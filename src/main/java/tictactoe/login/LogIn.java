@@ -34,7 +34,7 @@ public final class LogIn {
     }
 
 
-    public String createUser(HikariDataSource dataSource) {
+    public String createUserOLD(HikariDataSource dataSource) {
         PlayerInput playerInput = PlayerInput.getInstance();
         String userName;
 
@@ -55,5 +55,23 @@ public final class LogIn {
         LogInOutput.getInstance().createdNewUser(userName);
         return userName;
     }
+
+    public Boolean createUser(User user, HikariDataSource dataSource) {
+
+        if (!DBUser.userExists(user.getUserName(), dataSource)) {
+            String userName = user.getUserName();
+            String password = user.getPassword();
+            String question1 = user.getAnswer1();
+            String question2 = user.getAnswer2();
+
+            user = new User(userName, HashService.hash(password), HashService.hash(question1), HashService.hash(question2));
+            DBUser.insertUser(user, dataSource);
+
+            return true;
+        }
+        return false;
+    }
+
+
 
 }

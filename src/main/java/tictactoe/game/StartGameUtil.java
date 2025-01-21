@@ -24,7 +24,7 @@ public final class StartGameUtil {
             match = DBMatch.getLastNMatchesFromUser(userID, 1, ConnectionPool.getInstance().getDataSource()).getFirst();
         } else {
             System.out.println("Creating a new match");
-            match = new Match(); //TODO: combine into insert match method
+            match = new Match(); //TODO combine into insert match method
             match.setDifficulty(difficulty);
             if (difficulty == null) {
                 match.setDifficulty(PlayerInput.getInstance().askForDifficulty());
@@ -46,6 +46,9 @@ public final class StartGameUtil {
 
     private static boolean userHasRunningMatch(int userID, HikariDataSource dataSource) {
         List<Match> match = DBMatch.getLastNMatchesFromUser(userID, 1, dataSource);
+        if (match.isEmpty()) {
+            return false;
+        }
         return match.getFirst().getStatus() == MatchStatus.RUNNING || match.getLast().getStatus() == MatchStatus.NOT_STARTED;
     }
 

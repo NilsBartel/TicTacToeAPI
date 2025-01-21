@@ -2,6 +2,7 @@ package tictactoe.login;
 
 import tictactoe.PlayerInput;
 import tictactoe.database.*;
+import tictactoe.user.User;
 
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -44,9 +45,9 @@ public final class PasswordUtil {
     }
 
 
-    public static boolean resetPassword(int userID, PlayerInput playerInput, LogInOutput logInOutput, HikariDataSource dataSource) {
+    public static boolean resetPasswordOLD(int userID, PlayerInput playerInput, LogInOutput logInOutput, HikariDataSource dataSource) {
 
-        if (checkSecurityQuestions(userID, playerInput, logInOutput, dataSource)) {
+        if (checkSecurityQuestionsOLD(userID, playerInput, logInOutput, dataSource)) {
             String newPassword = playerInput.crateNewPassword();
 
 
@@ -59,7 +60,13 @@ public final class PasswordUtil {
         }
     }
 
-    private static Boolean checkSecurityQuestions(int userID, PlayerInput playerInput, LogInOutput logInOutput, HikariDataSource dataSource) {
+    public static void resetPassword(int userID, User user, HikariDataSource dataSource) {
+
+        String newPassword = user.getPassword();
+        DBUser.updatePassword(userID, HashService.hash(newPassword), dataSource);
+    }
+
+    private static Boolean checkSecurityQuestionsOLD(int userID, PlayerInput playerInput, LogInOutput logInOutput, HikariDataSource dataSource) {
 
         boolean bool1 = false;
         boolean bool2 = false;
@@ -78,6 +85,23 @@ public final class PasswordUtil {
             bool2 = true;
         } else {
             logInOutput.incorrect();
+        }
+        return bool1 && bool2;
+    }
+
+    public static Boolean checkSecurityQuestions(int userID, User user, HikariDataSource dataSource) {
+
+        boolean bool1 = false;
+        boolean bool2 = false;
+
+        String userAnswer1 = user.getAnswer1();
+        if (HashService.verify(userAnswer1, DBUser.getAnswer1(userID, dataSource))) {
+            bool1 = true;
+        }
+
+        String userAnswer2 = user.getAnswer2();
+        if (HashService.verify(userAnswer2, DBUser.getAnswer2(userID, dataSource))) {
+            bool2 = true;
         }
         return bool1 && bool2;
     }

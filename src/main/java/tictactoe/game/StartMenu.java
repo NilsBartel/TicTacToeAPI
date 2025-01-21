@@ -45,13 +45,13 @@ public class StartMenu {
             case "r": {
                 userName = playerInput.askForUserName();
                 int userID = DBUser.getUserId(userName, ConnectionPool.getInstance().getDataSource());
-                while(!PasswordUtil.resetPassword(userID, PlayerInput.getInstance(), LogInOutput.getInstance(), ConnectionPool.getInstance().getDataSource())) {
+                while(!PasswordUtil.resetPasswordOLD(userID, PlayerInput.getInstance(), LogInOutput.getInstance(), ConnectionPool.getInstance().getDataSource())) {
                     System.out.println("failed to reset password");
                 }
                 break;
             }
             case "b": {
-                userName = LogIn.getInstance().createUser(ConnectionPool.getInstance().getDataSource());
+                userName = LogIn.getInstance().createUserOLD(ConnectionPool.getInstance().getDataSource());
                 break;
             }
             case "q": {

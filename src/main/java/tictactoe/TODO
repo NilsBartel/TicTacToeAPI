@@ -1,0 +1,33 @@
+
+
+
+
+Match
+ -> POST move
+ -> new game
+ -> select difficulty
+ -> matchHistory
+ -> analyse
+ -> score?
+ -> quit/logout
+
+ error message as json
+ - controller class
+ - dont need a response class if i get a match and respond a match
+
+
+
+ ->
+ -- a class that constructs the whole response (message + header (rCode) and so on)
+->
+
+
+
+Login
+ -> POST  login
+ -> POST  password reset
+ -> POST  create account
+
+
+
+service classes are classes that are used once but are in another class to be less crowded

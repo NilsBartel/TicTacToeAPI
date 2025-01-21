@@ -95,7 +95,7 @@ public class Match {
 
     }
 
-    private Position playerMove(Board board, int userID) { //TODO: a lot!! the DB method calls are really bad!!!
+    private Position playerMove(Board board, int userID) { //TODO a lot!! the DB method calls are really bad!!!
 
         //tictactoe.game.Match tempMatch = FileWriteRead.getInstance().readFromHistoryFile(FileUtil.getInstance().getFileMatchHistory()).getMatches().getLast();
         //tictactoe.game.Match tempMatch = DB_Match.getMatchFromDB(DB_Match.getLastMatchIDFromUser(userID, DB_ConHandler.getInstance()), DB_ConHandler.getInstance());
@@ -128,7 +128,7 @@ public class Match {
 //                System.out.println("The Board has changed!");
 //                System.out.println("New Board:");
 //                //this.board = FileWriteRead.getInstance().getLastBoard();
-//                this.board = DB_Board.getBoard(DB_Board.getBoardId(DB_Match.getLastMatchIDFromUser(userID))); //TODO: a LOT!!!!! make the calls easier, all over this method !!!!!!!!!!
+//                this.board = DB_Board.getBoard(DB_Board.getBoardId(DB_Match.getLastMatchIDFromUser(userID))); //TODO a LOT!!!!! make the calls easier, all over this method !!!!!!!!!!
 //                this.board.print();
 //
 //                //tempMatch = FileWriteRead.getInstance().readFromHistoryFile(FileUtil.getInstance().getFileMatchHistory()).getMatches().getLast();

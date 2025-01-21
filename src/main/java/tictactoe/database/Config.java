@@ -1,6 +1,6 @@
 package tictactoe.database;
 
-public class Credentials {
+public class Config {
 
     private final static String URL = "jdbc:postgresql://localhost:5432/tictactoe";
     private final static String USERNAME = "postgres";

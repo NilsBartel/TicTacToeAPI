@@ -26,7 +26,7 @@ public class Database {
         ) {
 
             char test = match.getBoard().getSymbol(position.getRow(), position.getColumn());
-            //TODO: match.getSymbol ?
+            //TODO match.getSymbol ?
 
             prepStmt.setString(1, String.valueOf(test));
             prepStmt.setInt(2, userID);
