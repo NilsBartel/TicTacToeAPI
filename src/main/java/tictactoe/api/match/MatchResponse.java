@@ -1,4 +1,4 @@
-package tictactoe.api;
+package tictactoe.api.match;
 
 import tictactoe.game.Match;
 
@@ -7,7 +7,7 @@ import java.util.List;
 public class MatchResponse {
 
     private String message;
-    private List<Match> matches;
+    private Match match;
 
     public MatchResponse(String message) {
         this.message = message;
@@ -18,12 +18,12 @@ public class MatchResponse {
 
 
 
-    public List<Match> getMatches() {
-        return matches;
+    public Match getMatches() {
+        return match;
     }
 
-    public void setMatches(List<Match> matches) {
-        this.matches = matches;
+    public void setMatches(Match matches) {
+        this.match = matches;
     }
 
     public String getMessage() {
@@ -33,4 +33,9 @@ public class MatchResponse {
     public void setMessage(String message) {
         this.message = message;
     }
+
+
+
+
+
 }

@@ -1,4 +1,4 @@
-package tictactoe.api.account;
+package tictactoe.api;
 
 import net.bytebuddy.utility.RandomString;
 
@@ -7,13 +7,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class Authentication {
+public class AuthenticationToken {
 
-    private static Authentication instance;
-    private Authentication() {}
-    public static Authentication getInstance() {
+    private static AuthenticationToken instance;
+    private AuthenticationToken() {}
+    public static AuthenticationToken getInstance() {
         if (instance == null) {
-            instance = new Authentication();
+            instance = new AuthenticationToken();
         }
         return instance;
     }
@@ -42,12 +42,18 @@ public class Authentication {
 
     }
 
+    public int getUserId(String authToken){
+        return authMap.get(authToken).getKey();
+    }
+
     private boolean timestampValid(Timestamp timestamp){
         Timestamp now = new Timestamp(System.currentTimeMillis());
         return now.before(timestamp);
     }
 
-    //TODO: clean up map
+
+
+    //TODO: clean up map after certain time (things where the time ha ran out)
 
 
 

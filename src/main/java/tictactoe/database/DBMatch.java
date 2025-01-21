@@ -161,37 +161,12 @@ public class DBMatch {
 
 
 
-//    final static String DB_URL = "jdbc:postgresql://localhost:5432/tictactoe";
-//    final static String USERNAME = "postgres";
-//    final static String PASSWORD = "mysecretpassword";
-//
-//
-//
-//
-//    public static Connection getConnection() {
-//
-//        try {
-//            return DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
-//        } catch (SQLException e) {
-//            System.err.println(e.getMessage());
-//            return null;
-//        }
-//    }
-
-//    final String DB_URL = "jdbc:postgresql://localhost:5432/tictactoe";
-//    final String USERNAME = "postgres";
-//    final String PASSWORD = "mysecretpassword";
-//
-//    ConnectionPool pool = ConnectionPool.getInstance();
-//        pool.initPool(DB_URL, USERNAME, PASSWORD);
-
 
     public static Board getBoard(int matchID, HikariDataSource dataSource) {
         String sql = "select * from board left join public.row r on board.board_id = r.board_id left join public.field f on r.row_id = f.row_id WHERE board.match_id = ?";
         Board board = new Board();
 
         try (Connection connection = dataSource.getConnection();
-             //try (Connection connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
              PreparedStatement prepStmt = connection.prepareStatement(sql)
         ) {
             prepStmt.setInt(1, matchID);

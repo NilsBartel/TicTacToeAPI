@@ -2,6 +2,7 @@ package tictactoe.api;
 
 import com.sun.net.httpserver.HttpServer;
 import tictactoe.api.account.LoginController;
+import tictactoe.api.match.MatchController;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -14,13 +15,14 @@ public class Server {
         HttpServer server = HttpServer.create(new InetSocketAddress(serverPort), 0);
 
 
-        //server.createContext("/api/match")
-        //server.createContext("/api/login", (LoginHandler::handle));
-        server.createContext("/api/match", (MatchHandler::handle));
 
-        //new LoginController(server);
-        //loginController.endPoint();
+
+
+
+
+
         LoginController.endPoint(server);
+        MatchController.endPoint(server);
 
 
 

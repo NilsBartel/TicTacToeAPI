@@ -1,5 +1,12 @@
 
 
+-- how does it start?
+give whole matchHistory and let the frontend decide if there is a running match?
+or have the backend give a running or new match
+
+DATABASE:
+DBUser -> make the into one method and just create a user Object
+
 
 
 Match

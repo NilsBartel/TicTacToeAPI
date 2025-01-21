@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.apache.commons.io.IOUtils;
-import tictactoe.api.LoginHandler;
+import tictactoe.api.AuthenticationToken;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.DBUser;
 import tictactoe.login.LogIn;
@@ -37,7 +37,7 @@ public class LoginController {
             User user = objectMapper.readValue(requestBody, User.class);
 
             if (LogIn.getInstance().logInUser(user.getUserName(), user.getPassword(), ConnectionPool.getInstance().getDataSource())) {
-                String authToken = Authentication.getInstance().create(DBUser.getUserId(user.getUserName(), ConnectionPool.getInstance().getDataSource()));
+                String authToken = AuthenticationToken.getInstance().create(DBUser.getUserId(user.getUserName(), ConnectionPool.getInstance().getDataSource()));
                 loginResponse.setMessage("logged in successfully");
                 loginResponse.setToken(authToken);
 
