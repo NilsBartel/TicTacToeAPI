@@ -8,6 +8,8 @@ import tictactoe.PlayerInput;
 
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Match {
@@ -21,6 +23,7 @@ public class Match {
     private MatchStatus status;
     private DifficultyState difficulty;
     private boolean isPlayerTurn;
+    private int matchID;
     private Timestamp startTime;
     private Timestamp endTime;
 
@@ -31,9 +34,63 @@ public class Match {
         this.status = MatchStatus.NOT_STARTED;
     }
 
-
     public void play(int userID) {
-        System.out.println("no playerinput?");
+        if (status == MatchStatus.NOT_STARTED) {
+            setPlayerTurn(DBScore.getScore(userID, ConnectionPool.getInstance().getDataSource()));
+            this.status = MatchStatus.RUNNING;
+        }
+
+
+
+    }
+
+    public boolean validateMatch(int userID) {
+        //TODO: return the List<Position> back to controller so he can make the informed return of what went wrong with the request (no change, to many changes...)
+
+        Match dbMatch = DBMatch.getMatch(userID, this.matchID, ConnectionPool.getInstance().getDataSource());
+
+        boolean bool = this.equalsWithoutBoard(dbMatch);
+
+        List<Position> positions = seeWhatChanged(dbMatch.getBoard());
+        System.out.println(positions);
+
+
+
+        boolean bool2 = positions.size() == 1;
+
+
+
+
+
+
+
+        return bool && bool2;
+
+
+    }
+
+    //TODO:
+    //TODO:
+    //TODO:
+    //TODO:
+
+    public List<Position> seeWhatChanged(Board board) {
+        List<Position> positions = new ArrayList<>();
+
+        for (int i = 1; i <= 9; i++) {
+            char oldSymbol = board.getSymbol(new Position(i));
+            char newSymbol = this.board.getSymbol(new Position(i));
+            if (oldSymbol != newSymbol) {
+                positions.add(new Position(i));
+            }
+        }
+
+        return positions;
+    }
+
+
+    public void playOLD(int userID) {
+        //System.out.println("no playerinput?");
         //Database.writeToDatabase(this , userID);
         //Database.updateDB(this , userID);
 
@@ -215,6 +272,14 @@ public class Match {
         this.status = status;
     }
 
+    public int getMatchID() {
+        return matchID;
+    }
+
+    public void setMatchID(int matchID) {
+        this.matchID = matchID;
+    }
+
     public Timestamp getStartTime() {
         return startTime;
     }
@@ -242,16 +307,19 @@ public class Match {
 //        return isPlayerTurn == match.isPlayerTurn && startTime == match.startTime && endTime == match.endTime && board.equals(match.board) && status == match.status && difficulty == match.difficulty;
 //    }
 
+    public boolean equalsWithoutBoard(Object o) {
+        if (!(o instanceof Match match)) return false;
+        return isPlayerTurn == match.isPlayerTurn && matchID == match.matchID &&  status == match.status && difficulty == match.difficulty && Objects.equals(startTime, match.startTime) && Objects.equals(endTime, match.endTime);
+    }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Match match)) return false;
-        return isPlayerTurn == match.isPlayerTurn && Objects.equals(board, match.board) && status == match.status && difficulty == match.difficulty && Objects.equals(startTime, match.startTime) && Objects.equals(endTime, match.endTime);
+        return isPlayerTurn == match.isPlayerTurn && matchID == match.matchID && Objects.equals(board, match.board) && status == match.status && difficulty == match.difficulty && Objects.equals(startTime, match.startTime) && Objects.equals(endTime, match.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(board, status, difficulty, isPlayerTurn, startTime, endTime);
+        return Objects.hash(board, status, difficulty, isPlayerTurn, matchID, startTime, endTime);
     }
-
 }

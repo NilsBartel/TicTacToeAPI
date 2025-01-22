@@ -16,11 +16,12 @@ import java.util.List;
 
 public class DBMatch {
 
-    public static void insertNewMatch(Match match, int userID, HikariDataSource dataSource) {
+    public static int insertNewMatch(Match match, int userID, HikariDataSource dataSource) {
+        int matchID = 0;
         try (Connection connection = dataSource.getConnection()) {
 
             String sql = "INSERT INTO match(difficulty, status, isplayerturn, user_id) VALUES(?, ?, ?, ?) returning match_id";
-            int match_id = 0;
+
             try(PreparedStatement prepStmt = connection.prepareStatement(sql)) {
 
                 prepStmt.setString(1, match.getDifficulty().toString());
@@ -32,14 +33,14 @@ public class DBMatch {
 
                 ResultSet resultSet = prepStmt.getResultSet();
                 if (resultSet.next()) {
-                    match_id = resultSet.getInt(1);
+                    matchID = resultSet.getInt(1);
                 }
             }
 
             sql = "INSERT INTO board(match_id) VALUES(?) returning board_id";
             int board_id = 0;
             try(PreparedStatement prepStmt = connection.prepareStatement(sql)) {
-                prepStmt.setInt(1, match_id);
+                prepStmt.setInt(1, matchID);
                 prepStmt.execute();
 
                 ResultSet resultSet = prepStmt.getResultSet();
@@ -84,13 +85,54 @@ public class DBMatch {
             try(PreparedStatement prepStmt = connection.prepareStatement(sql)) {
                 prepStmt.setTimestamp(1, match.getStartTime());
                 prepStmt.setTimestamp(2, match.getEndTime());
-                prepStmt.setInt(3, match_id);
+                prepStmt.setInt(3, matchID);
                 prepStmt.executeUpdate();
             }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+        return matchID;
+    }
+
+    public static Match getMatch(int userID, int matchID, HikariDataSource dataSource) {
+        Match match = new Match();
+
+        //String sql = "SELECT * FROM match LEFT JOIN time ON match.match_id = time.match_id WHERE user_id = ?";
+
+        String sql = "SELECT * FROM match LEFT JOIN time ON match.match_id = time.match_id WHERE user_id = ? AND match.match_id = ?";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement prepStatement = connection.prepareStatement(sql)
+        ) {
+            prepStatement.setInt(1, userID);
+            prepStatement.setInt(2, matchID);
+            ResultSet resultSet = prepStatement.executeQuery();
+            while (resultSet.next()) {
+//                Match match = new Match();
+//                int matchID = resultSet.getInt("match_id");
+                match.setDifficulty(DifficultyState.valueOf(resultSet.getString("difficulty")));
+                match.setStatus(MatchStatus.valueOf(resultSet.getString("status")));
+                match.setIsPlayerTurn(resultSet.getBoolean("isplayerturn"));
+                match.setMatchID(resultSet.getInt("match_id"));
+                match.setStartTime(resultSet.getTimestamp("starttime"));
+                match.setEndTime(resultSet.getTimestamp("endtime"));
+
+                match.setBoard(getBoard(matchID, dataSource));
+
+//                matches.add(match);
+            }
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
+
+        return match;
+
     }
 
 
@@ -110,6 +152,7 @@ public class DBMatch {
                 match.setDifficulty(DifficultyState.valueOf(resultSet.getString("difficulty")));
                 match.setStatus(MatchStatus.valueOf(resultSet.getString("status")));
                 match.setIsPlayerTurn(resultSet.getBoolean("isplayerturn"));
+                match.setMatchID(resultSet.getInt("match_id"));
                 match.setStartTime(resultSet.getTimestamp("starttime"));
                 match.setEndTime(resultSet.getTimestamp("endtime"));
 
@@ -144,6 +187,7 @@ public class DBMatch {
                 match.setDifficulty(DifficultyState.valueOf(resultSet.getString("difficulty")));
                 match.setStatus(MatchStatus.valueOf(resultSet.getString("status")));
                 match.setIsPlayerTurn(resultSet.getBoolean("isplayerturn"));
+                match.setMatchID(resultSet.getInt("match_id"));
                 match.setStartTime(resultSet.getTimestamp("starttime"));
                 match.setEndTime(resultSet.getTimestamp("endtime"));
 

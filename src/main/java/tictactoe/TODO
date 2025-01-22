@@ -9,6 +9,17 @@ DBUser -> make the into one method and just create a user Object
 
 
 
+
+
+1. GET match -> takes token -> gives running or new match  (take userID from token)
+2. POST match -> takes token and match -> returns match with computer move
+3. ...?
+4. profit
+
+wenn ich mit dem POST für das match nur das match mit board mit gebe, dann weiß mein Program ja nicht welcher move vom spieler gemacht wurde. Soll ich den move (oder position) auch mitgeben in dem POST, oder soll das program das selber herrausfinden, quasi abgleichen mit der datenbank welcher move neu ist?
+
+
+
 Match
  -> POST move
  -> new game
@@ -38,3 +49,59 @@ Login
 
 
 service classes are classes that are used once but are in another class to be less crowded
+
+
+
+
+
+{
+  "board": {
+    "rows": [
+      {
+        "fields": [
+          {
+            "symbol": " "
+          },
+          {
+            "symbol": "o"
+          },
+          {
+            "symbol": " "
+          }
+        ]
+      },
+      {
+        "fields": [
+          {
+            "symbol": " "
+          },
+          {
+            "symbol": " "
+          },
+          {
+            "symbol": " "
+          }
+        ]
+      },
+      {
+        "fields": [
+          {
+            "symbol": " "
+          },
+          {
+            "symbol": " "
+          },
+          {
+            "symbol": " "
+          }
+        ]
+      }
+    ]
+  },
+  "status": "PLAYER_WON",
+  "difficulty": "EASY",
+  "isPlayerTurn": true,
+  "matchID": 360,
+  "startTime": 1737546384875,
+  "endTime": 1737558503204
+}

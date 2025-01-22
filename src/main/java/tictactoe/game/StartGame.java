@@ -18,7 +18,7 @@ public class StartGame {
 
             difficulty = match.getDifficulty();
 
-            match.play(userID);
+            match.playOLD(userID);
 
             Winner.printWhoWon(match.getStatus());
             Score.updateScore(match.getStatus(), userID);

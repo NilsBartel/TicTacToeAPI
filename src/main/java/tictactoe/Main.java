@@ -3,6 +3,9 @@ package tictactoe;
 //import org.apache.log4j.Logger;
 //import org.apache.log4j.Level;
 
+import org.slf4j.LoggerFactory;
+import ch.qos.logback.classic.Level;
+
 import tictactoe.api.Server;
 import tictactoe.database.*;
 
@@ -14,6 +17,13 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
+
+        ch.qos.logback.classic.Logger hikariLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.zaxxer.hikari");
+        hikariLogger.setLevel(Level.ERROR);
+
+
+
+
 //        String token =  AuthenticationToken.getInstance().create(11);
 
         //AuthenticationToken.getInstance().create(12);
@@ -42,6 +52,8 @@ public class Main {
 
         ConnectionPool pool = ConnectionPool.getInstance();
         pool.initPool(Config.getURL(), Config.getUSERNAME(), Config.getPASSWORD());
+        //DBMatch.getMatch(10, 358, ConnectionPool.getInstance().getDataSource()).printBoard();
+
 
         Server.start();
 

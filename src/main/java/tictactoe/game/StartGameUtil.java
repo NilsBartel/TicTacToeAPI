@@ -35,7 +35,8 @@ public final class StartGameUtil {
             System.out.println("wrote to DB");
             match.setStartTime(new Timestamp(System.currentTimeMillis()));
             //DB_Match.insertMatch(match, userID, ConnectionPool.getInstance().getDataSource());
-            DBMatch.insertNewMatch(match, userID, ConnectionPool.getInstance().getDataSource());
+            int matchID = DBMatch.insertNewMatch(match, userID, ConnectionPool.getInstance().getDataSource());
+            match.setMatchID(matchID);
 
 
         }

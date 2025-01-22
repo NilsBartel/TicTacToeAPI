@@ -85,6 +85,10 @@ public class Board {
         return rows.get(row).getSymbol(column);
     }
 
+    public char getSymbol(Position position){
+        return rows.get(position.getRow()).getSymbol(position.getColumn());
+    }
+
     public List<Row> getRows() {
         return rows;
     }
