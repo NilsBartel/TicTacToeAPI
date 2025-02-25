@@ -29,15 +29,25 @@ public class MatchController {
 
     public static void endPoint(HttpServer server) {
 
+        ErrorHandler errorHandler = new ErrorHandler();
+        server.createContext("/match/", exchange ->
+                Try.run(() -> handleMatch(exchange))
+                        .onFailure(t -> {errorHandler.handle(t, exchange);})
+        );
 
-        server.createContext("/match/", (MatchController::handleMatch));
-        //server.createContext("/match/play", (MatchController::handlePlay));
-        server.createContext("/match/play", (MatchController::handle));
+        server.createContext("/match/play/", exchange ->
+                Try.run(() -> handlePlay(exchange))
+                        .onFailure(t -> {errorHandler.handle(t, exchange);})
+        );
 
-        server.createContext("/match/create", (MatchController::handleCreateMatch));
-
+        server.createContext("/match/create/", exchange ->
+                Try.run(() -> handleCreateMatch(exchange))
+                        .onFailure(t -> {errorHandler.handle(t, exchange);})
+        );
 
     }
+
+
 
 
 
@@ -45,19 +55,8 @@ public class MatchController {
     public static void handleMatch(HttpExchange exchange) throws IOException {
 
         String token = exchange.getRequestHeaders().get("token").getFirst();
-        MatchResponse matchResponse = new MatchResponse();
+        AuthenticationToken.getInstance().authenticate(token);
 
-        if (!AuthenticationToken.getInstance().authenticate(token)) {
-
-            matchResponse.setMessage("Invalid token");
-            exchange.sendResponseHeaders(401, 0);
-
-            OutputStream output = exchange.getResponseBody();
-            output.write(objectMapper.writeValueAsBytes(matchResponse));
-            output.flush();
-            exchange.close();
-            return;
-        }
 
         Match match = new Match();
 
@@ -84,29 +83,12 @@ public class MatchController {
         responseBody.close();
 
     }
-
-    //static MatchError testError = new MatchError();
-    static ErrorHandler errorHandler = new ErrorHandler();
-    public static void handle(HttpExchange exchange) {
-        Try.run(() -> handlePlay(exchange)).onFailure(t -> {errorHandler.handle(t, exchange);});
-    }
+    
 
 
     public static void handlePlay(HttpExchange exchange) throws IOException, MatchError {
         String token = exchange.getRequestHeaders().getFirst("token");
-        MatchResponse matchResponse = new MatchResponse();
-
-        if (!AuthenticationToken.getInstance().authenticate(token)) {
-
-            matchResponse.setMessage("Invalid token");
-            exchange.sendResponseHeaders(401, 0);
-
-            OutputStream output = exchange.getResponseBody();
-            output.write(objectMapper.writeValueAsBytes(matchResponse));
-            output.flush();
-            exchange.close();
-            return;
-        }
+        AuthenticationToken.getInstance().authenticate(token);
 
 
         if (exchange.getRequestMethod().equals("POST")) {
@@ -115,9 +97,6 @@ public class MatchController {
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
             Match match = objectMapper.readValue(requestBody, Match.class);
             match.printBoard();
-
-
-
 
             if (match.validateMatch(userID)) {
                 Database.updateDB_Match(match, userID, ConnectionPool.getInstance().getDataSource());
@@ -139,21 +118,12 @@ public class MatchController {
 
 
 
-    }public static void handleCreateMatch(HttpExchange exchange) throws IOException {
+    }
+
+    public static void handleCreateMatch(HttpExchange exchange) throws IOException {
         String token = exchange.getRequestHeaders().getFirst("token");
-        MatchResponse matchResponse = new MatchResponse();
+        AuthenticationToken.getInstance().authenticate(token);
 
-        if (!AuthenticationToken.getInstance().authenticate(token)) {
-
-            matchResponse.setMessage("Invalid token");
-            exchange.sendResponseHeaders(401, 0);
-
-            OutputStream output = exchange.getResponseBody();
-            output.write(objectMapper.writeValueAsBytes(matchResponse));
-            output.flush();
-            exchange.close();
-            return;
-        }
 
 
         if (exchange.getRequestMethod().equals("GET")) {

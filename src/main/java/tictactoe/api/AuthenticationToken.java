@@ -1,6 +1,10 @@
 package tictactoe.api;
 
+import com.sun.net.httpserver.HttpExchange;
+import io.vavr.control.Try;
 import net.bytebuddy.utility.RandomString;
+import tictactoe.api.errors.ErrorHandler;
+import tictactoe.api.errors.LoginError;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -26,7 +30,11 @@ public class AuthenticationToken {
 
 
 
-
+    ErrorHandler errorHandler = new ErrorHandler();
+    public boolean handleAuthentication(HttpExchange exchange, String authToken) {
+        Try.run(() -> authenticate(authToken)).onFailure(t -> {errorHandler.handle(t, exchange);});
+        return true;
+    }
 
 
     public String create(int userID){
@@ -36,8 +44,10 @@ public class AuthenticationToken {
     }
 
 
-    public boolean authenticate(String authToken){
-        return authMap.containsKey(authToken) && timestampValid(authMap.get(authToken).getValue());
+    public boolean authenticate(String authToken) throws LoginError {
+        if (!authMap.containsKey(authToken) || !timestampValid(authMap.get(authToken).getValue())) throw new LoginError("Invalid or expired token");
+        return true;
+        //return authMap.containsKey(authToken) && timestampValid(authMap.get(authToken).getValue());
         //return authMap.containsKey(authToken) && authMap.get(authToken).getValue().before(new Timestamp(System.currentTimeMillis()));
 
     }

@@ -32,10 +32,25 @@ public class ErrorHandler {
     }
 
     private ErrorResponse getErrorResponse(Throwable throwable, HttpExchange exchange) throws IOException {
-        ErrorResponse response = new ErrorResponse(throwable.getMessage(), 400);
-        exchange.sendResponseHeaders(400, 0);
-
+        ErrorResponse response;
+        if (throwable instanceof MatchError) {
+            response = new ErrorResponse(throwable.getMessage(), 422);
+            exchange.sendResponseHeaders(422, 0);
+        } else if (throwable instanceof LoginError) {
+            response = new ErrorResponse(throwable.getMessage(), 401);
+            exchange.sendResponseHeaders(401, 0);
+        }else {
+            response = new ErrorResponse(throwable.getMessage(), 500);
+            exchange.sendResponseHeaders(500, 0);
+        }
         return response;
+
+
+
+//        ErrorResponse response = new ErrorResponse(throwable.getMessage(), 422);
+//        exchange.sendResponseHeaders(422, 0);
+//
+//        return response;
 
     }
 }

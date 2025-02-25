@@ -45,6 +45,7 @@ public class Match {
         System.out.println(positions);
 
 
+        if (positions.isEmpty()) throw new MatchError("No new input found");
         if (positions.size() != 1) throw new MatchError("Wrong number of positions");
         if (board.getSymbol(positions.getFirst()) != PLAYER_SYMBOL) throw new MatchError("Wrong symbol, player symbol is: " + Match.PLAYER_SYMBOL);
 
@@ -71,14 +72,13 @@ public class Match {
     public void computerPlay(int userID) {
 
 
-
+        System.out.println("player move:");
         board.print();
-        System.out.println();
 
 
 
 
-            char currentSymbol = PLAYER_SYMBOL;
+        char currentSymbol = PLAYER_SYMBOL;
         if (isGameOver(board, currentSymbol)){
             System.out.println("Game Over");
             System.out.println("Game Over");
@@ -97,6 +97,7 @@ public class Match {
             board.setSymbol(position.getRow(), position.getColumn(), currentSymbol);
 
             System.out.println();
+            System.out.println("Computer move:");
             board.print();
 
 
