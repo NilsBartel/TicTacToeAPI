@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Level;
 
 import tictactoe.api.Server;
+import tictactoe.api.errors.MatchError;
 import tictactoe.database.*;
 
 import java.io.IOException;
@@ -23,36 +24,30 @@ public class Main {
 
 
 
-
-//        String token =  AuthenticationToken.getInstance().create(11);
-
-        //AuthenticationToken.getInstance().create(12);
-
-//        System.out.println(AuthenticationToken.getInstance().getAuthMap());
-//
-//
-////        Thread.sleep(10000);
-////        System.out.println(AuthenticationToken.getInstance().authenticate(token) + " 10 sec");
-//
-//        Thread.sleep(30000);
-//        System.out.println(AuthenticationToken.getInstance().authenticate(token) + " 30 sec");
-//
-//        Thread.sleep(25000);
-//        System.out.println(AuthenticationToken.getInstance().authenticate(token) + " 55 sec");
-//
-//        Thread.sleep(10000);
-//        System.out.println(AuthenticationToken.getInstance().authenticate(token) + " 65 sec");
-//
-//        Thread.sleep(25000);
-//        System.out.println(AuthenticationToken.getInstance().authenticate(token) + " 180 sec");
-
-
-        //System.out.println(AuthenticationToken.getInstance().checkTimestamp(new Timestamp(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1))));
-
-
         ConnectionPool pool = ConnectionPool.getInstance();
         pool.initPool(Config.getURL(), Config.getUSERNAME(), Config.getPASSWORD());
-        //DBMatch.getMatch(10, 358, ConnectionPool.getInstance().getDataSource()).printBoard();
+
+//        char p = 'o';
+//        char c = 'x';
+//        char e = ' ';
+//
+//        Board board = new Board();
+//        board.setSymbol(0,0, c);
+//        board.setSymbol(0,1, p);
+//        board.setSymbol(0,2, 'o');
+//
+//        board.setSymbol(1,0, c);
+//        board.setSymbol(1,1, c);
+//        board.setSymbol(1,2,  e);
+//
+//        board.setSymbol(2,0, e);
+//        board.setSymbol(2,1, p);
+//        board.setSymbol(2,2, c);
+//
+//        System.out.println(Winner.thereIsWinner(board, c));
+
+        MatchError matchError = new MatchError("MatchError");
+
 
 
         Server.start();

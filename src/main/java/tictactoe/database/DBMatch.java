@@ -26,7 +26,7 @@ public class DBMatch {
 
                 prepStmt.setString(1, match.getDifficulty().toString());
                 prepStmt.setString(2, match.getStatus().toString());
-                prepStmt.setString(2, match.getStatus().toString());
+                //prepStmt.setString(2, match.getStatus().toString());
                 prepStmt.setBoolean(3, match.isIsPlayerTurn());
                 prepStmt.setInt(4, userID);
                 prepStmt.execute();
@@ -229,4 +229,6 @@ public class DBMatch {
 
         return board;
     }
+
+
 }

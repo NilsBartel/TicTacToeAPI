@@ -7,6 +7,8 @@ or have the backend give a running or new match
 DATABASE:
 DBUser -> make the into one method and just create a user Object
 
+- difficulty: just always take it from the match (match.getDifficulty)
+
 
 
 

@@ -93,8 +93,11 @@ public class Board {
         return rows;
     }
 
-    public List<Field> getFieldsInRow(int row){
-        return rows.get(row).getFields();
+//    public List<Field> getFieldsInRow(int row){
+//        return rows.get(row).getFields();
+//    }
+    public List<Field> getFieldsInRow(Row row){
+        return row.getFields();
     }
 
     public Field getField(int row , int column){

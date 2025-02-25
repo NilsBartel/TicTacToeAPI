@@ -10,22 +10,38 @@ public final class Winner {
     private Winner() {
     }
 
-    public static boolean thereIsWinner(Board board, Position position, char currentSymbol) {
+    public static boolean thereIsWinner(Board board,char currentSymbol) {
 
 
-        int row = position.getRow();
-        if(allEqualsSymbol(board.getFieldsInRow(row), currentSymbol)) {
-            return true;
+//        int row = position.getRow();
+//        if(allEqualsSymbol(board.getFieldsInRow(row), currentSymbol)) {
+//            return true;
+//        }
+
+        for (Row row : board.getRows()) {
+            if(allEqualsSymbol(board.getFieldsInRow(row), currentSymbol)) {
+                return true;
+            }
+        }
+
+        for (int column = 0; column < 3; column++) {
+            List<Field> columnList = new ArrayList<>();
+            for (int row = 0; row < 3; row++) {
+                columnList.add(board.getField(row, column));
+            }
+            if (allEqualsSymbol(columnList, currentSymbol)) {
+                return true;
+            }
         }
 
 
-        List<Field> column = new ArrayList<>();
-        for(Row line : board.getRows()) {
-            column.add(line.getField(position.getColumn()));
-        }
-        if(allEqualsSymbol(column, currentSymbol)) {
-            return true;
-        }
+//        List<Field> column = new ArrayList<>();
+//        for(Row line : board.getRows()) {
+//            column.add(line.getField(position.getColumn()));
+//        }
+//        if(allEqualsSymbol(column, currentSymbol)) {
+//            return true;
+//        }
 
 
         return checkDiagonalTopLeftBottomRight(board, currentSymbol) || checkDiagonalTopRightBottomLeft(board, currentSymbol);

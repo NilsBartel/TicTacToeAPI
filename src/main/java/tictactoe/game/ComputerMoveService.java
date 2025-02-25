@@ -97,7 +97,7 @@ public final class ComputerMoveService {
             int column = position.getColumn();
 
             board.setSymbol(row, column, symbol);
-            if (Winner.thereIsWinner(board, position, symbol)){
+            if (Winner.thereIsWinner(board, symbol)){
                 board.setSymbol(row, column, Match.EMPTY_SYMBOL);
                 return position;
             }
@@ -216,7 +216,7 @@ public final class ComputerMoveService {
             int column = position.getColumn();
             board.setSymbol(row, column, symbol);
 
-            if (Winner.thereIsWinner(board, position, symbol)){
+            if (Winner.thereIsWinner(board, symbol)){
                 board.setSymbol(row, column, Match.EMPTY_SYMBOL);
                 counter++;
             }

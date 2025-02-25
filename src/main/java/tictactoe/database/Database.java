@@ -12,7 +12,7 @@ import java.sql.SQLException;
 
 public class Database {
 
-    public static void updateBoard(Match match, int userID, Position position, HikariDataSource dataSource) {
+    public static void updateBoardOLD(Match match, int userID, Position position, HikariDataSource dataSource) {
         String sql = "UPDATE field SET symbol = ? WHERE row_id = ( " + // --need char ( x or o or ' ')
                 "SELECT row_id FROM row WHERE board_id = ( " +
                 "SELECT board_id FROM board WHERE match_id = ( " +
@@ -37,8 +37,35 @@ public class Database {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    public static void updateBoard(Match match, int userID, HikariDataSource dataSource) {
+        String sql = "UPDATE field SET symbol = ? WHERE row_id = ( " + // --need char ( x or o or ' ')
+                "SELECT row_id FROM row WHERE board_id = ( " +
+                "SELECT board_id FROM board WHERE match_id = ( " +
+                "SELECT match_id FROM match WHERE user_id = ? ORDER BY match_id DESC LIMIT 1 " + // --need user_id
+                ") " +
+                ") AND row = ? " + // -- need row ( 0 or 1 or 2)
+                ") AND field = ?; "; //-- need field (0 or 1 or 2)
 
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement prepStmt = connection.prepareStatement(sql)
+        ) {
+
+            for (int row = 0; row < 3; row++) {
+                for (int column = 0; column < 3; column++) {
+                    //match.getBoard().getSymbol(row, column);
+                    prepStmt.setString(1, String.valueOf(match.getBoard().getSymbol(row, column)));
+                    prepStmt.setInt(2, userID);
+                    prepStmt.setInt(3, row);
+                    prepStmt.setInt(4, column);
+                    prepStmt.executeUpdate();
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -71,5 +98,7 @@ public class Database {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        //TODO: have it all in one function?
+        updateBoard(match, userID, dataSource);
     }
 }

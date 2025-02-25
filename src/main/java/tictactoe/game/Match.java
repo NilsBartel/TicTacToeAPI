@@ -1,5 +1,6 @@
 package tictactoe.game;
 
+import tictactoe.api.errors.MatchError;
 import tictactoe.board.Board;
 import tictactoe.board.Position;
 import tictactoe.database.ConnectionPool;
@@ -34,47 +35,23 @@ public class Match {
         this.status = MatchStatus.NOT_STARTED;
     }
 
-    public void play(int userID) {
-        if (status == MatchStatus.NOT_STARTED) {
-            setPlayerTurn(DBScore.getScore(userID, ConnectionPool.getInstance().getDataSource()));
-            this.status = MatchStatus.RUNNING;
-        }
 
-
-
-    }
-
-    public boolean validateMatch(int userID) {
-        //TODO: return the List<Position> back to controller so he can make the informed return of what went wrong with the request (no change, to many changes...)
-
+    public boolean validateMatch(int userID) throws MatchError {
         Match dbMatch = DBMatch.getMatch(userID, this.matchID, ConnectionPool.getInstance().getDataSource());
 
-        boolean bool = this.equalsWithoutBoard(dbMatch);
+        if (!this.equalsWithoutBoard(dbMatch)) throw new MatchError("Something changed with the match that wasn't allowed");
 
-        List<Position> positions = seeWhatChanged(dbMatch.getBoard());
+        List<Position> positions = positionsThatChanged(dbMatch.getBoard());
         System.out.println(positions);
 
 
+        if (positions.size() != 1) throw new MatchError("Wrong number of positions");
+        if (board.getSymbol(positions.getFirst()) != PLAYER_SYMBOL) throw new MatchError("Wrong symbol, player symbol is: " + Match.PLAYER_SYMBOL);
 
-        boolean bool2 = positions.size() == 1;
-
-
-
-
-
-
-
-        return bool && bool2;
-
-
+        return true;
     }
 
-    //TODO:
-    //TODO:
-    //TODO:
-    //TODO:
-
-    public List<Position> seeWhatChanged(Board board) {
+    public List<Position> positionsThatChanged(Board board) throws MatchError {
         List<Position> positions = new ArrayList<>();
 
         for (int i = 1; i <= 9; i++) {
@@ -82,11 +59,77 @@ public class Match {
             char newSymbol = this.board.getSymbol(new Position(i));
             if (oldSymbol != newSymbol) {
                 positions.add(new Position(i));
+
+                if (oldSymbol != EMPTY_SYMBOL) throw new MatchError("The field at position " + i + " was overwritten");
             }
         }
 
         return positions;
     }
+
+
+    public void computerPlay(int userID) {
+
+
+
+        board.print();
+        System.out.println();
+
+
+
+
+            char currentSymbol = PLAYER_SYMBOL;
+        if (isGameOver(board, currentSymbol)){
+            System.out.println("Game Over");
+            System.out.println("Game Over");
+            System.out.println("Game Over");
+            endTime = new Timestamp(System.currentTimeMillis());
+            Database.updateDB_Match(this, userID, ConnectionPool.getInstance().getDataSource());
+            return;
+        }
+
+            Position position;
+            currentSymbol = COMPUTER_SYMBOL;
+
+            position = Difficulty.returnMove(board, difficulty);
+
+
+            board.setSymbol(position.getRow(), position.getColumn(), currentSymbol);
+
+            System.out.println();
+            board.print();
+
+
+            Database.updateBoard(this, userID, ConnectionPool.getInstance().getDataSource());
+
+            //TODO: where do I get the position from? when player played
+            if(isGameOver(board, currentSymbol)){
+                //Database.updateBoard(this, userID, position, ConnectionPool.getInstance().getDataSource());
+                System.out.println("Game Over");
+                System.out.println("Game Over");
+                System.out.println("Game Over");
+                endTime = new Timestamp(System.currentTimeMillis());
+
+                //break;
+            }
+
+            //isPlayerTurn = !isPlayerTurn;
+            //Database.updateDatabase(this , userID);
+            //Database.updateBoard(this, userID, position, ConnectionPool.getInstance().getDataSource());
+            Database.updateDB_Match(this, userID, ConnectionPool.getInstance().getDataSource());
+
+
+
+        //endTime = new Timestamp(System.currentTimeMillis());
+        //DB_Time.updateTime(endTime, ConnectionPool.getInstance().getDataSource());
+        Database.updateDB_Match(this, userID, ConnectionPool.getInstance().getDataSource());
+
+        //Database.updateDatabase(this , userID);
+//        Database.updateBoard(this, userID, position, ConnectionPool.getInstance().getDataSource());
+
+    }
+
+
 
 
     public void playOLD(int userID) {
@@ -129,9 +172,9 @@ public class Match {
             board.print();
 
 
-            Database.updateBoard(this, userID, position, ConnectionPool.getInstance().getDataSource());
+            Database.updateBoard(this, userID, ConnectionPool.getInstance().getDataSource());
 
-            if(isGameOver(board, position, currentSymbol)){
+            if(isGameOver(board, currentSymbol)){
                 //Database.updateBoard(this, userID, position, ConnectionPool.getInstance().getDataSource());
                 break;
             }
@@ -197,9 +240,8 @@ public class Match {
         return position;
     }
 
-    private boolean isGameOver(Board board, Position position, char currentSymbol) {
-
-        if (Winner.thereIsWinner(board, position, currentSymbol)) {
+    private boolean dfdf(Board board, Position position, char currentSymbol) {
+        if (Winner.thereIsWinner(board, currentSymbol)) {
             if (currentSymbol == COMPUTER_SYMBOL){
                 this.status = MatchStatus.COMPUTER_WON;
             } else{
@@ -215,7 +257,43 @@ public class Match {
         return false;
     }
 
-    private void setPlayerTurn(Score score) {
+    private boolean isGameOver(Board board, char currentSymbol) {
+
+        if (Winner.thereIsWinner(board, currentSymbol)) {
+            if (currentSymbol == COMPUTER_SYMBOL){
+                this.status = MatchStatus.COMPUTER_WON;
+            } else{
+                this.status = MatchStatus.PLAYER_WON;
+            }
+            return true;
+        }
+
+        if (board.isFull()) {
+            this.status = MatchStatus.DRAW;
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isGameOverOLD(Board board, Position position, char currentSymbol) {
+
+        if (Winner.thereIsWinner(board, currentSymbol)) {
+            if (currentSymbol == COMPUTER_SYMBOL){
+                this.status = MatchStatus.COMPUTER_WON;
+            } else{
+                this.status = MatchStatus.PLAYER_WON;
+            }
+            return true;
+        }
+
+        if (board.isFull()) {
+            this.status = MatchStatus.DRAW;
+            return true;
+        }
+        return false;
+    }
+
+    public void setPlayerTurn(Score score) {
         this.isPlayerTurn = score.getRoundCounter() % 2 == 0;
     }
 
