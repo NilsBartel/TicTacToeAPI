@@ -47,8 +47,7 @@ public class AuthenticationToken {
     public boolean authenticate(String authToken) throws LoginError {
         if (!authMap.containsKey(authToken) || !timestampValid(authMap.get(authToken).getValue())) throw new LoginError("Invalid or expired token");
         return true;
-        //return authMap.containsKey(authToken) && timestampValid(authMap.get(authToken).getValue());
-        //return authMap.containsKey(authToken) && authMap.get(authToken).getValue().before(new Timestamp(System.currentTimeMillis()));
+
 
     }
 

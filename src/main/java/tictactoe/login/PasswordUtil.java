@@ -1,6 +1,6 @@
 package tictactoe.login;
 
-import tictactoe.PlayerInput;
+//import tictactoe.PlayerInput;
 import tictactoe.database.*;
 import tictactoe.user.User;
 
@@ -45,20 +45,20 @@ public final class PasswordUtil {
     }
 
 
-    public static boolean resetPasswordOLD(int userID, PlayerInput playerInput, LogInOutput logInOutput, HikariDataSource dataSource) {
-
-        if (checkSecurityQuestionsOLD(userID, playerInput, logInOutput, dataSource)) {
-            String newPassword = playerInput.crateNewPassword();
-
-
-            DBUser.updatePassword(userID, HashService.hash(newPassword), dataSource);
-            return true;
-
-        } else {
-            logInOutput.failedReset();
-            return false;
-        }
-    }
+//    public static boolean resetPasswordOLD(int userID, PlayerInput playerInput, LogInOutput logInOutput, HikariDataSource dataSource) {
+//
+//        if (checkSecurityQuestionsOLD(userID, playerInput, logInOutput, dataSource)) {
+//            String newPassword = playerInput.crateNewPassword();
+//
+//
+//            DBUser.updatePassword(userID, HashService.hash(newPassword), dataSource);
+//            return true;
+//
+//        } else {
+//            logInOutput.failedReset();
+//            return false;
+//        }
+//    }
 
     public static void resetPassword(int userID, User user, HikariDataSource dataSource) {
 
@@ -66,28 +66,28 @@ public final class PasswordUtil {
         DBUser.updatePassword(userID, HashService.hash(newPassword), dataSource);
     }
 
-    private static Boolean checkSecurityQuestionsOLD(int userID, PlayerInput playerInput, LogInOutput logInOutput, HikariDataSource dataSource) {
-
-        boolean bool1 = false;
-        boolean bool2 = false;
-
-        String userAnswer1 = playerInput.askRecoveryQuestion1();
-        if (HashService.verify(userAnswer1, DBUser.getAnswer1(userID, dataSource))) {
-            logInOutput.correct();
-            bool1 = true;
-        } else {
-            logInOutput.incorrect();
-        }
-
-        String userAnswer2 = playerInput.askRecoveryQuestion2();
-        if (HashService.verify(userAnswer2, DBUser.getAnswer2(userID, dataSource))) {
-            logInOutput.correct();
-            bool2 = true;
-        } else {
-            logInOutput.incorrect();
-        }
-        return bool1 && bool2;
-    }
+//    private static Boolean checkSecurityQuestionsOLD(int userID, PlayerInput playerInput, LogInOutput logInOutput, HikariDataSource dataSource) {
+//
+//        boolean bool1 = false;
+//        boolean bool2 = false;
+//
+//        String userAnswer1 = playerInput.askRecoveryQuestion1();
+//        if (HashService.verify(userAnswer1, DBUser.getAnswer1(userID, dataSource))) {
+//            logInOutput.correct();
+//            bool1 = true;
+//        } else {
+//            logInOutput.incorrect();
+//        }
+//
+//        String userAnswer2 = playerInput.askRecoveryQuestion2();
+//        if (HashService.verify(userAnswer2, DBUser.getAnswer2(userID, dataSource))) {
+//            logInOutput.correct();
+//            bool2 = true;
+//        } else {
+//            logInOutput.incorrect();
+//        }
+//        return bool1 && bool2;
+//    }
 
     public static Boolean checkSecurityQuestions(int userID, User user, HikariDataSource dataSource) {
 
