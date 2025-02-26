@@ -1,5 +1,6 @@
 package tictactoe.login;
 
+import tictactoe.api.errors.LoginError;
 import tictactoe.user.User;
 //import tictactoe.PlayerInput;
 import tictactoe.database.*;
@@ -26,11 +27,16 @@ public final class LogIn {
 //        return DBUser.userExists(userName, dataSource) && PasswordUtil.checkPassword(password, DBUser.getPassword(userName, dataSource));
 //    }
 
-    public boolean logInUser(String userName, String password, HikariDataSource dataSource) {
+    public boolean logInUser(String userName, String password, HikariDataSource dataSource) throws LoginError {
+
+        if (!DBUser.userExists(userName, dataSource) || !PasswordUtil.checkPassword(password, DBUser.getPassword(userName, dataSource))) {
+            throw new LoginError("Username or Password is incorrect!");
+        }
 //        String password;
 //        password = playerInput.askForPassword();
+        return true;
 
-        return DBUser.userExists(userName, dataSource) && PasswordUtil.checkPassword(password, DBUser.getPassword(userName, dataSource));
+        //return DBUser.userExists(userName, dataSource) && PasswordUtil.checkPassword(password, DBUser.getPassword(userName, dataSource));
     }
 
 
@@ -56,20 +62,37 @@ public final class LogIn {
 //        return userName;
 //    }
 
-    public Boolean createUser(User user, HikariDataSource dataSource) {
+    public Boolean createUser(User user, HikariDataSource dataSource) throws LoginError {
 
-        if (!DBUser.userExists(user.getUserName(), dataSource)) {
-            String userName = user.getUserName();
-            String password = user.getPassword();
-            String question1 = user.getAnswer1();
-            String question2 = user.getAnswer2();
-
-            user = new User(userName, HashService.hash(password), HashService.hash(question1), HashService.hash(question2));
-            DBUser.insertUser(user, dataSource);
-
-            return true;
+        if (DBUser.userExists(user.getUserName(), dataSource)) {
+            throw new LoginError("This user already exists");
         }
-        return false;
+
+        if (!PasswordUtil.isPasswordValid(user.getPassword())) {
+            throw new LoginError("Password is not strong enough");
+        }
+
+        String userName = user.getUserName();
+        String password = user.getPassword();
+        String question1 = user.getAnswer1();
+        String question2 = user.getAnswer2();
+
+        user = new User(userName, HashService.hash(password), HashService.hash(question1), HashService.hash(question2));
+        DBUser.insertUser(user, dataSource);
+
+//        if (!DBUser.userExists(user.getUserName(), dataSource)) {
+//            String userName = user.getUserName();
+//            String password = user.getPassword();
+//            String question1 = user.getAnswer1();
+//            String question2 = user.getAnswer2();
+//
+//            user = new User(userName, HashService.hash(password), HashService.hash(question1), HashService.hash(question2));
+//            DBUser.insertUser(user, dataSource);
+//
+//            return true;
+//        }
+//        return false;
+        return true;
     }
 
 

@@ -49,6 +49,9 @@ public class ErrorHandler {
         return response;
     }
 
+    // LoginError = 400
+    // wrong token error = 405
+
 
 
 

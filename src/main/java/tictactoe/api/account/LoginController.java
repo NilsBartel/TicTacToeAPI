@@ -3,8 +3,12 @@ package tictactoe.api.account;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import io.vavr.control.Try;
 import org.apache.commons.io.IOUtils;
 import tictactoe.api.AuthenticationToken;
+import tictactoe.api.errors.ErrorHandler;
+import tictactoe.api.errors.LoginError;
+import tictactoe.api.errors.MethodNotAllowed;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.DBUser;
 import tictactoe.login.LogIn;
@@ -19,16 +23,27 @@ public class LoginController {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
 
-
     public static void endPoint(HttpServer server) {
+        ErrorHandler errorHandler = new ErrorHandler();
 
-        server.createContext("/account/login", (LoginController::handleLogin));
-        server.createContext("/account/register", (LoginController::handleRegister));
-        server.createContext("/account/resetPassword", (LoginController::handlePasswordReset));
+        server.createContext("/account/login", exchange ->
+                Try.run(() -> handleLogin(exchange))
+                        .onFailure(t -> {errorHandler.handle(t, exchange);})
+        );
+
+        server.createContext("/account/register", exchange ->
+                Try.run(() -> handleRegister(exchange))
+                        .onFailure(t -> {errorHandler.handle(t, exchange);})
+        );
+
+        server.createContext("/account/resetPassword", exchange ->
+                Try.run(() -> handlePasswordReset(exchange))
+                        .onFailure(t -> {errorHandler.handle(t, exchange);})
+        );
     }
 
 
-    private static void handleLogin(HttpExchange exchange) throws IOException {
+    private static void handleLogin(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
         LoginResponse loginResponse = new LoginResponse();
 
 
@@ -36,20 +51,15 @@ public class LoginController {
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
             User user = objectMapper.readValue(requestBody, User.class);
 
-            if (LogIn.getInstance().logInUser(user.getUserName(), user.getPassword(), ConnectionPool.getInstance().getDataSource())) {
-                String authToken = AuthenticationToken.getInstance().create(DBUser.getUserId(user.getUserName(), ConnectionPool.getInstance().getDataSource()));
-                loginResponse.setMessage("logged in successfully");
-                loginResponse.setToken(authToken);
+            LogIn.getInstance().logInUser(user.getUserName(), user.getPassword(), ConnectionPool.getInstance().getDataSource());
+            String authToken = AuthenticationToken.getInstance().create(DBUser.getUserId(user.getUserName(), ConnectionPool.getInstance().getDataSource()));
+            loginResponse.setMessage("logged in successfully");
+            loginResponse.setToken(authToken);
 
-                exchange.sendResponseHeaders(200, 0);
-            } else {
-                loginResponse.setMessage("Invalid username or password");
-                exchange.sendResponseHeaders(400, 0);
-            }
+            exchange.sendResponseHeaders(200, 0);
 
         } else {
-            loginResponse.setMessage("Invalid request method");
-            exchange.sendResponseHeaders(400, 0);
+            throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
         }
 
         OutputStream responseBody = exchange.getResponseBody();
@@ -59,25 +69,19 @@ public class LoginController {
     }
 
 
-    private static void handleRegister(HttpExchange exchange) throws IOException {
+    private static void handleRegister(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
         LoginResponse loginResponse = new LoginResponse();
 
         if (exchange.getRequestMethod().equals("POST")) {
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
             User user = objectMapper.readValue(requestBody, User.class);
 
-            if (LogIn.getInstance().createUser(user, ConnectionPool.getInstance().getDataSource())) {
-                loginResponse.setMessage("account creation successful");
-
-                exchange.sendResponseHeaders(200, 0);
-            } else {
-                loginResponse.setMessage("account creation failed");
-                exchange.sendResponseHeaders(400, 0);
-            }
+            LogIn.getInstance().createUser(user, ConnectionPool.getInstance().getDataSource());
+            loginResponse.setMessage("account creation successful");
+            exchange.sendResponseHeaders(200, 0);
 
         } else {
-            loginResponse.setMessage("Invalid request method");
-            exchange.sendResponseHeaders(400, 0);
+            throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
         }
 
         OutputStream responseBody = exchange.getResponseBody();
@@ -86,7 +90,7 @@ public class LoginController {
         responseBody.close();
     }
 
-    private static void handlePasswordReset(HttpExchange exchange) throws IOException {
+    private static void handlePasswordReset(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
         LoginResponse loginResponse = new LoginResponse();
 
         if (exchange.getRequestMethod().equals("POST")) {
@@ -95,25 +99,21 @@ public class LoginController {
             int userID = DBUser.getUserId(user.getUserName(), ConnectionPool.getInstance().getDataSource());
 
 
-            if (PasswordUtil.checkSecurityQuestions(userID, user, ConnectionPool.getInstance().getDataSource())) {
+            PasswordUtil.checkSecurityQuestions(userID, user, ConnectionPool.getInstance().getDataSource());
 
-                if (PasswordUtil.isPasswordValid(user.getPassword())) {
-                    PasswordUtil.resetPassword(userID, user, ConnectionPool.getInstance().getDataSource());
-                    loginResponse.setMessage("password reset successful");
-                    exchange.sendResponseHeaders(200, 0);
-                } else {
-                    loginResponse.setMessage("password is invalid (check it has all the needed characters)");
-                    exchange.sendResponseHeaders(400, 0);
-                }
+            if (PasswordUtil.isPasswordValid(user.getPassword())) {
+                PasswordUtil.resetPassword(userID, user, ConnectionPool.getInstance().getDataSource());
+                loginResponse.setMessage("password reset successful");
+                exchange.sendResponseHeaders(200, 0);
             } else {
-                loginResponse.setMessage("security questions do not match");
-                exchange.sendResponseHeaders(400, 0);
+                throw new LoginError("password is too weak");
             }
 
+
         } else {
-            loginResponse.setMessage("Invalid request method");
-            exchange.sendResponseHeaders(400, 0);
+            throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
         }
+
         OutputStream responseBody = exchange.getResponseBody();
         responseBody.write(objectMapper.writeValueAsBytes(loginResponse));
         responseBody.flush();

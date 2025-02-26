@@ -1,6 +1,7 @@
 package tictactoe.login;
 
 //import tictactoe.PlayerInput;
+import tictactoe.api.errors.LoginError;
 import tictactoe.database.*;
 import tictactoe.user.User;
 
@@ -89,21 +90,27 @@ public final class PasswordUtil {
 //        return bool1 && bool2;
 //    }
 
-    public static Boolean checkSecurityQuestions(int userID, User user, HikariDataSource dataSource) {
+    public static Boolean checkSecurityQuestions(int userID, User user, HikariDataSource dataSource) throws LoginError {
 
-        boolean bool1 = false;
-        boolean bool2 = false;
+//        boolean bool1 = false;
+//        boolean bool2 = false;
 
         String userAnswer1 = user.getAnswer1();
-        if (HashService.verify(userAnswer1, DBUser.getAnswer1(userID, dataSource))) {
-            bool1 = true;
+        if (!HashService.verify(userAnswer1, DBUser.getAnswer1(userID, dataSource))) {
+            throw new LoginError("Security questions do not match!");
         }
+//        if (HashService.verify(userAnswer1, DBUser.getAnswer1(userID, dataSource))) {
+//            bool1 = true;
+//        }
 
         String userAnswer2 = user.getAnswer2();
-        if (HashService.verify(userAnswer2, DBUser.getAnswer2(userID, dataSource))) {
-            bool2 = true;
+        if (!HashService.verify(userAnswer2, DBUser.getAnswer2(userID, dataSource))) {
+            throw new LoginError("Security questions do not match!");
         }
-        return bool1 && bool2;
+//        if (HashService.verify(userAnswer2, DBUser.getAnswer2(userID, dataSource))) {
+//            bool2 = true;
+//        }
+        return true;
     }
 
 }
