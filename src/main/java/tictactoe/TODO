@@ -32,22 +32,8 @@ DBUser -> make the into one method and just create a user Object
 3. ...?
 4. profit
 
-wenn ich mit dem POST für das match nur das match mit board mit gebe, dann weiß mein Program ja nicht welcher move vom spieler gemacht wurde. Soll ich den move (oder position) auch mitgeben in dem POST, oder soll das program das selber herrausfinden, quasi abgleichen mit der datenbank welcher move neu ist?
 
 
-
-Match
- -> POST move
- -> new game
- -> select difficulty
- -> matchHistory
- -> analyse
- -> score?
- -> quit/logout
-
- error message as json
- - controller class
- - dont need a response class if i get a match and respond a match
 
 
 

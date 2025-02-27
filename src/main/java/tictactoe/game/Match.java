@@ -5,8 +5,6 @@ import tictactoe.board.Board;
 import tictactoe.board.Position;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.*;
-//import tictactoe.PlayerInput;
-
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -36,37 +34,37 @@ public class Match {
     }
 
 
-    public boolean validateMatch(int userID) throws MatchError {
-        Match dbMatch = DBMatch.getMatch(userID, this.matchID, ConnectionPool.getInstance().getDataSource());
-
-        if (!this.equalsWithoutBoard(dbMatch)) throw new MatchError("Something changed with the match that wasn't allowed");
-
-        List<Position> positions = positionsThatChanged(dbMatch.getBoard());
-        System.out.println(positions);
-
-
-        if (positions.isEmpty()) throw new MatchError("No new input found");
-        if (positions.size() != 1) throw new MatchError("Wrong number of positions");
-        if (board.getSymbol(positions.getFirst()) != PLAYER_SYMBOL) throw new MatchError("Wrong symbol, player symbol is: " + Match.PLAYER_SYMBOL);
-
-        return true;
-    }
-
-    public List<Position> positionsThatChanged(Board board) throws MatchError {
-        List<Position> positions = new ArrayList<>();
-
-        for (int i = 1; i <= 9; i++) {
-            char oldSymbol = board.getSymbol(new Position(i));
-            char newSymbol = this.board.getSymbol(new Position(i));
-            if (oldSymbol != newSymbol) {
-                positions.add(new Position(i));
-
-                if (oldSymbol != EMPTY_SYMBOL) throw new MatchError("The field at position " + i + " was overwritten");
-            }
-        }
-
-        return positions;
-    }
+//    public boolean validateMatch(int userID) throws MatchError {
+//        Match dbMatch = DBMatch.getMatch(userID, this.matchID, ConnectionPool.getInstance().getDataSource());
+//
+//        if (!this.equalsWithoutBoard(dbMatch)) throw new MatchError("Something changed with the match that wasn't allowed");
+//
+//        List<Position> positions = positionsThatChanged(dbMatch.getBoard());
+//        System.out.println(positions);
+//
+//
+//        if (positions.isEmpty()) throw new MatchError("No new input found");
+//        if (positions.size() != 1) throw new MatchError("Wrong number of positions");
+//        if (board.getSymbol(positions.getFirst()) != PLAYER_SYMBOL) throw new MatchError("Wrong symbol, player symbol is: " + Match.PLAYER_SYMBOL);
+//
+//        return true;
+//    }
+//
+//    public List<Position> positionsThatChanged(Board board) throws MatchError {
+//        List<Position> positions = new ArrayList<>();
+//
+//        for (int i = 1; i <= 9; i++) {
+//            char oldSymbol = board.getSymbol(new Position(i));
+//            char newSymbol = this.board.getSymbol(new Position(i));
+//            if (oldSymbol != newSymbol) {
+//                positions.add(new Position(i));
+//
+//                if (oldSymbol != EMPTY_SYMBOL) throw new MatchError("The field at position " + i + " was overwritten");
+//            }
+//        }
+//
+//        return positions;
+//    }
 
 
     public void computerPlay(int userID) {

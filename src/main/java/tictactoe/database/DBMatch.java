@@ -1,10 +1,7 @@
 package tictactoe.database;
 
-import tictactoe.board.*;
-
 import com.zaxxer.hikari.HikariDataSource;
 import tictactoe.board.Board;
-//import tictactoe.game.Match;
 import tictactoe.game.*;
 
 import java.sql.Connection;
@@ -97,7 +94,7 @@ public class DBMatch {
     }
 
     public static Match getMatch(int userID, int matchID, HikariDataSource dataSource) {
-        Match match = new Match();
+        Match match = null;
 
         //String sql = "SELECT * FROM match LEFT JOIN time ON match.match_id = time.match_id WHERE user_id = ?";
 
@@ -112,6 +109,7 @@ public class DBMatch {
             while (resultSet.next()) {
 //                Match match = new Match();
 //                int matchID = resultSet.getInt("match_id");
+                match = new Match();
                 match.setDifficulty(DifficultyState.valueOf(resultSet.getString("difficulty")));
                 match.setStatus(MatchStatus.valueOf(resultSet.getString("status")));
                 match.setIsPlayerTurn(resultSet.getBoolean("isplayerturn"));

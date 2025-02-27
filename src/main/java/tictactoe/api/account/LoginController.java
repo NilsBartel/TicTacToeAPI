@@ -118,7 +118,6 @@ public class LoginController {
         responseBody.write(objectMapper.writeValueAsBytes(loginResponse));
         responseBody.flush();
         responseBody.close();
-
     }
 
 
