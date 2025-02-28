@@ -1,4 +1,4 @@
-package tictactoe.api.score;
+package tictactoe.api.analyze;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
@@ -7,30 +7,31 @@ import io.vavr.control.Try;
 import tictactoe.api.AuthenticationToken;
 import tictactoe.api.errors.ErrorHandler;
 import tictactoe.api.errors.MethodNotAllowed;
+import tictactoe.board.Position;
 import tictactoe.database.ConnectionPool;
-import tictactoe.database.DBScore;
-import tictactoe.game.Score;
+import tictactoe.game.AnalyseService;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
+import java.util.Map;
 
-public class ScoreController {
-
+public class AnalyzeController {
 
 
     public static void endPoint(HttpServer server) {
 
         ErrorHandler errorHandler = new ErrorHandler();
-        server.createContext("/score/", exchange ->
-                Try.run(() -> handeScore(exchange))
+        server.createContext("/analyze/", exchange ->
+                Try.run(() -> handleAnalyze(exchange))
                         .onFailure(t -> {
                             errorHandler.handle(t, exchange);
                         })
         );
     }
-    private static void handeScore(HttpExchange exchange) throws IOException, MethodNotAllowed {
+    private static void handleAnalyze(HttpExchange exchange) throws IOException, MethodNotAllowed {
         ObjectMapper objectMapper = new ObjectMapper();
-        Score score;
+        Map<List<Position>, Integer> positionMap;
 
         String token = exchange.getRequestHeaders().get("token").getFirst();
         AuthenticationToken.getInstance().handleAuthentication(exchange, token);
@@ -38,9 +39,7 @@ public class ScoreController {
         if (exchange.getRequestMethod().equals("GET")) {
             int userID = AuthenticationToken.getInstance().getUserID(token);
 
-            score = DBScore.getScore(userID, ConnectionPool.getInstance().getDataSource());
-
-
+            positionMap = AnalyseService.getInstance().findBestWinningLine(userID, ConnectionPool.getInstance().getDataSource());
 
 
             exchange.sendResponseHeaders(200, 0);
@@ -49,7 +48,7 @@ public class ScoreController {
         }
 
         OutputStream responseBody = exchange.getResponseBody();
-        responseBody.write(objectMapper.writeValueAsBytes(score));
+        responseBody.write(objectMapper.writeValueAsBytes(positionMap));
         responseBody.flush();
         responseBody.close();
     }

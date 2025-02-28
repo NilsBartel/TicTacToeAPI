@@ -2,6 +2,7 @@ package tictactoe.api;
 
 import com.sun.net.httpserver.HttpServer;
 import tictactoe.api.account.LoginController;
+import tictactoe.api.analyze.AnalyzeController;
 import tictactoe.api.match.MatchController;
 import tictactoe.api.score.ScoreController;
 
@@ -25,6 +26,7 @@ public class Server {
         LoginController.endPoint(server);
         MatchController.endPoint(server);
         ScoreController.endPoint(server);
+        AnalyzeController.endPoint(server);
 
 
 

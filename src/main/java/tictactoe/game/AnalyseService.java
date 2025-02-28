@@ -33,7 +33,6 @@ public final class AnalyseService {
             if (match.isStatusEqual(MatchStatus.PLAYER_WON) || match.isStatusEqual(MatchStatus.COMPUTER_WON)) {
                 wins.add(Winner.findWinningRow(match.getBoard(), getWinnerSymbol(match.getStatus())));
             }
-
         }
 
         for (List<Position> win : wins) {
