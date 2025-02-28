@@ -1,4 +1,4 @@
-package tictactoe.api;
+package tictactoe.api.errors;
 
 public class ErrorResponse {
     private String message;

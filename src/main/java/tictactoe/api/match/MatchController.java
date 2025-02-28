@@ -5,7 +5,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import io.vavr.control.Try;
 import org.apache.commons.io.IOUtils;
-import tictactoe.api.ApiMatchUtil;
 import tictactoe.api.AuthenticationToken;
 import tictactoe.api.errors.ErrorHandler;
 import tictactoe.api.errors.MatchError;
@@ -15,8 +14,8 @@ import tictactoe.database.DBMatch;
 import tictactoe.database.DBScore;
 import tictactoe.database.Database;
 import tictactoe.game.DifficultyState;
+import tictactoe.game.Game;
 import tictactoe.game.Match;
-import tictactoe.game.MatchHistory;
 import tictactoe.game.MatchStatus;
 
 import java.io.IOException;
@@ -66,7 +65,7 @@ public class MatchController {
 
 
 
-    public static void handleMatch(HttpExchange exchange) throws IOException, MethodNotAllowed {
+    public static void handleMatch(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError {
 
         String token = exchange.getRequestHeaders().get("token").getFirst();
         AuthenticationToken.getInstance().handleAuthentication(exchange, token);
@@ -74,8 +73,16 @@ public class MatchController {
         Match match;
 
         if (exchange.getRequestMethod().equals("GET")) {
-            int matchId = getIDFromPath(exchange.getRequestURI().getPath());
             int userID = AuthenticationToken.getInstance().getUserID(token);
+
+            //int matchId = getIDFromPath(exchange.getRequestURI().getPath());
+
+            int matchId;
+            try {
+                matchId = getIDFromPath(exchange.getRequestURI().getPath());
+            } catch (NumberFormatException e) {
+                throw new MatchError("No number input found. Please input the matchID. (/match/20)");
+            }
 
             match = DBMatch.getMatch(userID, matchId, ConnectionPool.getInstance().getDataSource());
 
@@ -109,12 +116,8 @@ public class MatchController {
 
             if (ApiMatchUtil.validateMatch(userID, match)) {
                 Database.updateDB_Match(match, userID, ConnectionPool.getInstance().getDataSource());
-                match.computerPlay(userID);
+                Game.play(userID, match);
             }
-//            if (match.validateMatch(userID)) {
-//                Database.updateDB_Match(match, userID, ConnectionPool.getInstance().getDataSource());
-//                match.computerPlay(userID);
-//            }
 
         } else {
             throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
@@ -137,44 +140,21 @@ public class MatchController {
         AuthenticationToken.getInstance().handleAuthentication(exchange, token);
 
 
-
         if (exchange.getRequestMethod().equals("GET")) {
             DifficultyState difficulty;
             userID = AuthenticationToken.getInstance().getUserID(token);
-            System.out.println("test");
 
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
             match = objectMapper.readValue(requestBody, Match.class);
             difficulty = match.getDifficulty();
-            System.out.println("difficulty: " + difficulty);
-
-            System.out.println("test");
 
             match = ApiMatchUtil.returnRunningOrNewMatch(difficulty, userID);
 
-
-
-            //match = new Match();
-            //TODO
-            //TODO: needs to come from the person somehow
-//            match.setStatus(MatchStatus.RUNNING);
-//            match.setDifficulty(DifficultyState.EASY);
-//            //match.setIsPlayerTurn(true);
-//            match.setStartTime(new Timestamp(System.currentTimeMillis()));
-
-
-
-//            match.setPlayerTurn(DBScore.getScore(userID, ConnectionPool.getInstance().getDataSource()));
-
             if (!match.isIsPlayerTurn()) {
-                match.computerPlay(userID);
+                Game.play(userID, match);
             }
 
             Database.updateDB_Match(match, userID, ConnectionPool.getInstance().getDataSource());
-
-            //DBMatch.insertNewMatch(match, userID, ConnectionPool.getInstance().getDataSource());
-//            match.setMatchID(matchID);
-
 
         } else {
             throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
@@ -184,13 +164,12 @@ public class MatchController {
 
         OutputStream responseBody = exchange.getResponseBody();
         responseBody.write(objectMapper.writeValueAsBytes(match));
-        //responseBody.write(objectMapper.writeValueAsBytes(DBMatch.getMatch(userID, match.getMatchID(), ConnectionPool.getInstance().getDataSource())));
         responseBody.flush();
         responseBody.close();
     }
 
 
-    public static void handleMatchHistory(HttpExchange exchange) throws IOException, MethodNotAllowed {
+    public static void handleMatchHistory(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError {
         int userID;
         List<Match> matchHistory;
 
@@ -198,8 +177,15 @@ public class MatchController {
         AuthenticationToken.getInstance().handleAuthentication(exchange, token);
 
         if (exchange.getRequestMethod().equals("GET")) {
+            int matchHistorySize;
+            try {
+                matchHistorySize = getIDFromPath(exchange.getRequestURI().getPath());
+            } catch (NumberFormatException e) {
+                throw new MatchError("No number input found. Please input the number of matches for the match history. (/match/matchHistory/20)");
+            }
+
             userID = AuthenticationToken.getInstance().getUserID(token);
-            matchHistory = DBMatch.getLastNMatchesFromUser(userID, MatchHistory.MAX_HISTORY_SIZE, ConnectionPool.getInstance().getDataSource());
+            matchHistory = DBMatch.getLastNMatchesFromUser(userID, matchHistorySize, ConnectionPool.getInstance().getDataSource());
 
         } else {
             throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() + " not allowed for "+ exchange.getRequestURI());
@@ -224,19 +210,16 @@ public class MatchController {
 
         if (exchange.getRequestMethod().equals("GET")) {
             userID = AuthenticationToken.getInstance().getUserID(token);
-
             match = new Match();
-            //TODO
-            //TODO: needs to come from the person somehow
+
             match.setStatus(MatchStatus.RUNNING);
             match.setDifficulty(DifficultyState.EASY);
-            //match.setIsPlayerTurn(true);
             match.setStartTime(new Timestamp(System.currentTimeMillis()));
 
             match.setPlayerTurn(DBScore.getScore(userID, ConnectionPool.getInstance().getDataSource()));
 
             if (!match.isIsPlayerTurn()) {
-                match.computerPlay(userID);
+                Game.play(userID, match);
             }
 
             int matchID = DBMatch.insertNewMatch(match, userID, ConnectionPool.getInstance().getDataSource());
@@ -250,7 +233,6 @@ public class MatchController {
         exchange.sendResponseHeaders(200, 0);
 
         OutputStream responseBody = exchange.getResponseBody();
-        //responseBody.write(objectMapper.writeValueAsBytes(DBMatch.getMatch(userID, match.getMatchID(), ConnectionPool.getInstance().getDataSource())));
         responseBody.write(objectMapper.writeValueAsBytes(match));
         responseBody.flush();
         responseBody.close();

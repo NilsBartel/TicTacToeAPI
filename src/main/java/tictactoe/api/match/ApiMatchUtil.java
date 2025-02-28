@@ -1,4 +1,4 @@
-package tictactoe.api;
+package tictactoe.api.match;
 
 import com.zaxxer.hikari.HikariDataSource;
 import tictactoe.api.errors.MatchError;

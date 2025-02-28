@@ -1,4 +1,12 @@
 
+-> / at the end or not?
+
+-> ObjectMapper reference from where? example controller
+- create it new every time?
+- other api thing has a class for it
+
+
+
 
 
 Hochlanden auf github für tim
@@ -12,16 +20,8 @@ Hochlanden auf github für tim
 
 
 
-
-
--- how does it start?
-give whole matchHistory and let the frontend decide if there is a running match?
-or have the backend give a running or new match
-
 DATABASE:
 DBUser -> make the into one method and just create a user Object
-
-- difficulty: just always take it from the match (match.getDifficulty)
 
 
 
@@ -40,13 +40,6 @@ DBUser -> make the into one method and just create a user Object
  ->
  -- a class that constructs the whole response (message + header (rCode) and so on)
 ->
-
-
-
-Login
- -> POST  login
- -> POST  password reset
- -> POST  create account
 
 
 

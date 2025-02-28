@@ -2,7 +2,6 @@ package tictactoe.api.errors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
-import tictactoe.api.ErrorResponse;
 
 import java.io.IOException;
 import java.io.OutputStream;

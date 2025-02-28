@@ -1,7 +1,6 @@
 package tictactoe.game;
 
 import tictactoe.database.*;
-import tictactoe.PrintService;
 
 import java.util.Objects;
 
@@ -20,13 +19,20 @@ public class Score {
     }
 
     public static void updateScore(MatchStatus status, int userID) {
+        System.out.println("Score");
         switch (status) {
-            case PLAYER_WON -> DBScore.updateScore("player", userID, ConnectionPool.getInstance().getDataSource());
+            case PLAYER_WON -> {
+                System.out.println("Player won");
+                DBScore.updateScore("player", userID, ConnectionPool.getInstance().getDataSource());
+            }
             case COMPUTER_WON -> DBScore.updateScore("computer", userID, ConnectionPool.getInstance().getDataSource());
             case DRAW -> DBScore.updateScore("draw", userID, ConnectionPool.getInstance().getDataSource());
             case NOT_STARTED, RUNNING, MATCH_ALREADY_FINISHED -> System.out.println("Match not finished!");
+            default -> {
+                System.out.println("Wrong score!");
+            }
 
-            default -> PrintService.getInstance().printInvalidStatus();
+//            default -> PrintService.getInstance().printInvalidStatus();
         }
     }
 

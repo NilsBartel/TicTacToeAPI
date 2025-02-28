@@ -1,7 +1,6 @@
 package tictactoe.game;
 
 import tictactoe.board.*;
-import tictactoe.PrintService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,16 +124,16 @@ public final class Winner {
         return positions;
     }
 
-    public static void printWhoWon(MatchStatus matchStatus) {
-        PrintService printService = PrintService.getInstance();
-        switch (matchStatus) {
-            case COMPUTER_WON -> printService.printComputerWon();
-            case PLAYER_WON -> printService.printPlayerWon();
-            case DRAW -> printService.printDraw();
-            case NOT_STARTED, RUNNING, MATCH_ALREADY_FINISHED -> System.out.println("Match not finished!");
-
-            default -> printService.printInvalidStatus();
-        }
-    }
+//    public static void printWhoWon(MatchStatus matchStatus) {
+//        PrintService printService = PrintService.getInstance();
+//        switch (matchStatus) {
+//            case COMPUTER_WON -> printService.printComputerWon();
+//            case PLAYER_WON -> printService.printPlayerWon();
+//            case DRAW -> printService.printDraw();
+//            case NOT_STARTED, RUNNING, MATCH_ALREADY_FINISHED -> System.out.println("Match not finished!");
+//
+//            default -> printService.printInvalidStatus();
+//        }
+//    }
 
 }

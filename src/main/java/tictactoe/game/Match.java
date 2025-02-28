@@ -66,6 +66,8 @@ public class Match {
 //        return positions;
 //    }
 
+    //TODO: can I move the game over if's out of this function?
+    // where do I update the score
 
     public void computerPlay(int userID) {
         System.out.println("player move:");
@@ -107,7 +109,7 @@ public class Match {
 
 
 
-    private boolean isGameOver(Board board, char currentSymbol) {
+    public boolean isGameOver(Board board, char currentSymbol) {
 
         if (Winner.thereIsWinner(board, currentSymbol)) {
             if (currentSymbol == COMPUTER_SYMBOL){

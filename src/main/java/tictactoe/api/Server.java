@@ -3,6 +3,7 @@ package tictactoe.api;
 import com.sun.net.httpserver.HttpServer;
 import tictactoe.api.account.LoginController;
 import tictactoe.api.match.MatchController;
+import tictactoe.api.score.ScoreController;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -23,6 +24,7 @@ public class Server {
 
         LoginController.endPoint(server);
         MatchController.endPoint(server);
+        ScoreController.endPoint(server);
 
 
 
