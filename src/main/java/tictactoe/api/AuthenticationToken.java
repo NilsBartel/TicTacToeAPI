@@ -52,10 +52,6 @@ public class AuthenticationToken {
 
     }
 
-    public int getUserId(String authToken) {
-        return authMap.get(authToken).getKey();
-    }
-
     private boolean timestampValid(Timestamp timestamp) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         return now.before(timestamp);

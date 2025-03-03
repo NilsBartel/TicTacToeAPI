@@ -4,9 +4,6 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 import tictactoe.board.Board;
-import tictactoe.board.Position;
-import tictactoe.database.ConnectionPool;
-import tictactoe.database.Database;
 
 public class Match {
 
@@ -37,39 +34,6 @@ public class Match {
             return COMPUTER_SYMBOL;
         }
         return symbol;
-    }
-
-    public void computerPlay(int userID) {
-        System.out.println("player move:");
-        board.print();
-
-        char currentSymbol = PLAYER_SYMBOL;
-        if (isGameOver(board, currentSymbol)) {
-            System.out.println("Game Over");
-            endTime = new Timestamp(System.currentTimeMillis());
-            Database.updateDB_Match(this, userID, ConnectionPool.getInstance().getDataSource());
-            return;
-        }
-
-        Position position;
-        currentSymbol = COMPUTER_SYMBOL;
-
-        position = Difficulty.returnMove(board, difficulty);
-
-        board.setSymbol(position.getRow(), position.getColumn(), currentSymbol);
-
-        System.out.println();
-        System.out.println("Computer move:");
-        board.print();
-
-        Database.updateBoard(this, userID, ConnectionPool.getInstance().getDataSource());
-
-        if (isGameOver(board, currentSymbol)) {
-            System.out.println("Game Over");
-            endTime = new Timestamp(System.currentTimeMillis());
-        }
-
-        Database.updateDB_Match(this, userID, ConnectionPool.getInstance().getDataSource());
     }
 
     public boolean isGameOver(Board board, char currentSymbol) {

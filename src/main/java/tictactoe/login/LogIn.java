@@ -7,7 +7,6 @@ import tictactoe.user.User;
 
 public final class LogIn {
 
-    public static final int USERNAME_MIN_LENGTH = 3;
     private static LogIn instance;
 
     private LogIn() {

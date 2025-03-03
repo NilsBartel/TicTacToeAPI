@@ -33,18 +33,6 @@ public class Board {
         }
     }
 
-    @JsonIgnore
-    public String getBoardAsString() {
-        String boardString = "";
-        for (Row row : rows) {
-            //row.print();
-            //row.getRowsAsString();
-            boardString = boardString.concat(row.getRowsAsString() + "\n");
-        }
-
-        return boardString;
-    }
-
     public boolean isValid(int index) {
         if (index < 1 || index > 9) {
             return false;
