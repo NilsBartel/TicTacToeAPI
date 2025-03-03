@@ -3,13 +3,13 @@ package tictactoe.api.account;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import com.zaxxer.hikari.HikariDataSource;
 import io.vavr.control.Try;
 import org.apache.commons.io.IOUtils;
 import tictactoe.api.AuthenticationToken;
 import tictactoe.api.errors.ErrorHandler;
 import tictactoe.api.errors.LoginError;
 import tictactoe.api.errors.MethodNotAllowed;
-import tictactoe.database.ConnectionPool;
 import tictactoe.database.DBUser;
 import tictactoe.login.LogIn;
 import tictactoe.login.PasswordUtil;
@@ -20,10 +20,18 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 public class LoginController {
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final HikariDataSource dataSource;
+    private final HttpServer server;
+
+    public LoginController(HttpServer server, HikariDataSource dataSource) {
+        this.server = server;
+        this.dataSource = dataSource;
+    }
 
 
-    public static void endPoint(HttpServer server) {
+    public void endPoint() {
         ErrorHandler errorHandler = new ErrorHandler();
 
         server.createContext("/account/login", exchange ->
@@ -43,7 +51,7 @@ public class LoginController {
     }
 
 
-    private static void handleLogin(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
+    private void handleLogin(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
         LoginResponse loginResponse = new LoginResponse();
 
 
@@ -51,8 +59,8 @@ public class LoginController {
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
             User user = objectMapper.readValue(requestBody, User.class);
 
-            LogIn.getInstance().logInUser(user.getUserName(), user.getPassword(), ConnectionPool.getInstance().getDataSource());
-            String authToken = AuthenticationToken.getInstance().create(DBUser.getUserId(user.getUserName(), ConnectionPool.getInstance().getDataSource()));
+            LogIn.getInstance().logInUser(user.getUserName(), user.getPassword(), dataSource);
+            String authToken = AuthenticationToken.getInstance().create(DBUser.getUserId(user.getUserName(), dataSource));
             loginResponse.setMessage("logged in successfully");
             loginResponse.setToken(authToken);
 
@@ -69,14 +77,14 @@ public class LoginController {
     }
 
 
-    private static void handleRegister(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
+    private void handleRegister(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
         LoginResponse loginResponse = new LoginResponse();
 
         if (exchange.getRequestMethod().equals("POST")) {
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
             User user = objectMapper.readValue(requestBody, User.class);
 
-            LogIn.getInstance().createUser(user, ConnectionPool.getInstance().getDataSource());
+            LogIn.getInstance().createUser(user, dataSource);
             loginResponse.setMessage("account creation successful");
             exchange.sendResponseHeaders(200, 0);
 
@@ -90,19 +98,19 @@ public class LoginController {
         responseBody.close();
     }
 
-    private static void handlePasswordReset(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
+    private void handlePasswordReset(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
         LoginResponse loginResponse = new LoginResponse();
 
         if (exchange.getRequestMethod().equals("POST")) {
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
             User user = objectMapper.readValue(requestBody, User.class);
-            int userID = DBUser.getUserId(user.getUserName(), ConnectionPool.getInstance().getDataSource());
+            int userID = DBUser.getUserId(user.getUserName(), dataSource);
 
 
-            PasswordUtil.checkSecurityQuestions(userID, user, ConnectionPool.getInstance().getDataSource());
+            PasswordUtil.checkSecurityQuestions(userID, user, dataSource);
 
             if (PasswordUtil.isPasswordValid(user.getPassword())) {
-                PasswordUtil.resetPassword(userID, user, ConnectionPool.getInstance().getDataSource());
+                PasswordUtil.resetPassword(userID, user, dataSource);
                 loginResponse.setMessage("password reset successful");
                 exchange.sendResponseHeaders(200, 0);
             } else {

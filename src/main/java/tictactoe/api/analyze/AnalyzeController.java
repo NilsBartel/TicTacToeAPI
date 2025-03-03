@@ -3,6 +3,7 @@ package tictactoe.api.analyze;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import com.zaxxer.hikari.HikariDataSource;
 import io.vavr.control.Try;
 import tictactoe.api.AuthenticationToken;
 import tictactoe.api.errors.ErrorHandler;
@@ -17,9 +18,18 @@ import java.util.List;
 import java.util.Map;
 
 public class AnalyzeController {
+    
+    private final HttpServer server;
+    private final HikariDataSource dataSource;
+    
+    public AnalyzeController(HttpServer server, HikariDataSource datasource) {
+        this.server = server;
+        this.dataSource = datasource;
+    }
 
 
-    public static void endPoint(HttpServer server) {
+
+    public void endPoint() {
 
         ErrorHandler errorHandler = new ErrorHandler();
         server.createContext("/analyze/", exchange ->
@@ -29,7 +39,7 @@ public class AnalyzeController {
                         })
         );
     }
-    private static void handleAnalyze(HttpExchange exchange) throws IOException, MethodNotAllowed {
+    private void handleAnalyze(HttpExchange exchange) throws IOException, MethodNotAllowed {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<List<Position>, Integer> positionMap;
 
@@ -39,7 +49,7 @@ public class AnalyzeController {
         if (exchange.getRequestMethod().equals("GET")) {
             int userID = AuthenticationToken.getInstance().getUserID(token);
 
-            positionMap = AnalyseService.getInstance().findBestWinningLine(userID, ConnectionPool.getInstance().getDataSource());
+            positionMap = AnalyseService.getInstance().findBestWinningLine(userID, dataSource);
 
 
             exchange.sendResponseHeaders(200, 0);

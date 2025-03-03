@@ -41,6 +41,9 @@ public class ErrorHandler {
         } else if (throwable instanceof MethodNotAllowed) {
             response = new ErrorResponse(throwable.getMessage(), 405);
             exchange.sendResponseHeaders(405, 0);
+        } else if (throwable instanceof TokenError) {
+            response = new ErrorResponse(throwable.getMessage(), 401);
+            exchange.sendResponseHeaders(401, 0);
         } else {
             response = new ErrorResponse(throwable.getMessage(), 500);
             exchange.sendResponseHeaders(500, 0);

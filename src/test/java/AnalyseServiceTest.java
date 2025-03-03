@@ -1,6 +1,18 @@
+import ch.qos.logback.classic.Level;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.*;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.PostgreSQLContainer;
+import tictactoe.board.Board;
+import tictactoe.board.Position;
+import tictactoe.database.ConnectionPool;
+import tictactoe.database.DBMatch;
+import tictactoe.database.DBUser;
+import tictactoe.game.AnalyseService;
+import tictactoe.game.DifficultyState;
+import tictactoe.game.Match;
+import tictactoe.game.MatchStatus;
+import tictactoe.user.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,18 +28,46 @@ class AnalyseServiceTest {
     static HikariDataSource dataSource;
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine").withUsername("postgres").withInitScript("init.sql");
 
-//    @BeforeAll
-//    static void beforeAll() {
-//        postgres.start();
-//    }
-@BeforeAll
-static void beforeAll() {
-    postgres.start();
 
-    ConnectionPool pool = ConnectionPool.getInstance();
-    pool.initPool(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
-    dataSource = pool.getDataSource();
-}
+    //    @BeforeAll
+    //    static void beforeAll() {
+    //        postgres.start();
+    //    }
+
+    @BeforeEach
+    void init() throws SQLException {
+        
+    }
+
+
+    @BeforeAll
+    static void beforeAll() {
+        ch.qos.logback.classic.Logger dockerLogger1 = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.github.dockerjava");
+        dockerLogger1.setLevel(Level.ERROR);
+
+        ch.qos.logback.classic.Logger dockerLogger2 = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.wire");
+        dockerLogger2.setLevel(Level.ERROR);
+
+        ch.qos.logback.classic.Logger hikariLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.zaxxer.hikari");
+        hikariLogger.setLevel(Level.ERROR);
+
+        ch.qos.logback.classic.Logger testContainerLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.testcontainers");
+        testContainerLogger.setLevel(Level.ERROR);
+
+        ch.qos.logback.classic.Logger testContainerRyukLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("tc.testcontainers/ryuk:0.11.0");
+        testContainerRyukLogger.setLevel(Level.ERROR);
+
+        ch.qos.logback.classic.Logger postgresLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("tc.postgres:16-alpine");
+        postgresLogger.setLevel(Level.ERROR);
+
+
+
+        postgres.start();
+
+        ConnectionPool pool = ConnectionPool.getInstance();
+        pool.initPool(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+        dataSource = pool.getDataSource();
+    }
 
     @AfterAll
     static void afterAll() {
@@ -36,28 +76,13 @@ static void beforeAll() {
 
     @BeforeEach
     void setUp() {
-//        DB_ConHandler mockDBConHandler = mock(DB_ConHandler.class);
-//        when(mockDBConHandler.getConnection()).thenReturn(getConnection());
-
         User user = new User("nils", "password", "answer1", "answer2");
-        DB_User.insertUser(user, dataSource);
+        DBUser.insertUser(user, dataSource);
     }
 
-//    private Connection getConnection() {
-//        DatabaseConnectionForTests databaseConnectionForTests = new DatabaseConnectionForTests(
-//                postgres.getJdbcUrl(),
-//                postgres.getUsername(),
-//                postgres.getPassword()
-//        );
-//        return databaseConnectionForTests.getConnection();
-//    }
 
     @AfterEach
     void tearDown() {
-//        setUp();
-//        DB_ConHandler mockDBConHandler = mock(DB_ConHandler.class);
-//        when(mockDBConHandler.getConnection()).thenReturn(getConnection());
-
         wipeTable();
     }
 
@@ -167,9 +192,9 @@ static void beforeAll() {
     }
 
     private void insertMatches(){
-        DB_Match.insertNewMatch(generateMatch(generateBoardForTest(new int[]{1,2,3}, new int[]{})), 1, dataSource);
-        DB_Match.insertNewMatch(generateMatch(generateBoardForTest(new int[]{4,5,6}, new int[]{})), 1, dataSource);
-        DB_Match.insertNewMatch(generateMatch(generateBoardForTest(new int[]{7,8,9}, new int[]{})), 1, dataSource);
+        DBMatch.insertNewMatch(generateMatch(generateBoardForTest(new int[]{1,2,3}, new int[]{})), 1, dataSource);
+        DBMatch.insertNewMatch(generateMatch(generateBoardForTest(new int[]{4,5,6}, new int[]{})), 1, dataSource);
+        DBMatch.insertNewMatch(generateMatch(generateBoardForTest(new int[]{7,8,9}, new int[]{})), 1, dataSource);
     }
 
     private static Match generateMatch(Board board) {

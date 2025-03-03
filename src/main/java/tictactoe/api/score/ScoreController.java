@@ -3,6 +3,7 @@ package tictactoe.api.score;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import com.zaxxer.hikari.HikariDataSource;
 import io.vavr.control.Try;
 import tictactoe.api.AuthenticationToken;
 import tictactoe.api.errors.ErrorHandler;
@@ -15,10 +16,18 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class ScoreController {
+    
+    private final HttpServer server;
+    private final HikariDataSource dataSource;
+    
+    public ScoreController(HttpServer server, HikariDataSource dataSource) {
+        this.server = server;
+        this.dataSource = dataSource;
+    }
 
 
 
-    public static void endPoint(HttpServer server) {
+    public void endPoint() {
 
         ErrorHandler errorHandler = new ErrorHandler();
         server.createContext("/score/", exchange ->
@@ -28,7 +37,7 @@ public class ScoreController {
                         })
         );
     }
-    private static void handeScore(HttpExchange exchange) throws IOException, MethodNotAllowed {
+    private void handeScore(HttpExchange exchange) throws IOException, MethodNotAllowed {
         ObjectMapper objectMapper = new ObjectMapper();
         Score score;
 
@@ -38,7 +47,7 @@ public class ScoreController {
         if (exchange.getRequestMethod().equals("GET")) {
             int userID = AuthenticationToken.getInstance().getUserID(token);
 
-            score = DBScore.getScore(userID, ConnectionPool.getInstance().getDataSource());
+            score = DBScore.getScore(userID, dataSource);
 
 
 

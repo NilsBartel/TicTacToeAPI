@@ -3,13 +3,14 @@ package tictactoe.api.match;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import com.zaxxer.hikari.HikariDataSource;
 import io.vavr.control.Try;
 import org.apache.commons.io.IOUtils;
 import tictactoe.api.AuthenticationToken;
 import tictactoe.api.errors.ErrorHandler;
 import tictactoe.api.errors.MatchError;
 import tictactoe.api.errors.MethodNotAllowed;
-import tictactoe.database.ConnectionPool;
+import tictactoe.api.errors.TokenError;
 import tictactoe.database.DBMatch;
 import tictactoe.database.DBScore;
 import tictactoe.database.Database;
@@ -26,11 +27,18 @@ import java.util.List;
 
 public class MatchController {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final HttpServer server;
+    private final HikariDataSource dataSource;
+    
+    public MatchController(HttpServer server, HikariDataSource datasource) {
+        this.server = server;
+        this.dataSource = datasource;
+    }
 
 
 
-    public static void endPoint(HttpServer server) {
+    public void endPoint() {
 
         ErrorHandler errorHandler = new ErrorHandler();
         server.createContext("/match/", exchange ->
@@ -65,9 +73,14 @@ public class MatchController {
 
 
 
-    public static void handleMatch(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError {
+    public void handleMatch(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError {
 
-        String token = exchange.getRequestHeaders().get("token").getFirst();
+        String token = null;
+        try {
+            token = exchange.getRequestHeaders().get("token").getFirst();
+        } catch (Exception e) {
+            throw new TokenError("No token provided");
+        }
         AuthenticationToken.getInstance().handleAuthentication(exchange, token);
 
         Match match;
@@ -84,7 +97,7 @@ public class MatchController {
                 throw new MatchError("No number input found. Please input the matchID. (/match/20)");
             }
 
-            match = DBMatch.getMatch(userID, matchId, ConnectionPool.getInstance().getDataSource());
+            match = DBMatch.getMatch(userID, matchId, dataSource);
 
             exchange.sendResponseHeaders(200, 0);
         } else {
@@ -99,7 +112,7 @@ public class MatchController {
 
 
 
-    public static void handlePlay(HttpExchange exchange) throws IOException, MatchError, MethodNotAllowed {
+    public void handlePlay(HttpExchange exchange) throws IOException, MatchError, MethodNotAllowed {
         int userID;
         Match match;
 
@@ -115,7 +128,7 @@ public class MatchController {
             match.printBoard();
 
             if (ApiMatchUtil.validateMatch(userID, match)) {
-                Database.updateDB_Match(match, userID, ConnectionPool.getInstance().getDataSource());
+                Database.updateDB_Match(match, userID, dataSource);
                 Game.play(userID, match);
             }
 
@@ -127,12 +140,12 @@ public class MatchController {
         exchange.sendResponseHeaders(200, 0);
 
         OutputStream responseBody = exchange.getResponseBody();
-        responseBody.write(objectMapper.writeValueAsBytes(DBMatch.getMatch(userID, match.getMatchID(), ConnectionPool.getInstance().getDataSource())));
+        responseBody.write(objectMapper.writeValueAsBytes(DBMatch.getMatch(userID, match.getMatchID(), dataSource)));
         responseBody.flush();
         responseBody.close();
     }
 
-    public static void handleStart(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError {
+    public void handleStart(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError {
         int userID;
         Match match;
 
@@ -154,7 +167,7 @@ public class MatchController {
                 Game.play(userID, match);
             }
 
-            Database.updateDB_Match(match, userID, ConnectionPool.getInstance().getDataSource());
+            Database.updateDB_Match(match, userID, dataSource);
 
         } else {
             throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
@@ -169,7 +182,7 @@ public class MatchController {
     }
 
 
-    public static void handleMatchHistory(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError {
+    public void handleMatchHistory(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError {
         int userID;
         List<Match> matchHistory;
 
@@ -185,7 +198,7 @@ public class MatchController {
             }
 
             userID = AuthenticationToken.getInstance().getUserID(token);
-            matchHistory = DBMatch.getLastNMatchesFromUser(userID, matchHistorySize, ConnectionPool.getInstance().getDataSource());
+            matchHistory = DBMatch.getLastNMatchesFromUser(userID, matchHistorySize, dataSource);
 
         } else {
             throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() + " not allowed for "+ exchange.getRequestURI());
@@ -199,7 +212,7 @@ public class MatchController {
         responseBody.close();
     }
 
-    public static void handleCreateMatch(HttpExchange exchange) throws IOException, MethodNotAllowed {
+    public void handleCreateMatch(HttpExchange exchange) throws IOException, MethodNotAllowed {
         int userID;
         Match match;
 
@@ -216,13 +229,13 @@ public class MatchController {
             match.setDifficulty(DifficultyState.EASY);
             match.setStartTime(new Timestamp(System.currentTimeMillis()));
 
-            match.setPlayerTurn(DBScore.getScore(userID, ConnectionPool.getInstance().getDataSource()));
+            match.setPlayerTurn(DBScore.getScore(userID, dataSource));
 
             if (!match.isIsPlayerTurn()) {
                 Game.play(userID, match);
             }
 
-            int matchID = DBMatch.insertNewMatch(match, userID, ConnectionPool.getInstance().getDataSource());
+            int matchID = DBMatch.insertNewMatch(match, userID, dataSource);
             match.setMatchID(matchID);
 
 
