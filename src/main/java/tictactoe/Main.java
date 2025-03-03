@@ -22,6 +22,12 @@ public class Main {
         ch.qos.logback.classic.Logger hikariLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.zaxxer.hikari");
         hikariLogger.setLevel(Level.ERROR);
 
+        ch.qos.logback.classic.Logger testcontainerLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.github.dockerjava");
+        testcontainerLogger.setLevel(Level.ERROR);
+
+//        logger name="com.github.dockerjava" level="WARN";
+//        logger name="com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.wire" level="OFF";
+
 
 
         ConnectionPool pool = ConnectionPool.getInstance();
