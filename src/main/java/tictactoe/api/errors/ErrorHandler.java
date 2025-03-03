@@ -1,23 +1,18 @@
 package tictactoe.api.errors;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.net.httpserver.HttpExchange;
-
 import java.io.IOException;
 import java.io.OutputStream;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.net.httpserver.HttpExchange;
+
 public class ErrorHandler {
-
-
-
-
 
     public void handle(Throwable throwable, HttpExchange exchange) {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
             throwable.printStackTrace();
-//            exchange.getResponseHeaders().set(Constants.CONTENT_TYPE, Constants.APPLICATION_JSON);
             ErrorResponse response = getErrorResponse(throwable, exchange);
 
             OutputStream responseBody = exchange.getResponseBody();
@@ -47,11 +42,5 @@ public class ErrorHandler {
         }
         return response;
     }
-
-    // LoginError = 400
-    // wrong token error = 405
-
-
-
 
 }

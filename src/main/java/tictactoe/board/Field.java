@@ -6,13 +6,9 @@ public class Field {
 
     private char symbol;
 
-
     public Field() {
         this.symbol = ' ';
     }
-
-
-
 
     public char getSymbol() {
         return symbol;

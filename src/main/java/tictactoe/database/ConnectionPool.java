@@ -4,18 +4,17 @@ import com.zaxxer.hikari.HikariDataSource;
 
 public class ConnectionPool {
     private static ConnectionPool instance;
-    private ConnectionPool() {}
+    private static HikariDataSource dataSource;
+
+    private ConnectionPool() {
+    }
+
     public static ConnectionPool getInstance() {
         if (instance == null) {
             instance = new ConnectionPool();
         }
         return instance;
     }
-
-    private static HikariDataSource dataSource;
-
-
-
 
     public void initPool(String jdbcUrl, String username, String password) {
         dataSource = new HikariDataSource();

@@ -6,7 +6,6 @@ public class Config {
     private final static String USERNAME = "postgres";
     private final static String PASSWORD = "mysecretpassword";
 
-
     public static String getURL() {
         return URL;
     }

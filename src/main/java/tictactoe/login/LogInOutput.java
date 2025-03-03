@@ -2,16 +2,16 @@ package tictactoe.login;
 
 public final class LogInOutput {
     private static LogInOutput instance;
-    private LogInOutput() {}
+
+    private LogInOutput() {
+    }
+
     public static LogInOutput getInstance() {
         if (instance == null) {
             instance = new LogInOutput();
         }
         return instance;
     }
-
-
-
 
     public void printUserNotFound(String userName) {
         System.out.println("User " + userName + " doesn't exist!");
@@ -44,8 +44,5 @@ public final class LogInOutput {
     public void incorrect() {
         System.out.println("answer incorrect");
     }
-
-
-
 
 }

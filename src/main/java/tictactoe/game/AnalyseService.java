@@ -1,17 +1,17 @@
 package tictactoe.game;
 
-import tictactoe.board.*;
-import tictactoe.database.*;
-
-import com.zaxxer.hikari.HikariDataSource;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.zaxxer.hikari.HikariDataSource;
+import tictactoe.board.Position;
+import tictactoe.database.DBMatch;
+
 public final class AnalyseService {
     private static AnalyseService instance;
+
     private AnalyseService() {
     }
 
@@ -26,7 +26,6 @@ public final class AnalyseService {
 
         Map<List<Position>, Integer> map = new HashMap<>();
         List<List<Position>> wins = new ArrayList<>();
-        //List<Match> matches = DB_Match.getAllMatchesFromUserWhereWin(userID, dataSource);
         List<Match> matches = DBMatch.getAllMatchesFromUser(userID, dataSource);
 
         for (Match match : matches) {
@@ -46,8 +45,6 @@ public final class AnalyseService {
 
         return map;
     }
-
-
 
     private Character getWinnerSymbol(MatchStatus status) {
         switch (status) {

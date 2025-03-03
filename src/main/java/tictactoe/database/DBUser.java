@@ -1,22 +1,21 @@
 package tictactoe.database;
 
-import com.zaxxer.hikari.HikariDataSource;
-import tictactoe.user.User;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class DBUser {
+import com.zaxxer.hikari.HikariDataSource;
+import tictactoe.user.User;
 
+public class DBUser {
 
     public static void insertUser(User user, HikariDataSource dataSource) {
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()
+            Statement statement = connection.createStatement()
         ) {
             String sql = "INSERT INTO users(username, password, answer1, answer2) " +
-                              "VALUES ('"+user.getUserName()+"', '"+ user.getPassword() +"', '"+ user.getAnswer1() +"', '"+ user.getAnswer2() +"')";
+                "VALUES ('" + user.getUserName() + "', '" + user.getPassword() + "', '" + user.getAnswer1() + "', '" + user.getAnswer2() + "')";
             statement.executeUpdate(sql);
 
         } catch (SQLException e) {
@@ -26,12 +25,11 @@ public class DBUser {
 
     public static void insertUserTEST(User user, HikariDataSource dataSource) {
 
-
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()
+            Statement statement = connection.createStatement()
         ) {
             String sql = "INSERT INTO users(username, password, answer1, answer2) " +
-                              "VALUES ('"+user.getUserName()+"', '"+ user.getPassword() +"', '"+ user.getAnswer1() +"', '"+ user.getAnswer2() +"')";
+                "VALUES ('" + user.getUserName() + "', '" + user.getPassword() + "', '" + user.getAnswer1() + "', '" + user.getAnswer2() + "')";
             statement.executeUpdate(sql);
 
         } catch (SQLException e) {
@@ -40,12 +38,13 @@ public class DBUser {
 
     }
 
-
     public static boolean userExists(String username, HikariDataSource dataSource) {
         boolean bool = false;
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT exists(SELECT 1 FROM users WHERE username = '"+ username +"') AS exists ");
+            Statement statement = connection.createStatement();
+            ResultSet resultSet =
+                statement.executeQuery("SELECT exists(SELECT 1 FROM users WHERE username = '" + username + "') AS " +
+                    "exists ")
 
         ) {
             while (resultSet.next()) {
@@ -63,8 +62,9 @@ public class DBUser {
         String password = "";
 
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT password FROM users WHERE username = '"+ username +"'");
+            Statement statement = connection.createStatement();
+            ResultSet resultSet =
+                statement.executeQuery("SELECT password FROM users WHERE username = '" + username + "'")
 
         ) {
             while (resultSet.next()) {
@@ -81,14 +81,14 @@ public class DBUser {
     public static void updatePassword(int userID, String HashedPassword, HikariDataSource dataSource) {
 
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()
+            Statement statement = connection.createStatement()
         ) {
 
             for (int i = 0; i < 3; i++) {
                 String sql =
-                        "UPDATE users " +
-                                "SET password = '" + HashedPassword + "' " +
-                                "WHERE user_id = " + userID + " ";
+                    "UPDATE users " +
+                        "SET password = '" + HashedPassword + "' " +
+                        "WHERE user_id = " + userID + " ";
                 statement.executeUpdate(sql);
             }
 
@@ -100,8 +100,9 @@ public class DBUser {
     public static int getUserId(String username, HikariDataSource dataSource) {
         int userID = 0;
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT users.user_id FROM users WHERE username = '"+ username +"'");
+            Statement statement = connection.createStatement();
+            ResultSet resultSet =
+                statement.executeQuery("SELECT users.user_id FROM users WHERE username = '" + username + "'")
 
         ) {
             while (resultSet.next()) {
@@ -118,8 +119,8 @@ public class DBUser {
         String answer1 = "";
 
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT answer1 FROM users WHERE user_id = "+ userID +" ");
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT answer1 FROM users WHERE user_id = " + userID + " ")
 
         ) {
             while (resultSet.next()) {
@@ -136,8 +137,8 @@ public class DBUser {
         String answer2 = "";
 
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT answer2 FROM users WHERE user_id = "+ userID +" ");
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT answer2 FROM users WHERE user_id = " + userID + " ")
 
         ) {
             while (resultSet.next()) {
@@ -149,8 +150,5 @@ public class DBUser {
         }
         return answer2;
     }
-
-
-
 
 }

@@ -2,14 +2,12 @@ package tictactoe.user;
 
 public class User {
 
-
+    private static final String QUESTION1 = "Name of your first Pet?";
+    private static final String QUESTION2 = "City your were born in?";
     private String userName;
     private String password;
     private String answer1;
     private String answer2;
-    private static final String QUESTION1 = "Name of your first Pet?";
-    private static final String QUESTION2 = "City your were born in?";
-
 
     public User(String userName, String password, String answer1, String answer2) {
         this.userName = userName;
@@ -17,13 +15,9 @@ public class User {
         this.answer1 = answer1;
         this.answer2 = answer2;
     }
-    public User(){
+
+    public User() {
     }
-    
-
-
-
-
 
     public static String getQUESTION1() {
         return QUESTION1;
