@@ -17,7 +17,7 @@ public class Main {
 
 
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException {
 
         ch.qos.logback.classic.Logger hikariLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.zaxxer.hikari");
         hikariLogger.setLevel(Level.ERROR);
@@ -52,7 +52,7 @@ public class Main {
 //
 //        System.out.println(Winner.thereIsWinner(board, c));
 
-        MatchError matchError = new MatchError("MatchError");
+        //MatchError matchError = new MatchError("MatchError");
 
 
 
