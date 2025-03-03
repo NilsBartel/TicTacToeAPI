@@ -1,16 +1,20 @@
 package tictactoe.database;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import com.zaxxer.hikari.HikariDataSource;
 import tictactoe.game.Score;
-
-import java.sql.*;
 
 public class DBScore {
     public static void insertEmptyScore(int userID, HikariDataSource dataSource) {
 
         String sql = "INSERT INTO score (player, computer, draw, user_id) VALUES (?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement prepStatement = connection.prepareStatement(sql)
+            PreparedStatement prepStatement = connection.prepareStatement(sql)
         ) {
             prepStatement.setInt(1, 0);
             prepStatement.setInt(2, 0);
@@ -30,14 +34,13 @@ public class DBScore {
         }
 
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()
+            Statement statement = connection.createStatement()
         ) {
             String sql = "UPDATE score " +
-                    "SET "+column+" = "+column+" +1 " +  // <- could not make this work with prepStatement
-                    "WHERE user_id = "+userID+";";
+                "SET " + column + " = " + column + " +1 " +  // <- could not make this work with prepStatement
+                "WHERE user_id = " + userID + ";";
 
             statement.executeUpdate(sql);
-
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -51,8 +54,9 @@ public class DBScore {
         int draw = 0;
 
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT player, computer, draw FROM score WHERE user_id = "+ userID +" ");
+            Statement statement = connection.createStatement();
+            ResultSet resultSet =
+                statement.executeQuery("SELECT player, computer, draw FROM score WHERE user_id = " + userID + " ")
 
         ) {
             while (resultSet.next()) {
@@ -71,8 +75,10 @@ public class DBScore {
     private static boolean scoreExists(int userID, HikariDataSource dataSource) {
         boolean bool = false;
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT exists(SELECT 1 FROM score WHERE user_id = '"+ userID +"') AS exists ");
+            Statement statement = connection.createStatement();
+            ResultSet resultSet =
+                statement.executeQuery("SELECT exists(SELECT 1 FROM score WHERE user_id = '" + userID + "') AS exists" +
+                    " ")
 
         ) {
             while (resultSet.next()) {

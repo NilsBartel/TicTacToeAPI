@@ -1,39 +1,35 @@
 package tictactoe.board;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Row {
 
     List<Field> fields = new ArrayList<>();
-    //private PrintService printService;
 
     public Row() {
-        //setPrintService(PrintService.getInstance());
-        for(int column = 0; column<3; column++){
+        for (int column = 0; column < 3; column++) {
             fields.add(new Field());
         }
     }
 
-
-    public void print(){
+    public void print() {
         List<String> symbols = new ArrayList<>();
-        for(Field field : fields){
+        for (Field field : fields) {
             symbols.add(String.valueOf(field.getSymbol()));
         }
 
         String line = String.join(" | ", symbols);
         System.out.println(line);
-        //printService.printRow(line);
     }
 
     @JsonIgnore
-    public String getRowsAsString(){
+    public String getRowsAsString() {
         List<String> symbols = new ArrayList<>();
-        for(Field field : fields){
+        for (Field field : fields) {
             symbols.add(String.valueOf(field.getSymbol()));
         }
 
@@ -45,7 +41,7 @@ public class Row {
         return fields;
     }
 
-    public Field getField(int column){
+    public Field getField(int column) {
         return fields.get(column);
     }
 
@@ -53,13 +49,9 @@ public class Row {
         fields.get(column).setSymbol(symbol);
     }
 
-    public char getSymbol(int column){
+    public char getSymbol(int column) {
         return fields.get(column).getSymbol();
     }
-
-//    public final void setPrintService(PrintService printService) {
-//        this.printService = printService;
-//    }
 
     @Override
     public boolean equals(Object object) {

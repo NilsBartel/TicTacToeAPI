@@ -1,5 +1,8 @@
 package tictactoe.api.score;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -11,23 +14,19 @@ import tictactoe.database.ConnectionPool;
 import tictactoe.database.DBScore;
 import tictactoe.game.Score;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 public class ScoreController {
-
-
 
     public static void endPoint(HttpServer server) {
 
         ErrorHandler errorHandler = new ErrorHandler();
         server.createContext("/score/", exchange ->
-                Try.run(() -> handeScore(exchange))
-                        .onFailure(t -> {
-                            errorHandler.handle(t, exchange);
-                        })
+            Try.run(() -> handeScore(exchange))
+                .onFailure(t -> {
+                    errorHandler.handle(t, exchange);
+                })
         );
     }
+
     private static void handeScore(HttpExchange exchange) throws IOException, MethodNotAllowed {
         ObjectMapper objectMapper = new ObjectMapper();
         Score score;
@@ -40,12 +39,9 @@ public class ScoreController {
 
             score = DBScore.getScore(userID, ConnectionPool.getInstance().getDataSource());
 
-
-
-
             exchange.sendResponseHeaders(200, 0);
         } else {
-            throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
+            throw new MethodNotAllowed("Method " + exchange.getRequestMethod() + " not allowed for " + exchange.getRequestURI());
         }
 
         OutputStream responseBody = exchange.getResponseBody();
