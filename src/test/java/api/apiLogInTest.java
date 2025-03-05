@@ -80,7 +80,6 @@ public class apiLogInTest {
         System.out.println(loginResponse.getToken());
 
         Assertions.assertEquals(200, httpResponse.getCode());
-
     }
 
 
@@ -131,7 +130,6 @@ public class apiLogInTest {
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
         System.out.println(httpResponse.getCode());
-
 
 
         String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
@@ -228,7 +226,7 @@ public class apiLogInTest {
 
     @Test
     void passwordResetPasswordNotStrongEnoughTest() throws IOException {
-        String userName = "test";
+        String userName = userForChangePasswordTest.getUserName();
         String newPassword = "newPassword";
         String newAccount = "{\"userName\":\"" +userName+ "\", \"password\":\"" +newPassword+ "\", \"answer1\":\"answer1\", \"answer2\":\"answer2\"}";
 
