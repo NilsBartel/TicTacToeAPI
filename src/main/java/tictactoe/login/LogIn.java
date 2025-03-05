@@ -28,15 +28,13 @@ public final class LogIn {
 //    }
 
     public boolean logInUser(String userName, String password, HikariDataSource dataSource) throws LoginError {
+        System.out.println(PasswordUtil.checkPassword("test", DBUser.getPassword(userName, dataSource)));
 
         if (!DBUser.userExists(userName, dataSource) || !PasswordUtil.checkPassword(password, DBUser.getPassword(userName, dataSource))) {
             throw new LoginError("Username or Password is incorrect!");
         }
-//        String password;
-//        password = playerInput.askForPassword();
-        return true;
 
-        //return DBUser.userExists(userName, dataSource) && PasswordUtil.checkPassword(password, DBUser.getPassword(userName, dataSource));
+        return true;
     }
 
 

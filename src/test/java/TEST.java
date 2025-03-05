@@ -1,29 +1,31 @@
-import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.ClientProtocolException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.classic.methods.HttpGet;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.classic.methods.HttpPost;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.classic.methods.HttpUriRequest;
-import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.ContentType;
-import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.HttpStatus;
+import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.HttpEntity;
+import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.ProtocolException;
+import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.io.entity.EntityUtils;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.io.entity.StringEntity;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.*;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 import tictactoe.api.Server;
+import tictactoe.api.account.LoginResponse;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.DBUser;
+import tictactoe.login.HashService;
+import tictactoe.login.PasswordUtil;
 import tictactoe.user.User;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -34,7 +36,7 @@ public class TEST {
 
     @BeforeAll
     static void init() throws SQLException {
-        Logger.disableLoggers();
+        LoggerConfig.disableLoggers();
 
         postgres.start();
 
@@ -51,25 +53,34 @@ public class TEST {
     @BeforeEach
     void setUp() {
         User user = new User("nils", "password", "answer1", "answer2");
+
+        User user2 = new User("test", HashService.hash("test"), "answer3", "answer4");
         DBUser.insertUser(user, dataSource);
+        DBUser.insertUser(user2, dataSource);
         MatchCreate.createMatch(dataSource);
     }
 
 
     @Test
-    void loginTest() throws IOException, InterruptedException {
+    void loginTest() throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
         Server.start(dataSource);
-        String login = "{\"userName\":\"nils\", \"password\":\"password\"}";
+        String login = "{\"userName\":\"test\", \"password\":\"test\"}";
 
         HttpUriRequest request = new HttpPost("http://localhost:8080/account/login");
         request.setEntity(new StringEntity(login));
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 
+
         System.out.println(httpResponse.getCode());
+
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        System.out.println(entitiystring);
+        LoginResponse loginResponse = objectMapper.readValue(entitiystring, LoginResponse.class);
+        System.out.println(loginResponse.getToken());
+
         Assertions.assertEquals(200, httpResponse.getCode());
-
-
     }
 
 

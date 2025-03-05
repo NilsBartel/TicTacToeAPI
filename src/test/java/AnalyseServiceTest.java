@@ -36,12 +36,13 @@ class AnalyseServiceTest {
 
     @BeforeEach
     void init() throws SQLException {
-        
+
     }
 
 
     @BeforeAll
     static void beforeAll() {
+
         ch.qos.logback.classic.Logger dockerLogger1 = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.github.dockerjava");
         dockerLogger1.setLevel(Level.ERROR);
 
