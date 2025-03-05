@@ -10,7 +10,7 @@ import tictactoe.api.AuthenticationToken;
 import tictactoe.api.errors.ErrorHandler;
 import tictactoe.api.errors.MatchError;
 import tictactoe.api.errors.MethodNotAllowed;
-import tictactoe.api.errors.TokenError;
+import tictactoe.api.errors.NoTokenError;
 import tictactoe.database.DBMatch;
 import tictactoe.database.DBScore;
 import tictactoe.database.Database;
@@ -79,7 +79,7 @@ public class MatchController {
         try {
             token = exchange.getRequestHeaders().get("token").getFirst();
         } catch (Exception e) {
-            throw new TokenError("No token provided");
+            throw new NoTokenError("No token provided");
         }
         AuthenticationToken.getInstance().handleAuthentication(exchange, token);
 
@@ -98,6 +98,9 @@ public class MatchController {
             }
 
             match = DBMatch.getMatch(userID, matchId, dataSource);
+            if (match == null) {
+                throw new MatchError("No match found.");
+            }
 
             exchange.sendResponseHeaders(200, 0);
         } else {

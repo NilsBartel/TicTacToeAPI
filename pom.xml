@@ -120,6 +120,13 @@
             <artifactId>liquibase-core</artifactId>
             <version>4.31.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-maven-plugin</artifactId>
+            <version>4.31.1</version>
+        </dependency>
+
+
 
 
 
@@ -162,6 +169,22 @@
                     <mainClass>Main</mainClass>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>4.31.1</version>
+
+                <configuration>
+
+                    <url>jdbc:postgresql://localhost:5432/tictactoe</url>
+                    <username>postgres</username>
+                    <password>mysecretpassword</password>
+                    <outputChangeLogFile>src/main/resources/liquibase-outputChangeLog.xml</outputChangeLogFile>
+                </configuration>
+            </plugin>
+
+
 
 
 

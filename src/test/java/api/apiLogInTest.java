@@ -1,3 +1,5 @@
+package api;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.classic.methods.HttpGet;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -18,16 +20,20 @@ import tictactoe.user.User;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 
 
-public class apiLoginTest {
+public class apiLogInTest {
     static ObjectMapper objectMapper;
     static HikariDataSource dataSource;
+    static Server server;
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine").withUsername("postgres").withInitScript("init.sql");
 
+
+    static User user1;
+    static User userForChangePasswordTest;
+
     @BeforeAll
-    static void init() throws SQLException, IOException {
+    static void init() throws IOException {
         LoggerConfig.disableLoggers();
         objectMapper = new ObjectMapper();
 
@@ -37,37 +43,27 @@ public class apiLoginTest {
         pool.initPool(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
         dataSource = pool.getDataSource();
 
-        User user2 = new User("test", HashService.hash("test"), "answer3", "answer4");
-        DBUser.insertUser(user2, dataSource);
+        user1 = new User("test", HashService.hash("test"), HashService.hash("answer1"), HashService.hash("answer2"));
+        userForChangePasswordTest = new User("testName", HashService.hash("test"), HashService.hash("answer1"), HashService.hash("answer2"));
+        DBUser.insertUser(user1, dataSource);
+        DBUser.insertUser(userForChangePasswordTest, dataSource);
         MatchCreate.createMatch(dataSource);
 
-        Server.start(dataSource);
+        //Server.start(dataSource);
+        server = new Server();
+        server.start(dataSource);
     }
-
-//    @BeforeEach
-//    void setUp() {
-//        User user = new User("nils", "password", "answer1", "answer2");
-//
-//        User user2 = new User("test", HashService.hash("test"), "answer3", "answer4");
-//        DBUser.insertUser(user, dataSource);
-//        DBUser.insertUser(user2, dataSource);
-//        MatchCreate.createMatch(dataSource);
-//    }
 
     @AfterAll
-    static void close() throws SQLException {
+    static void close() {
         dataSource.close();
+        server.close();
     }
 
-//    @AfterEach
-//    void tearDown() {
-//
-//    }
 
 
     @Test
     void loginTest() throws IOException {
-        //Server.start(dataSource);
         String login = "{\"userName\":\"test\", \"password\":\"test\"}";
 
         HttpUriRequest request = new HttpPost("http://localhost:8080/account/login");
@@ -90,7 +86,6 @@ public class apiLoginTest {
 
     @Test
     void getRequestFalse() throws IOException {
-        //Server.start(dataSource);
         String login = "{\"userName\":\"test\", \"password\":\"test\"}";
 
         HttpUriRequest request = new HttpGet("http://localhost:8080/account/login");
@@ -105,7 +100,6 @@ public class apiLoginTest {
 
     @Test
     void loginSuccessfulTest() throws IOException {
-        //Server.start(dataSource);
         String login = "{\"userName\":\"test\", \"password\":\"test\"}";
 
         HttpUriRequest request = new HttpPost("http://localhost:8080/account/login");
@@ -118,7 +112,6 @@ public class apiLoginTest {
 
     @Test
     void loginFailedTest() throws IOException {
-        //Server.start(dataSource);
         String login = "{\"userName\":\"test\", \"password\":\"wrongPassword\"}";
 
         HttpUriRequest request = new HttpPost("http://localhost:8080/account/login");
@@ -131,13 +124,13 @@ public class apiLoginTest {
 
     @Test
     void tokenCreatedTest() throws IOException {
-        //Server.start(dataSource);
         String login = "{\"userName\":\"test\", \"password\":\"test\"}";
 
         HttpUriRequest request = new HttpPost("http://localhost:8080/account/login");
         request.setEntity(new StringEntity(login));
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        System.out.println(httpResponse.getCode());
 
 
 
@@ -161,8 +154,6 @@ public class apiLoginTest {
 
         Assertions.assertEquals(200, httpResponse.getCode());
         Assertions.assertTrue(tryLogIn(userName, password));
-        System.out.println(getToken(userName, password));
-
     }
 
     boolean tryLogIn(String userName, String password) throws IOException {
@@ -189,6 +180,67 @@ public class apiLoginTest {
         LoginResponse loginResponse = objectMapper.readValue(entitiystring, LoginResponse.class);
         return loginResponse.getToken();
     }
+
+    @Test
+    void passwordResetSuccessfulTest() throws IOException {
+        String userName = userForChangePasswordTest.getUserName();
+        String newPassword = "newPassword1234.";
+        String newAccount = "{\"userName\":\"" +userName+ "\", \"password\":\"" +newPassword+ "\", \"answer1\":\"answer1\", \"answer2\":\"answer2\"}";
+
+        HttpUriRequest request = new HttpPost("http://localhost:8080/account/resetPassword");
+        request.setEntity(new StringEntity(newAccount));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertTrue(tryLogIn(userName, newPassword));
+    }
+
+    @Test
+    void passwordResetAnswer1FailedTest() throws IOException {
+        String userName = userForChangePasswordTest.getUserName();
+        String newPassword = "newPassword1234.";
+        String newAccount = "{\"userName\":\"" +userName+ "\", \"password\":\"" +newPassword+ "\", \"answer1\":\"wrongAnswer\", \"answer2\":\"answer2\"}";
+
+        HttpUriRequest request = new HttpPost("http://localhost:8080/account/resetPassword");
+        request.setEntity(new StringEntity(newAccount));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+
+        Assertions.assertEquals(401, httpResponse.getCode());
+        Assertions.assertFalse(tryLogIn(userName, newPassword));
+    }
+
+    @Test
+    void passwordResetAnswer2FailedTest() throws IOException {
+        String userName = userForChangePasswordTest.getUserName();
+        String newPassword = "newPassword1234.";
+        String newAccount = "{\"userName\":\"" +userName+ "\", \"password\":\"" +newPassword+ "\", \"answer1\":\"answer1\", \"answer2\":\"wrongAnswer\"}";
+
+        HttpUriRequest request = new HttpPost("http://localhost:8080/account/resetPassword");
+        request.setEntity(new StringEntity(newAccount));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+
+        Assertions.assertEquals(401, httpResponse.getCode());
+        Assertions.assertFalse(tryLogIn(userName, newPassword));
+    }
+
+    @Test
+    void passwordResetPasswordNotStrongEnoughTest() throws IOException {
+        String userName = "test";
+        String newPassword = "newPassword";
+        String newAccount = "{\"userName\":\"" +userName+ "\", \"password\":\"" +newPassword+ "\", \"answer1\":\"answer1\", \"answer2\":\"answer2\"}";
+
+        HttpUriRequest request = new HttpPost("http://localhost:8080/account/resetPassword");
+        request.setEntity(new StringEntity(newAccount));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+
+        Assertions.assertEquals(401, httpResponse.getCode());
+    }
+
+
 
 
 

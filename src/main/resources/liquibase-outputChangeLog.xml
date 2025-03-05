@@ -1,0 +1,115 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+                   http://www.liquibase.org/xml/ns/pro
+                   http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd
+                   http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+
+
+    <changeSet author="nilsbartel (generated)" id="1741169124591-1">
+        <createTable tableName="users">
+            <column autoIncrement="true" name="user_id" startWith="33" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="user_pkey"/>
+            </column>
+            <column name="username" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="answer1" type="VARCHAR(255)"/>
+            <column name="answer2" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="nilsbartel (generated)" id="1741169124591-2">
+        <createTable tableName="score">
+            <column autoIncrement="true" name="score_id" startWith="17" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="score_pkey"/>
+            </column>
+            <column name="player" type="INTEGER"/>
+            <column name="computer" type="INTEGER"/>
+            <column name="draw" type="INTEGER"/>
+            <column name="user_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="nilsbartel (generated)" id="1741169124591-3">
+        <createTable tableName="match">
+            <column autoIncrement="true" name="match_id" startWith="403" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="match_pkey"/>
+            </column>
+            <column name="difficulty" type="VARCHAR(255)"/>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="isplayerturn" type="BOOLEAN"/>
+            <column name="user_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="nilsbartel (generated)" id="1741169124591-4">
+        <createTable tableName="board">
+            <column autoIncrement="true" name="board_id" startWith="590" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="board_pkey"/>
+            </column>
+            <column name="match_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="nilsbartel (generated)" id="1741169124591-5">
+        <createTable tableName="row">
+            <column autoIncrement="true" name="row_id" startWith="1689" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="row_pkey"/>
+            </column>
+            <column name="row" type="INTEGER"/>
+            <column name="board_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="nilsbartel (generated)" id="1741169124591-6">
+        <createTable tableName="field">
+            <column autoIncrement="true" name="field_id" startWith="5000" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="field_pkey"/>
+            </column>
+            <column name="field" type="INTEGER"/>
+            <column name="symbol" type="CHAR(1)"/>
+            <column name="row_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="nilsbartel (generated)" id="1741169124591-7">
+        <createTable tableName="time">
+            <column autoIncrement="true" name="time_id" startWith="564" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="time_pkey"/>
+            </column>
+            <column name="starttime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="endtime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="match_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="nilsbartel (generated)" id="1741169124591-8">
+        <addForeignKeyConstraint baseColumnNames="match_id" baseTableName="board" constraintName="board_match_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="match_id" referencedTableName="match" validate="true"/>
+    </changeSet>
+    <changeSet author="nilsbartel (generated)" id="1741169124591-9">
+        <addForeignKeyConstraint baseColumnNames="row_id" baseTableName="field" constraintName="field_row_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="row_id" referencedTableName="row" validate="true"/>
+    </changeSet>
+    <changeSet author="nilsbartel (generated)" id="1741169124591-10">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="match" constraintName="match_user_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="nilsbartel (generated)" id="1741169124591-11">
+        <addForeignKeyConstraint baseColumnNames="board_id" baseTableName="row" constraintName="row_board_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="board_id" referencedTableName="board" validate="true"/>
+    </changeSet>
+    <changeSet author="nilsbartel (generated)" id="1741169124591-12">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="score" constraintName="score_user_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="nilsbartel (generated)" id="1741169124591-13">
+        <addForeignKeyConstraint baseColumnNames="match_id" baseTableName="time" constraintName="time_match_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="match_id" referencedTableName="match" validate="true"/>
+    </changeSet>
+</databaseChangeLog>
