@@ -176,7 +176,6 @@
                 <version>4.31.1</version>
 
                 <configuration>
-
                     <url>jdbc:postgresql://localhost:5432/tictactoe</url>
                     <username>postgres</username>
                     <password>mysecretpassword</password>

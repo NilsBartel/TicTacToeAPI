@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 
-public class apiLogInTest {
+public class ApiLogInTest {
     static ObjectMapper objectMapper;
     static HikariDataSource dataSource;
     static Server server;

@@ -1,5 +1,7 @@
-package api;
+package api.match;
 
+import api.LoggerConfig;
+import api.MatchCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.classic.methods.HttpGet;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -9,27 +11,31 @@ import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.impl.clas
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.io.entity.StringEntity;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.testcontainers.containers.PostgreSQLContainer;
 import tictactoe.api.Server;
 import tictactoe.api.account.LoginResponse;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.DBUser;
+import tictactoe.database.LiquibaseMigrationService;
 import tictactoe.game.Match;
 import tictactoe.login.HashService;
 import tictactoe.user.User;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 
-public class apiMatchTest {
+public class ApiMatchTest {
 
         static ObjectMapper objectMapper;
         static HikariDataSource dataSource;
         static Server server;
+
+        //TODO: hier mit geht es nicht
+        //static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine").withUsername("postgres");
+
+        //TODO: hier mit geht es
         static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine").withUsername("postgres").withInitScript("init.sql");
 
         @BeforeAll
@@ -42,6 +48,10 @@ public class apiMatchTest {
             ConnectionPool pool = ConnectionPool.getInstance();
             pool.initPool(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
             dataSource = pool.getDataSource();
+
+
+            LiquibaseMigrationService migrationService = new LiquibaseMigrationService();
+            migrationService.runMigration(dataSource);
 
             User user1 = new User("test", HashService.hash("test"), HashService.hash("answer1"), HashService.hash("answer2"));
             DBUser.insertUser(user1, dataSource);

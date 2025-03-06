@@ -3,21 +3,11 @@ package tictactoe;
 //import org.apache.log4j.Logger;
 //import org.apache.log4j.Level;
 
-import com.zaxxer.hikari.HikariDataSource;
-import liquibase.Contexts;
-import liquibase.LabelExpression;
-import liquibase.Liquibase;
-import liquibase.database.DatabaseConnection;
-import liquibase.database.DatabaseFactory;
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.DatabaseException;
 import liquibase.exception.LiquibaseException;
-import liquibase.resource.ClassLoaderResourceAccessor;
-import liquibase.resource.ResourceAccessor;
 import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Level;
 
-import tictactoe.api.LiquibaseMigrationService;
+import tictactoe.database.LiquibaseMigrationService;
 import tictactoe.api.Server;
 import tictactoe.database.*;
 
