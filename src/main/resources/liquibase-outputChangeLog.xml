@@ -14,7 +14,7 @@
 
     <changeSet author="nilsbartel (generated)" id="1741169124591-1">
         <createTable tableName="users">
-            <column autoIncrement="true" name="user_id" startWith="33" type="INTEGER">
+            <column autoIncrement="true" name="user_id" startWith="1" type="INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="user_pkey"/>
             </column>
             <column name="username" type="VARCHAR(255)"/>
@@ -25,7 +25,7 @@
     </changeSet>
     <changeSet author="nilsbartel (generated)" id="1741169124591-2">
         <createTable tableName="score">
-            <column autoIncrement="true" name="score_id" startWith="17" type="INTEGER">
+            <column autoIncrement="true" name="score_id" startWith="1" type="INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="score_pkey"/>
             </column>
             <column name="player" type="INTEGER"/>
@@ -38,7 +38,7 @@
     </changeSet>
     <changeSet author="nilsbartel (generated)" id="1741169124591-3">
         <createTable tableName="match">
-            <column autoIncrement="true" name="match_id" startWith="403" type="INTEGER">
+            <column autoIncrement="true" name="match_id" startWith="1" type="INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="match_pkey"/>
             </column>
             <column name="difficulty" type="VARCHAR(255)"/>
@@ -51,7 +51,7 @@
     </changeSet>
     <changeSet author="nilsbartel (generated)" id="1741169124591-4">
         <createTable tableName="board">
-            <column autoIncrement="true" name="board_id" startWith="590" type="INTEGER">
+            <column autoIncrement="true" name="board_id" startWith="1" type="INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="board_pkey"/>
             </column>
             <column name="match_id" type="INTEGER">
@@ -61,7 +61,7 @@
     </changeSet>
     <changeSet author="nilsbartel (generated)" id="1741169124591-5">
         <createTable tableName="row">
-            <column autoIncrement="true" name="row_id" startWith="1689" type="INTEGER">
+            <column autoIncrement="true" name="row_id" startWith="1" type="INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="row_pkey"/>
             </column>
             <column name="row" type="INTEGER"/>
@@ -72,7 +72,7 @@
     </changeSet>
     <changeSet author="nilsbartel (generated)" id="1741169124591-6">
         <createTable tableName="field">
-            <column autoIncrement="true" name="field_id" startWith="5000" type="INTEGER">
+            <column autoIncrement="true" name="field_id" startWith="1" type="INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="field_pkey"/>
             </column>
             <column name="field" type="INTEGER"/>
@@ -84,7 +84,7 @@
     </changeSet>
     <changeSet author="nilsbartel (generated)" id="1741169124591-7">
         <createTable tableName="time">
-            <column autoIncrement="true" name="time_id" startWith="564" type="INTEGER">
+            <column autoIncrement="true" name="time_id" startWith="1" type="INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="time_pkey"/>
             </column>
             <column name="starttime" type="TIMESTAMP WITH TIME ZONE"/>

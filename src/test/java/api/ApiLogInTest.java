@@ -8,6 +8,7 @@ import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.impl.clas
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.io.entity.StringEntity;
 import com.zaxxer.hikari.HikariDataSource;
+import logger.LoggerConfig;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.*;
 import org.testcontainers.containers.PostgreSQLContainer;

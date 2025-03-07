@@ -11,6 +11,12 @@ public class Row {
     List<Field> fields = new ArrayList<>();
     //private PrintService printService;
 
+    public Row(List<Character> symbols) {
+        for(int column = 0; column<3; column++){
+            fields.add(new Field(symbols.get(column)));
+        }
+    }
+
     public Row() {
         //setPrintService(PrintService.getInstance());
         for(int column = 0; column<3; column++){

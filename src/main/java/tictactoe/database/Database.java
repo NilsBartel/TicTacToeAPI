@@ -86,7 +86,7 @@ public class Database {
 
             String sql1 = "UPDATE time SET endtime = ? WHERE match_id = ?"; //SET starttime = ? AND
             try (PreparedStatement prepStmt = connection.prepareStatement(sql1)) {
-                System.out.println(match.getStartTime());
+                //System.out.println(match.getStartTime());
                 //prepStmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
                 //prepStmt.setTimestamp(1, match.getStartTime());
                 prepStmt.setTimestamp(1, match.getEndTime());

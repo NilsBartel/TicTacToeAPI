@@ -1,6 +1,6 @@
 package api.match;
 
-import api.LoggerConfig;
+import logger.LoggerConfig;
 import api.MatchCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -24,6 +24,7 @@ import tictactoe.user.User;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ApiMatchTest {
@@ -31,24 +32,29 @@ public class ApiMatchTest {
         static ObjectMapper objectMapper;
         static HikariDataSource dataSource;
         static Server server;
-
-        //TODO: hier mit geht es nicht
-        //static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine").withUsername("postgres");
-
-        //TODO: hier mit geht es
-        static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine").withUsername("postgres").withInitScript("init.sql");
+        static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine").withUsername("postgres");
 
         @BeforeAll
-        static void init() throws IOException {
+        static void init() throws IOException, InterruptedException, SQLException {
             LoggerConfig.disableLoggers();
             objectMapper = new ObjectMapper();
 
             postgres.start();
 
+
             ConnectionPool pool = ConnectionPool.getInstance();
             pool.initPool(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
             dataSource = pool.getDataSource();
 
+
+            while (true) {
+                try {
+                    DriverManager.getConnection(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+                    break;
+                } catch (SQLException e){
+                    Thread.sleep(500);
+                }
+            }
 
             LiquibaseMigrationService migrationService = new LiquibaseMigrationService();
             migrationService.runMigration(dataSource);

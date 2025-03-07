@@ -11,6 +11,7 @@ import tictactoe.game.DifficultyState;
 import tictactoe.game.Match;
 import tictactoe.game.MatchStatus;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +20,8 @@ public class ApiMatchUtil{
 
 
 
-    public static boolean validateMatch(int userID, Match match) throws MatchError {
-        Match dbMatch = DBMatch.getMatch(userID, match.getMatchID(), ConnectionPool.getInstance().getDataSource());
+    public static boolean validateMatch(int userID, Match match, HikariDataSource dataSource) throws MatchError {
+        Match dbMatch = DBMatch.getMatch(userID, match.getMatchID(), dataSource);
 
         if (!match.equalsWithoutBoard(dbMatch)) throw new MatchError("Something changed with the match that wasn't allowed");
 
@@ -51,23 +52,23 @@ public class ApiMatchUtil{
         return positions;
     }
 
-    public static Match returnRunningOrNewMatch(DifficultyState difficulty, int userID) throws MatchError {
+    public static Match returnRunningOrNewMatch(DifficultyState difficulty, int userID, HikariDataSource dataSource) throws MatchError, SQLException {
         Match match;
 
         if (difficulty != DifficultyState.EASY && difficulty != DifficultyState.MEDIUM && difficulty != DifficultyState.IMPOSSIBLE) {
             throw new MatchError("Wrong difficulty");
         }
 
-        if (userHasRunningMatch(userID, ConnectionPool.getInstance().getDataSource())) {
-            match = DBMatch.getLastNMatchesFromUser(userID, 1, ConnectionPool.getInstance().getDataSource()).getFirst();
+        if (userHasRunningMatch(userID, dataSource)) {
+            match = DBMatch.getLastNMatchesFromUser(userID, 1, dataSource).getFirst();
         } else {
             match = new Match();
             match.setStatus(MatchStatus.RUNNING);
             match.setDifficulty(difficulty);
             match.setStartTime(new Timestamp(System.currentTimeMillis()));
-            match.setPlayerTurn(DBScore.getScore(userID, ConnectionPool.getInstance().getDataSource()));
+            match.setPlayerTurn(DBScore.getScore(userID, dataSource));
 
-            int matchID = DBMatch.insertNewMatch(match, userID, ConnectionPool.getInstance().getDataSource());
+            int matchID = DBMatch.insertNewMatch(match, userID, dataSource);
             match.setMatchID(matchID);
         }
 
@@ -81,6 +82,19 @@ public class ApiMatchUtil{
             return false;
         }
         return match.getFirst().getStatus() == MatchStatus.RUNNING || match.getLast().getStatus() == MatchStatus.NOT_STARTED;
+    }
+    
+    public static Match createNewMatch(int userID, DifficultyState difficulty, HikariDataSource dataSource) {
+        Match match = new Match();
+        match.setStatus(MatchStatus.RUNNING);
+        match.setDifficulty(difficulty);
+        match.setStartTime(new Timestamp(System.currentTimeMillis()));
+        match.setPlayerTurn(DBScore.getScore(userID, dataSource));
+
+        int matchID = DBMatch.insertNewMatch(match, userID, dataSource);
+        match.setMatchID(matchID);
+        
+        return match;
     }
 
 

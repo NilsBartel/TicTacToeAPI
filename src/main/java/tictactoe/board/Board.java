@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Board {
 
@@ -15,6 +16,16 @@ public class Board {
     public static final List<Position> DIAGONAL_TOP_LEFT_BOTTOM_RIGHT = new ArrayList<>(List.of(new Position(1), new Position(5), new Position(9)));
 
     List<Row> rows = new ArrayList<>();
+
+    public Board(List<Character> symbols) {
+        for(int row = 0; row<3; row++){
+            List<Character> rowSymbols = new ArrayList<>(symbols);
+            for(int i = 0; i<3; i++){
+                rowSymbols.add(symbols.get(i+row));
+            }
+            rows.add(new Row(rowSymbols));
+        }
+    }
 
     public Board(Row... rows) {
         this.rows = Arrays.asList(rows);

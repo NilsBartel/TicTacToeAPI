@@ -26,6 +26,16 @@ public class Match {
     private Timestamp startTime;
     private Timestamp endTime;
 
+    public Match(Board board, MatchStatus status, DifficultyState difficulty, boolean isPlayerTurn, int matchID, Timestamp startTime, Timestamp endTime) {
+        this.board = board;
+        this.status = status;
+        this.difficulty = difficulty;
+        this.isPlayerTurn = isPlayerTurn;
+        this.matchID = matchID;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
 
 
     public Match() {

@@ -7,10 +7,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.vavr.control.Try;
 import org.apache.commons.io.IOUtils;
 import tictactoe.api.AuthenticationToken;
-import tictactoe.api.errors.ErrorHandler;
-import tictactoe.api.errors.MatchError;
-import tictactoe.api.errors.MethodNotAllowed;
-import tictactoe.api.errors.NoTokenError;
+import tictactoe.api.errors.*;
 import tictactoe.database.DBMatch;
 import tictactoe.database.DBScore;
 import tictactoe.database.Database;
@@ -22,6 +19,7 @@ import tictactoe.game.MatchStatus;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -130,7 +128,7 @@ public class MatchController {
             match = objectMapper.readValue(requestBody, Match.class);
             match.printBoard();
 
-            if (ApiMatchUtil.validateMatch(userID, match)) {
+            if (ApiMatchUtil.validateMatch(userID, match, dataSource)) {
                 Database.updateDB_Match(match, userID, dataSource);
                 Game.play(userID, match);
             }
@@ -148,7 +146,7 @@ public class MatchController {
         responseBody.close();
     }
 
-    public void handleStart(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError {
+    public void handleStart(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError, SQLException {
         int userID;
         Match match;
 
@@ -161,10 +159,15 @@ public class MatchController {
             userID = AuthenticationToken.getInstance().getUserID(token);
 
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
+
+            if (requestBody.isEmpty()) {
+                throw new InputError("No request body provided. Need a difficulty. {\"difficulty\": \"EASY\"}");
+            }
+
             match = objectMapper.readValue(requestBody, Match.class);
             difficulty = match.getDifficulty();
 
-            match = ApiMatchUtil.returnRunningOrNewMatch(difficulty, userID);
+            match = ApiMatchUtil.returnRunningOrNewMatch(difficulty, userID, dataSource);
 
             if (!match.isIsPlayerTurn()) {
                 Game.play(userID, match);

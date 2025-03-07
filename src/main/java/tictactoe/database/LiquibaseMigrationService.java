@@ -10,13 +10,9 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.ClassLoaderResourceAccessor;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class LiquibaseMigrationService {
-    private static final String JDBC_URL = Config.getURL();
-    private static final String USERNAME = Config.getUSERNAME();
-    private static final String PASSWORD = Config.getPASSWORD();
 
     public void runMigration(HikariDataSource dataSource) {
         try (Connection connection = openConnection(dataSource)) {
@@ -32,6 +28,5 @@ public class LiquibaseMigrationService {
 
     private Connection openConnection(HikariDataSource dataSource) throws SQLException {
         return dataSource.getConnection();
-        //return DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
     }
 }

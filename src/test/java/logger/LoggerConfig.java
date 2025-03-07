@@ -1,4 +1,4 @@
-package api;
+package logger;
 
 import ch.qos.logback.classic.Level;
 import org.slf4j.LoggerFactory;

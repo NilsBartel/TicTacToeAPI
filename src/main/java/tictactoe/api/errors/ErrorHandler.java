@@ -44,6 +44,9 @@ public class ErrorHandler {
         } else if (throwable instanceof NoTokenError) {
             response = new ErrorResponse(throwable.getMessage(), 401);
             exchange.sendResponseHeaders(401, 0);
+        } else if (throwable instanceof InputError) {
+            response = new ErrorResponse(throwable.getMessage(), 400);
+            exchange.sendResponseHeaders(400, 0);
         } else {
             response = new ErrorResponse(throwable.getMessage(), 500);
             exchange.sendResponseHeaders(500, 0);

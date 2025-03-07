@@ -10,46 +10,46 @@ import ch.qos.logback.classic.Level;
 import tictactoe.database.LiquibaseMigrationService;
 import tictactoe.api.Server;
 import tictactoe.database.*;
+import tictactoe.login.HashService;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public class Main {
 
 
 
 
-    public static void main(String[] args) throws IOException, SQLException, LiquibaseException {
-        ch.qos.logback.classic.Logger hikariLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.zaxxer.hikari");
-        hikariLogger.setLevel(Level.ERROR);
+    public static void main(String[] args) throws IOException, SQLException, LiquibaseException, InterruptedException {
 
 
-        ConnectionPool pool = ConnectionPool.getInstance();
-        pool.initPool(Config.getURL(), Config.getUSERNAME(), Config.getPASSWORD());
+        long time = System.currentTimeMillis();
 
 
-        Connection connection = pool.getDataSource().getConnection();
+        System.out.println(time);
+        System.out.println(new Timestamp(time));
 
-        //java.sql.Connection connection = openConnection(); //your openConnection logic here
-//        java.sql.Connection connection = pool.getDataSource().getConnection();
+        Thread.sleep(19760);
+        long time2 = System.currentTimeMillis();
+        System.out.println(time2);
+        System.out.println(new Timestamp(time2));
+
+
+//        ch.qos.logback.classic.Logger hikariLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.zaxxer.hikari");
+//        hikariLogger.setLevel(Level.ERROR);
 //
-//        Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
 //
-//        Liquibase liquibase = new liquibase.Liquibase("src/main/resources/liquibase-outputChangeLog.xml", new ClassLoaderResourceAccessor(), (DatabaseConnection) database);
+//        ConnectionPool pool = ConnectionPool.getInstance();
+//        pool.initPool(Config.getURL(), Config.getUSERNAME(), Config.getPASSWORD());
 //
-//        liquibase.update(new Contexts(), new LabelExpression());
-
-        LiquibaseMigrationService migrationService = new LiquibaseMigrationService();
-        migrationService.runMigration(pool.getDataSource());
-
-
-        //Server.start(pool.getDataSource());
-        Server server = new Server();
-        server.start(pool.getDataSource());
-
-
-
+//
+//        LiquibaseMigrationService migrationService = new LiquibaseMigrationService();
+//        migrationService.runMigration(pool.getDataSource());
+//
+//        Server server = new Server();
+//        server.start(pool.getDataSource());
     }
 
 }
