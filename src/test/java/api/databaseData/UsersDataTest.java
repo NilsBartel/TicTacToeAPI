@@ -1,28 +1,24 @@
 package api.databaseData;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.zaxxer.hikari.HikariDataSource;
 import logger.LoggerConfig;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import org.testcontainers.containers.PostgreSQLContainer;
-import tictactoe.database.*;
-import tictactoe.game.Match;
-import tictactoe.game.Score;
+import tictactoe.api.errors.LoginError;
+import tictactoe.database.ConnectionPool;
+import tictactoe.database.DBUser;
+import tictactoe.database.LiquibaseMigrationService;
+import tictactoe.login.PasswordUtil;
+import tictactoe.user.User;
 
-
-import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class TestMatchesTest {
-
-
+class UsersDataTest {
 
     static ObjectMapper objectMapper;
     static HikariDataSource dataSource;
@@ -54,8 +50,6 @@ public class TestMatchesTest {
         migrationService.runMigration(dataSource);
 
         DatabaseUtil.populateDatabase(postgres, dataSource);
-
-
     }
 
 
@@ -65,48 +59,31 @@ public class TestMatchesTest {
     }
 
 
-
     @Test
-    void getScoreTest() {
-        Score score = DBScore.getScore(1,dataSource);
-        System.out.println(score);
-        System.out.println(score.getPlayerScore() + " = 5?");
-        System.out.println(score.getComputerScore() + " = 3?");
+    void user1Test() throws LoginError {
+        User user = UsersData.getUser1();
 
-        Assertions.assertTrue(DBUser.userExists("test", dataSource));
+        Assertions.assertTrue(DBUser.userExists(user.getUserName(), dataSource));
+        Assertions.assertTrue(PasswordUtil.checkPassword(user.getPassword(), DBUser.getPassword(user.getUserName(), dataSource)));
+        Assertions.assertTrue(PasswordUtil.checkSecurityQuestions(1, user, dataSource));
     }
 
     @Test
-    void getUserTest() {
-        Assertions.assertTrue(DBUser.userExists("test", dataSource));
+    void user2Test() throws LoginError {
+        User user = UsersData.getUser2();
+
+        Assertions.assertTrue(DBUser.userExists(user.getUserName(), dataSource));
+        Assertions.assertTrue(PasswordUtil.checkPassword(user.getPassword(), DBUser.getPassword(user.getUserName(), dataSource)));
+        Assertions.assertTrue(PasswordUtil.checkSecurityQuestions(2, user, dataSource));
     }
 
     @Test
-    void getMatchTest() {
-        Match match = DBMatch.getMatch(1,1, dataSource);
-        Match match2 = TestMatches.getMatch1();
+    void user3Test() throws LoginError {
+        User user = UsersData.getUser3();
 
-        Assertions.assertEquals(match, match2);
-    }
-
-
-
-
-
-
-
-    void wipeDatabase(){
-        String sql = "DROP SCHEMA public CASCADE;";
-        String sql2 = "CREATE SCHEMA public;";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement prepStatement = connection.prepareStatement(sql);
-             PreparedStatement prepStatement2 = connection.prepareStatement(sql2)
-        ) {
-            prepStatement.executeUpdate();
-            prepStatement2.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        Assertions.assertTrue(DBUser.userExists(user.getUserName(), dataSource));
+        Assertions.assertTrue(PasswordUtil.checkPassword(user.getPassword(), DBUser.getPassword(user.getUserName(), dataSource)));
+        Assertions.assertTrue(PasswordUtil.checkSecurityQuestions(3, user, dataSource));
     }
 
 

@@ -1,5 +1,6 @@
 package tictactoe.api.match;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -159,11 +160,9 @@ public class MatchController {
             userID = AuthenticationToken.getInstance().getUserID(token);
 
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
-
             if (requestBody.isEmpty()) {
                 throw new InputError("No request body provided. Need a difficulty. {\"difficulty\": \"EASY\"}");
             }
-
             match = objectMapper.readValue(requestBody, Match.class);
             difficulty = match.getDifficulty();
 
@@ -221,6 +220,7 @@ public class MatchController {
     public void handleCreateMatch(HttpExchange exchange) throws IOException, MethodNotAllowed {
         int userID;
         Match match;
+        DifficultyState difficulty;
 
         String token = exchange.getRequestHeaders().getFirst("token");
         AuthenticationToken.getInstance().handleAuthentication(exchange, token);
@@ -229,14 +229,25 @@ public class MatchController {
 
         if (exchange.getRequestMethod().equals("GET")) {
             userID = AuthenticationToken.getInstance().getUserID(token);
+
+            String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
+//            if (requestBody.isEmpty()) {
+//                throw new InputError("No request body provided. Need a difficulty. {\"difficulty\": \"EASY\"}");
+//            }
+            try {
+                match = objectMapper.readValue(requestBody, Match.class);
+            } catch (JsonProcessingException e) {
+                //throw new RuntimeException(e);
+                throw new InputError("Wrong or no request body provided. Need a difficulty. {\"difficulty\": \"EASY\"}");
+            }
+            difficulty = match.getDifficulty();
+
+
             match = new Match();
-
             match.setStatus(MatchStatus.RUNNING);
-            match.setDifficulty(DifficultyState.EASY);
+            match.setDifficulty(difficulty);
             match.setStartTime(new Timestamp(System.currentTimeMillis()));
-
             match.setPlayerTurn(DBScore.getScore(userID, dataSource));
-
             if (!match.isIsPlayerTurn()) {
                 Game.play(userID, match);
             }

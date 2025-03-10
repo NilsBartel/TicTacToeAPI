@@ -18,11 +18,13 @@ public class Board {
     List<Row> rows = new ArrayList<>();
 
     public Board(List<Character> symbols) {
+        int counter = 0;
         for(int row = 0; row<3; row++){
-            List<Character> rowSymbols = new ArrayList<>(symbols);
+            List<Character> rowSymbols = new ArrayList<>();
             for(int i = 0; i<3; i++){
-                rowSymbols.add(symbols.get(i+row));
+                rowSymbols.add(symbols.get(i+row+counter));
             }
+            counter+=2;
             rows.add(new Row(rowSymbols));
         }
     }

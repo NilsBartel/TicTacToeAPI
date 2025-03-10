@@ -1,2 +1,3 @@
 score_id,player,computer,draw,user_id
-1,5,3,1,1
+1,5,2,1,1
+2,1,1,0,2

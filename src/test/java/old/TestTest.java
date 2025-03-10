@@ -1,10 +1,7 @@
-package api.match;
+package old;
 
-import api.MatchCreate;
 import api.databaseData.DatabaseUtil;
-import api.databaseData.TestMatches;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.classic.methods.HttpGet;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.classic.methods.HttpPost;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.classic.methods.HttpUriRequest;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
@@ -14,20 +11,11 @@ import com.zaxxer.hikari.HikariDataSource;
 import logger.LoggerConfig;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.*;
-import org.postgresql.copy.CopyManager;
-import org.postgresql.core.BaseConnection;
 import org.testcontainers.containers.PostgreSQLContainer;
 import tictactoe.api.Server;
 import tictactoe.api.account.LoginResponse;
 import tictactoe.database.*;
-import tictactoe.game.Match;
-import tictactoe.game.Score;
-import tictactoe.login.HashService;
-import tictactoe.user.User;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
@@ -69,18 +57,9 @@ public class TestTest {
             LiquibaseMigrationService migrationService = new LiquibaseMigrationService();
             migrationService.runMigration(dataSource);
 
-            //User user1 = new User("test", "test", "answer1", "answer2");
-            //DBUser.insertUser(user1, dataSource);
-            //insertTable();
-            DatabaseUtil.populateDatabase(postgres, dataSource);
-//            User user2 = new User("user2", "test", "answer1", "answer2");
-//            DBUser.insertUser(user2, dataSource);
 
-//            User user1 = new User("test", HashService.hash("test"), HashService.hash("answer1"), HashService.hash("answer2"));
-//            DBUser.insertUser(user1, dataSource);
-//            User user2 = new User("user2", HashService.hash("test"), HashService.hash("answer1"), HashService.hash("answer2"));
-//            DBUser.insertUser(user2, dataSource);
-            //MatchCreate.createMatch(dataSource);
+            DatabaseUtil.populateDatabase(postgres, dataSource);
+
 
 
 
@@ -89,22 +68,6 @@ public class TestTest {
         }
 
 
-        void setUp() throws SQLException {
-            LiquibaseMigrationService migrationService = new LiquibaseMigrationService();
-            migrationService.runMigration(dataSource);
-
-//            User user1 = new User("test", "test", "answer1", "answer2");
-//            DBUser.insertUser(user1, dataSource);
-//            User user2 = new User("user2", "test", "answer1", "answer2");
-//            DBUser.insertUser(user2, dataSource);
-
-//            User user1 = new User("test", HashService.hash("test"), HashService.hash("answer1"), HashService.hash("answer2"));
-//            DBUser.insertUser(user1, dataSource);
-//            User user2 = new User("user2", HashService.hash("test"), HashService.hash("answer1"), HashService.hash("answer2"));
-//            DBUser.insertUser(user2, dataSource);
-            insertTable();
-            MatchCreate.createMatch(dataSource);
-        }
 
         @AfterAll
         static void close() {
@@ -113,35 +76,15 @@ public class TestTest {
         }
 
 
-        void tearDown() {
-            wipeDatabase();
-        }
-
-
 
         @Test
-        void getScoreTest() throws IOException {
-            Score score = DBScore.getScore(1,dataSource);
-            System.out.println(score);
-            System.out.println(score.getPlayerScore() + " = 5?");
-            System.out.println(score.getComputerScore() + " = 3?");
-
+        void testMatch() {
             Assertions.assertTrue(DBUser.userExists("test", dataSource));
         }
 
-        @Test
-        void getUserTest() throws IOException {
-            Assertions.assertTrue(DBUser.userExists("test", dataSource));
 
-        }
 
-        @Test
-        void getMatchTest() throws IOException {
-            Match match = DBMatch.getMatch(1,1, dataSource);
-            Match match2 = TestMatches.getMatch1();
 
-            Assertions.assertEquals(match, match2);
-        }
 
 
 
@@ -188,31 +131,6 @@ public class TestTest {
             }
         }
 
-        static void insertTable() throws SQLException {
-//            String sql = "COPY users FROM 'src/test/java/api/UsersTableData.csv' ( FORMAT CSV, DELIMITER'/' );";
-//            try (Connection connection = dataSource.getConnection();
-//                 PreparedStatement prepStatement = connection.prepareStatement(sql);
-//            ) {
-//                prepStatement.executeUpdate();
-//            } catch (SQLException e) {
-//                throw new RuntimeException(e);
-//            }
 
-            try (Connection conn = DriverManager.getConnection(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword())) {
-                long rowsInserted = new CopyManager((BaseConnection) conn)
-                        .copyIn(
-                                "COPY users FROM STDIN (FORMAT csv, HEADER)",
-                                new BufferedReader(new FileReader("/Users/nilsbartel/IdeaProjects/TicTacToeAPI/src/test/java/api/UsersTableData.csv"))
-                        );
-                System.out.printf("%d row(s) inserted%n", rowsInserted);
-                new CopyManager((BaseConnection) conn)
-                        .copyIn(
-                                "COPY score FROM STDIN (FORMAT csv, HEADER)",
-                                new BufferedReader(new FileReader("/Users/nilsbartel/IdeaProjects/TicTacToeAPI/src/test/java/api/match/ScoreTableData.csv"))
-                        );
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
 
 }

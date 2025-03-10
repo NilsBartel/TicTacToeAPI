@@ -1,9 +1,13 @@
 
--> / at the end or not?
 
--> ObjectMapper reference from where? example controller
-- create it new every time?
-- other api thing has a class for it
+
+
+deserialization error?  wrong JSON input and so on
+
+
+
+
+
 
 -> analyzeController: gebe ich sie als Position weiter oder als int?
 

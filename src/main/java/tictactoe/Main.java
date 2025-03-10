@@ -24,17 +24,18 @@ public class Main {
 
     public static void main(String[] args) throws IOException, SQLException, LiquibaseException, InterruptedException {
 
+        long startTime = System.currentTimeMillis();
+        System.out.println(startTime);
+        System.out.println(new Timestamp(startTime));
+        Thread.sleep(17643);
+        long endTime = System.currentTimeMillis();
+        System.out.println(endTime);
+        System.out.println(new Timestamp(endTime));
 
-        long time = System.currentTimeMillis();
+//        System.out.println(HashService.hash("hamburg"));
+//        System.out.println(HashService.hash("bruno"));
 
 
-        System.out.println(time);
-        System.out.println(new Timestamp(time));
-
-        Thread.sleep(19760);
-        long time2 = System.currentTimeMillis();
-        System.out.println(time2);
-        System.out.println(new Timestamp(time2));
 
 
 //        ch.qos.logback.classic.Logger hikariLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.zaxxer.hikari");

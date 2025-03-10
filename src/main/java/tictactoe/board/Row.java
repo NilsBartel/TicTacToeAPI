@@ -9,7 +9,6 @@ import java.util.Objects;
 public class Row {
 
     List<Field> fields = new ArrayList<>();
-    //private PrintService printService;
 
     public Row(List<Character> symbols) {
         for(int column = 0; column<3; column++){
@@ -18,7 +17,6 @@ public class Row {
     }
 
     public Row() {
-        //setPrintService(PrintService.getInstance());
         for(int column = 0; column<3; column++){
             fields.add(new Field());
         }
@@ -33,7 +31,6 @@ public class Row {
 
         String line = String.join(" | ", symbols);
         System.out.println(line);
-        //printService.printRow(line);
     }
 
     @JsonIgnore
@@ -63,9 +60,6 @@ public class Row {
         return fields.get(column).getSymbol();
     }
 
-//    public final void setPrintService(PrintService printService) {
-//        this.printService = printService;
-//    }
 
     @Override
     public boolean equals(Object object) {
