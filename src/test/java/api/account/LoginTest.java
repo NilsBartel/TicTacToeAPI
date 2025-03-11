@@ -1,6 +1,5 @@
-package api.match;
+package api.account;
 
-import api.ApiUtil;
 import api.databaseData.DatabaseUtil;
 import api.databaseData.UsersData;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,21 +18,16 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import tictactoe.api.Server;
+import tictactoe.api.account.LoginResponse;
 import tictactoe.database.ConnectionPool;
-import tictactoe.database.DBMatch;
-import tictactoe.database.DBUser;
 import tictactoe.database.LiquibaseMigrationService;
-import tictactoe.game.DifficultyState;
-import tictactoe.game.Match;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 
-
-public class CreateMatchTest {
+public class LoginTest {
 
     static ObjectMapper objectMapper;
     static HikariDataSource dataSource;
@@ -78,10 +72,16 @@ public class CreateMatchTest {
     }
 
 
+
+
+
+
     @Test
-    void PostRequestFalse() throws IOException {
-        HttpUriRequest request = new HttpPost("http://localhost:8080/match/create");
-        request.setHeader("token", ApiUtil.getToken("test", "test"));
+    void getRequestFalse() throws IOException {
+        String login = "{\"userName\":\""+ UsersData.getUser1().getUserName() +"\", \"password\":\""+ UsersData.getUser1().getPassword() +"\"}";
+
+        HttpUriRequest request = new HttpGet("http://localhost:8080/account/login");
+        request.setEntity(new StringEntity(login));
 
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
@@ -90,71 +90,71 @@ public class CreateMatchTest {
         Assertions.assertEquals(405, httpResponse.getCode());
     }
 
+
     @Test
-    void createEasyMatch() throws IOException {
-        String json = "{\"difficulty\":\"EASY\"}";
-        HttpUriRequest request = new HttpGet("http://localhost:8080/match/create");
-        request.setHeader("token", ApiUtil.getToken("test", "test"));
-        request.setEntity(new StringEntity(json));
+    void loginSuccessfulTest() throws IOException {
+        String login = "{\"userName\":\""+ UsersData.getUser1().getUserName() +"\", \"password\":\""+ UsersData.getUser1().getPassword() +"\"}";
+        HttpUriRequest request = new HttpPost("http://localhost:8080/account/login");
+        request.setEntity(new StringEntity(login));
+
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
-
-
-        Assertions.assertEquals(200, httpResponse.getCode());
 
         String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
-        Match match = objectMapper.readValue(entitiystring, Match.class);
-        Assertions.assertEquals(DifficultyState.EASY, match.getDifficulty());
-        Assertions.assertTrue(match.getBoard().isEmpty());
-    }
-
-    @Test
-    void wrongJsonInput() throws IOException {
-        String json = "{\"difficulty\":\"wrong\"}";
-        HttpUriRequest request = new HttpGet("http://localhost:8080/match/create");
-        request.setHeader("token", ApiUtil.getToken("test", "test"));
-        request.setEntity(new StringEntity(json));
-
-        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
-
-        Assertions.assertEquals(400, httpResponse.getCode());
-    }
-
-
-    @Test
-    void noJsonInput() throws IOException {
-        HttpUriRequest request = new HttpGet("http://localhost:8080/match/create");
-        request.setHeader("token", ApiUtil.getToken("test", "test"));
-
-        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
-
-        Assertions.assertEquals(400, httpResponse.getCode());
-    }
-
-    @Test
-    void newMatchGetsAddedToDB() throws IOException {
-        String json = "{\"difficulty\":\"EASY\"}";
-        HttpUriRequest request = new HttpGet("http://localhost:8080/match/create");
-        request.setHeader("token", ApiUtil.getToken(UsersData.getUser2().getUserName(), UsersData.getUser2().getPassword()));
-        request.setEntity(new StringEntity(json));
-
-        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
-
-        List<Match> matches = DBMatch.getLastNMatchesFromUser(2, 1, dataSource);
+        LoginResponse loginResponse = objectMapper.readValue(entitiystring, LoginResponse.class);
 
         Assertions.assertEquals(200, httpResponse.getCode());
-        Assertions.assertTrue(matches.getFirst().getBoard().isEmpty());
+        Assertions.assertNotNull(loginResponse.getToken());
+    }
+
+    @Test
+    void loginFailedWrongPasswordTest() throws IOException {
+        String login = "{\"userName\":\""+ UsersData.getUser1().getUserName() +"\", \"password\":\"WrongPassword\"}";
+        HttpUriRequest request = new HttpPost("http://localhost:8080/account/login");
+        request.setEntity(new StringEntity(login));
+
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+
+
+        Assertions.assertEquals(401, httpResponse.getCode());
+    }
+
+    @Test
+    void loginFailedWrongUserNameTest() throws IOException {
+        String login = "{\"userName\":\"WrongName\", \"password\":\""+ UsersData.getUser1().getPassword() +"\"}";
+        HttpUriRequest request = new HttpPost("http://localhost:8080/account/login");
+        request.setEntity(new StringEntity(login));
+
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+
+
+        Assertions.assertEquals(401, httpResponse.getCode());
     }
 
 
+    @Test
+    void requestBodyWrongTest() throws IOException {
+        String login = "{\"userName\":\""+ UsersData.getUser1().getUserName() +"\", \"Wrong\":\""+ UsersData.getUser1().getPassword() +"\"}";
+        HttpUriRequest request = new HttpPost("http://localhost:8080/account/login");
+        request.setEntity(new StringEntity(login));
 
 
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 
 
+        Assertions.assertEquals(400, httpResponse.getCode());
+    }
 
+    @Test
+    void noRequestBodyTest() throws IOException {
+        HttpUriRequest request = new HttpPost("http://localhost:8080/account/login");
 
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 
-
+        Assertions.assertEquals(400, httpResponse.getCode());
+    }
 
 
 

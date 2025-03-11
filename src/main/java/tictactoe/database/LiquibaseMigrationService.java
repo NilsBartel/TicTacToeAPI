@@ -4,6 +4,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
+import liquibase.UpdateSummaryOutputEnum;
+import liquibase.command.CommandScope;
+import liquibase.command.core.helpers.DbUrlConnectionArgumentsCommandStep;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
@@ -18,7 +21,12 @@ public class LiquibaseMigrationService {
         try (Connection connection = openConnection(dataSource)) {
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
             Liquibase liquibase = new Liquibase("liquibase-outputChangeLog.xml", new ClassLoaderResourceAccessor(), database);
+//            liquibase.setShowSummaryOutput(UpdateSummaryOutputEnum.LOG);
+//            CommandScope commandScope = new CommandScope();
+//
+//            commandScope.addArgumentValue(DbUrlConnectionArgumentsCommandStep.DATABASE_ARG, database);
             liquibase.update(new Contexts(), new LabelExpression());
+
             System.out.println("Datenbankmigration abgeschlossen.");
         } catch (SQLException | liquibase.exception.LiquibaseException e) {
             System.err.println("Fehler bei der Datenbankmigration: " + e.getMessage());

@@ -1,5 +1,6 @@
 package tictactoe.api.account;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -8,6 +9,7 @@ import io.vavr.control.Try;
 import org.apache.commons.io.IOUtils;
 import tictactoe.api.AuthenticationToken;
 import tictactoe.api.errors.ErrorHandler;
+import tictactoe.api.errors.InputError;
 import tictactoe.api.errors.LoginError;
 import tictactoe.api.errors.MethodNotAllowed;
 import tictactoe.database.DBUser;
@@ -57,7 +59,12 @@ public class LoginController {
 
         if (exchange.getRequestMethod().equals("POST")) {
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
-            User user = objectMapper.readValue(requestBody, User.class);
+            User user = null;
+            try {
+                user = objectMapper.readValue(requestBody, User.class);
+            } catch (JsonProcessingException e) {
+                throw new InputError("Invalid request body");
+            }
 
             LogIn.getInstance().logInUser(user.getUserName(), user.getPassword(), dataSource);
             String authToken = AuthenticationToken.getInstance().create(DBUser.getUserId(user.getUserName(), dataSource));
@@ -82,7 +89,12 @@ public class LoginController {
 
         if (exchange.getRequestMethod().equals("POST")) {
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
-            User user = objectMapper.readValue(requestBody, User.class);
+            User user = null;
+            try {
+                user = objectMapper.readValue(requestBody, User.class);
+            } catch (JsonProcessingException e) {
+                throw new LoginError("Invalid request body");
+            }
 
             LogIn.getInstance().createUser(user, dataSource);
             loginResponse.setMessage("account creation successful");
@@ -103,7 +115,12 @@ public class LoginController {
 
         if (exchange.getRequestMethod().equals("POST")) {
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
-            User user = objectMapper.readValue(requestBody, User.class);
+            User user = null;
+            try {
+                user = objectMapper.readValue(requestBody, User.class);
+            } catch (JsonProcessingException e) {
+                throw new InputError("Invalid request body");
+            }
             int userID = DBUser.getUserId(user.getUserName(), dataSource);
 
 

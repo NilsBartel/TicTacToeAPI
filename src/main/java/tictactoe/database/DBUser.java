@@ -1,6 +1,7 @@
 package tictactoe.database;
 
 import com.zaxxer.hikari.HikariDataSource;
+import tictactoe.api.errors.LoginError;
 import tictactoe.user.User;
 
 import java.sql.Connection;
@@ -97,7 +98,7 @@ public class DBUser {
         }
     }
 
-    public static int getUserId(String username, HikariDataSource dataSource) {
+    public static int getUserId(String username, HikariDataSource dataSource) throws LoginError {
         int userID = 0;
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
@@ -110,6 +111,9 @@ public class DBUser {
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+        if (userID == 0) {
+            throw new LoginError("Username does not exist");
         }
         return userID;
     }

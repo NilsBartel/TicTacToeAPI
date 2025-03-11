@@ -63,64 +63,64 @@ public class ApiLogInTest {
 
 
 
-    @Test
-    void loginTest() throws IOException {
-        String login = "{\"userName\":\"test\", \"password\":\"test\"}";
-
-        HttpUriRequest request = new HttpPost("http://localhost:8080/account/login");
-        request.setEntity(new StringEntity(login));
-
-        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
-
-
-        System.out.println(httpResponse.getCode());
-
-        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
-        System.out.println(entitiystring);
-        LoginResponse loginResponse = objectMapper.readValue(entitiystring, LoginResponse.class);
-        System.out.println(loginResponse.getToken());
-
-        Assertions.assertEquals(200, httpResponse.getCode());
-    }
-
-
-    @Test
-    void getRequestFalse() throws IOException {
-        String login = "{\"userName\":\"test\", \"password\":\"test\"}";
-
-        HttpUriRequest request = new HttpGet("http://localhost:8080/account/login");
-        request.setEntity(new StringEntity(login));
+//    @Test
+//    void loginTest() throws IOException {
+//        String login = "{\"userName\":\"test\", \"password\":\"test\"}";
+//
+//        HttpUriRequest request = new HttpPost("http://localhost:8080/account/login");
+//        request.setEntity(new StringEntity(login));
+//
+//        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+//
+//
+//        System.out.println(httpResponse.getCode());
+//
+//        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+//        System.out.println(entitiystring);
+//        LoginResponse loginResponse = objectMapper.readValue(entitiystring, LoginResponse.class);
+//        System.out.println(loginResponse.getToken());
+//
+//        Assertions.assertEquals(200, httpResponse.getCode());
+//    }
 
 
-        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+//    @Test
+//    void getRequestFalse() throws IOException {
+//        String login = "{\"userName\":\"test\", \"password\":\"test\"}";
+//
+//        HttpUriRequest request = new HttpGet("http://localhost:8080/account/login");
+//        request.setEntity(new StringEntity(login));
+//
+//
+//        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+//
+//        //MethodNotAllowed error
+//        Assertions.assertEquals(405, httpResponse.getCode());
+//    }
 
-        //MethodNotAllowed error
-        Assertions.assertEquals(405, httpResponse.getCode());
-    }
+//    @Test
+//    void loginSuccessfulTest() throws IOException {
+//        String login = "{\"userName\":\"test\", \"password\":\"test\"}";
+//
+//        HttpUriRequest request = new HttpPost("http://localhost:8080/account/login");
+//        request.setEntity(new StringEntity(login));
+//
+//        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+//
+//        Assertions.assertEquals(200, httpResponse.getCode());
+//    }
 
-    @Test
-    void loginSuccessfulTest() throws IOException {
-        String login = "{\"userName\":\"test\", \"password\":\"test\"}";
-
-        HttpUriRequest request = new HttpPost("http://localhost:8080/account/login");
-        request.setEntity(new StringEntity(login));
-
-        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
-
-        Assertions.assertEquals(200, httpResponse.getCode());
-    }
-
-    @Test
-    void loginFailedTest() throws IOException {
-        String login = "{\"userName\":\"test\", \"password\":\"wrongPassword\"}";
-
-        HttpUriRequest request = new HttpPost("http://localhost:8080/account/login");
-        request.setEntity(new StringEntity(login));
-
-        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
-
-        Assertions.assertEquals(401, httpResponse.getCode());
-    }
+//    @Test
+//    void loginFailedTest() throws IOException {
+//        String login = "{\"userName\":\"test\", \"password\":\"wrongPassword\"}";
+//
+//        HttpUriRequest request = new HttpPost("http://localhost:8080/account/login");
+//        request.setEntity(new StringEntity(login));
+//
+//        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+//
+//        Assertions.assertEquals(401, httpResponse.getCode());
+//    }
 
     @Test
     void tokenCreatedTest() throws IOException {

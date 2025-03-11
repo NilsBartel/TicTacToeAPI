@@ -10,6 +10,7 @@ import com.zaxxer.hikari.HikariDataSource;
 public final class LogIn {
 
     public static final int USERNAME_MIN_LENGTH = 3;
+    private static final int ANSWER_MIN_LENGTH = 3;
     private static LogIn instance;
     private LogIn() {}
     public static LogIn getInstance() {
@@ -65,8 +66,20 @@ public final class LogIn {
             throw new LoginError("This user already exists");
         }
 
+        if (user.getUserName().length() < USERNAME_MIN_LENGTH) {
+            throw new LoginError("Username too short");
+        }
+
         if (!PasswordUtil.isPasswordValid(user.getPassword())) {
             throw new LoginError("Password is not strong enough");
+        }
+
+        if (user.getAnswer1().isEmpty()) {
+            throw new LoginError("Security answer1 is Empty");
+        }
+
+        if (user.getAnswer2().isEmpty()) {
+            throw new LoginError("Security answer2 is Empty");
         }
 
         String userName = user.getUserName();

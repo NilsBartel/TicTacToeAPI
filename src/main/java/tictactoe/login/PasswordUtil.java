@@ -1,6 +1,8 @@
 package tictactoe.login;
 
 //import tictactoe.PlayerInput;
+import ch.qos.logback.core.util.StringUtil;
+import tictactoe.api.errors.InputError;
 import tictactoe.api.errors.LoginError;
 import tictactoe.database.*;
 import tictactoe.user.User;
@@ -20,6 +22,9 @@ public final class PasswordUtil {
 
 
     public static boolean isPasswordValid(String password) {
+        if (StringUtil.isNullOrEmpty(password)) {
+            throw new InputError("password is empty or null");
+        }
 
         if(password.length() >= PASSWORD_MIN_LENGTH && password.length() < PASSWORD_MAX_LENGTH) {
 
@@ -91,25 +96,20 @@ public final class PasswordUtil {
 //    }
 
     public static Boolean checkSecurityQuestions(int userID, User user, HikariDataSource dataSource) throws LoginError {
-
-//        boolean bool1 = false;
-//        boolean bool2 = false;
+        if (StringUtil.isNullOrEmpty(user.getAnswer1()) || StringUtil.isNullOrEmpty(user.getAnswer2())) {
+            throw new InputError("Security questions required");
+        }
 
         String userAnswer1 = user.getAnswer1();
         if (!HashService.verify(userAnswer1, DBUser.getAnswer1(userID, dataSource))) {
             throw new LoginError("Security questions do not match!");
         }
-//        if (HashService.verify(userAnswer1, DBUser.getAnswer1(userID, dataSource))) {
-//            bool1 = true;
-//        }
 
         String userAnswer2 = user.getAnswer2();
         if (!HashService.verify(userAnswer2, DBUser.getAnswer2(userID, dataSource))) {
             throw new LoginError("Security questions do not match!");
         }
-//        if (HashService.verify(userAnswer2, DBUser.getAnswer2(userID, dataSource))) {
-//            bool2 = true;
-//        }
+
         return true;
     }
 

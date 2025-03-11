@@ -87,7 +87,6 @@ public class MatchController {
         if (exchange.getRequestMethod().equals("GET")) {
             int userID = AuthenticationToken.getInstance().getUserID(token);
 
-            //int matchId = getIDFromPath(exchange.getRequestURI().getPath());
 
             int matchId;
             try {
@@ -126,7 +125,11 @@ public class MatchController {
             userID = AuthenticationToken.getInstance().getUserID(token);
 
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
-            match = objectMapper.readValue(requestBody, Match.class);
+            try {
+                match = objectMapper.readValue(requestBody, Match.class);
+            } catch (JsonProcessingException e) {
+                throw new InputError("No request body provided");
+            }
             match.printBoard();
 
             if (ApiMatchUtil.validateMatch(userID, match, dataSource)) {
@@ -160,10 +163,16 @@ public class MatchController {
             userID = AuthenticationToken.getInstance().getUserID(token);
 
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
-            if (requestBody.isEmpty()) {
-                throw new InputError("No request body provided. Need a difficulty. {\"difficulty\": \"EASY\"}");
+//            if (requestBody.isEmpty()) {
+//                throw new InputError("No request body provided. Need a difficulty. {\"difficulty\": \"EASY\"}");
+//            }
+
+            try {
+                match = objectMapper.readValue(requestBody, Match.class);
+            } catch (JsonProcessingException e) {
+                    throw new InputError("Invalid request body provided. Need a difficulty. {\"difficulty\": \"EASY\"}");
             }
-            match = objectMapper.readValue(requestBody, Match.class);
+
             difficulty = match.getDifficulty();
 
             match = ApiMatchUtil.returnRunningOrNewMatch(difficulty, userID, dataSource);
@@ -231,13 +240,10 @@ public class MatchController {
             userID = AuthenticationToken.getInstance().getUserID(token);
 
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
-//            if (requestBody.isEmpty()) {
-//                throw new InputError("No request body provided. Need a difficulty. {\"difficulty\": \"EASY\"}");
-//            }
+
             try {
                 match = objectMapper.readValue(requestBody, Match.class);
             } catch (JsonProcessingException e) {
-                //throw new RuntimeException(e);
                 throw new InputError("Wrong or no request body provided. Need a difficulty. {\"difficulty\": \"EASY\"}");
             }
             difficulty = match.getDifficulty();
@@ -271,39 +277,11 @@ public class MatchController {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private static int getIDFromPath(String path) {
         String[] parts = path.split("/");
         String id = parts[parts.length - 1];
         return Integer.parseInt(id);
     }
-
-
-
-
-
-
-
 
 
 
