@@ -17,7 +17,6 @@ public class ErrorHandler {
 
         try {
             throwable.printStackTrace();
-//            exchange.getResponseHeaders().set(Constants.CONTENT_TYPE, Constants.APPLICATION_JSON);
             ErrorResponse response = getErrorResponse(throwable, exchange);
 
             OutputStream responseBody = exchange.getResponseBody();

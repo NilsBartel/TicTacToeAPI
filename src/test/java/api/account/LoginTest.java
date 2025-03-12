@@ -12,13 +12,16 @@ import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.io.entity.S
 import com.zaxxer.hikari.HikariDataSource;
 import logger.LoggerConfig;
 import org.apache.commons.io.IOUtils;
+import org.junit.Rule;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.rules.ExpectedException;
 import org.testcontainers.containers.PostgreSQLContainer;
 import tictactoe.api.Server;
 import tictactoe.api.account.LoginResponse;
+import tictactoe.api.errors.MethodNotAllowed;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.LiquibaseMigrationService;
 
@@ -75,14 +78,11 @@ public class LoginTest {
 
 
 
-
     @Test
     void getRequestFalse() throws IOException {
         String login = "{\"userName\":\""+ UsersData.getUser1().getUserName() +"\", \"password\":\""+ UsersData.getUser1().getPassword() +"\"}";
-
         HttpUriRequest request = new HttpGet("http://localhost:8080/account/login");
         request.setEntity(new StringEntity(login));
-
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 
