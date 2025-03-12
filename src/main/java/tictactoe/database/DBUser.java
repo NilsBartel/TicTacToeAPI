@@ -30,7 +30,7 @@ public class DBUser {
 
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT exists(SELECT 1 FROM users WHERE username = '"+ username +"') AS exists ");
+             ResultSet resultSet = statement.executeQuery("SELECT exists(SELECT 1 FROM users WHERE username = '"+ username +"') AS exists ")
         ) {
             while (resultSet.next()) {
                 bool = resultSet.getBoolean("exists");
@@ -48,7 +48,7 @@ public class DBUser {
 
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT password FROM users WHERE username = '"+ username +"'");
+             ResultSet resultSet = statement.executeQuery("SELECT password FROM users WHERE username = '"+ username +"'")
         ) {
             while (resultSet.next()) {
                 password = resultSet.getString("password");
@@ -83,7 +83,7 @@ public class DBUser {
         int userID = 0;
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT users.user_id FROM users WHERE username = '"+ username +"'");
+             ResultSet resultSet = statement.executeQuery("SELECT users.user_id FROM users WHERE username = '"+ username +"'")
 
         ) {
             while (resultSet.next()) {
@@ -104,7 +104,7 @@ public class DBUser {
 
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT answer1 FROM users WHERE user_id = "+ userID +" ");
+             ResultSet resultSet = statement.executeQuery("SELECT answer1 FROM users WHERE user_id = "+ userID +" ")
         ) {
             while (resultSet.next()) {
                 answer1 = resultSet.getString("answer1");
@@ -121,7 +121,7 @@ public class DBUser {
 
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT answer2 FROM users WHERE user_id = "+ userID +" ");
+             ResultSet resultSet = statement.executeQuery("SELECT answer2 FROM users WHERE user_id = "+ userID +" ")
         ) {
             while (resultSet.next()) {
                 answer2 = resultSet.getString("answer2");

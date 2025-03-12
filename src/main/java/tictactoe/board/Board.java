@@ -98,10 +98,6 @@ public class Board {
         return rows.get(row).getField(column);
     }
 
-    public void setRows(List<Row> rows) {
-        this.rows = rows;
-    }
-
     @Override
     public boolean equals(Object object) {
         if (this == object){

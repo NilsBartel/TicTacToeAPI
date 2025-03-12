@@ -58,7 +58,7 @@ public class LoginController {
 
 
         if (exchange.getRequestMethod().equals("POST")) {
-            User user = null;
+            User user;
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
 
             try {
@@ -88,7 +88,7 @@ public class LoginController {
         LoginResponse loginResponse = new LoginResponse();
 
         if (exchange.getRequestMethod().equals("POST")) {
-            User user = null;
+            User user;
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
 
             try {
@@ -115,7 +115,7 @@ public class LoginController {
         LoginResponse loginResponse = new LoginResponse();
 
         if (exchange.getRequestMethod().equals("POST")) {
-            User user = null;
+            User user;
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
 
             try {

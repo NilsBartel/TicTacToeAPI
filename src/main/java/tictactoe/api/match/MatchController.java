@@ -73,8 +73,9 @@ public class MatchController {
 
 
     public void handleMatch(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError, LoginError {
+        String token;
+        Match match;
 
-        String token = null;
         try {
             token = exchange.getRequestHeaders().get("token").getFirst();
         } catch (Exception e) {
@@ -82,11 +83,8 @@ public class MatchController {
         }
         AuthenticationToken.getInstance().authenticate(token);
 
-        Match match;
-
         if (exchange.getRequestMethod().equals("GET")) {
             int userID = AuthenticationToken.getInstance().getUserID(token);
-
 
             int matchId;
             try {
@@ -116,8 +114,8 @@ public class MatchController {
     public void handlePlay(HttpExchange exchange) throws IOException, MatchError, MethodNotAllowed, LoginError {
         int userID;
         Match match;
+        String token;
 
-        String token = null;
         try {
             token = exchange.getRequestHeaders().get("token").getFirst();
         } catch (Exception e) {
@@ -157,8 +155,8 @@ public class MatchController {
     public void handleStart(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError, SQLException, LoginError {
         int userID;
         Match match;
+        String token;
 
-        String token = null;
         try {
             token = exchange.getRequestHeaders().get("token").getFirst();
         } catch (Exception e) {
@@ -169,11 +167,7 @@ public class MatchController {
         if (exchange.getRequestMethod().equals("GET")) {
             DifficultyState difficulty;
             userID = AuthenticationToken.getInstance().getUserID(token);
-
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
-//            if (requestBody.isEmpty()) {
-//                throw new InputError("No request body provided. Need a difficulty. {\"difficulty\": \"EASY\"}");
-//            }
 
             try {
                 match = objectMapper.readValue(requestBody, Match.class);
@@ -182,7 +176,6 @@ public class MatchController {
             }
 
             difficulty = match.getDifficulty();
-
             match = ApiMatchUtil.returnRunningOrNewMatch(difficulty, userID, dataSource);
 
             if (!match.isIsPlayerTurn()) {
@@ -207,8 +200,8 @@ public class MatchController {
     public void handleMatchHistory(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError, LoginError {
         int userID;
         List<Match> matchHistory;
+        String token;
 
-        String token = null;
         try {
             token = exchange.getRequestHeaders().get("token").getFirst();
         } catch (Exception e) {
@@ -242,15 +235,14 @@ public class MatchController {
         int userID;
         Match match;
         DifficultyState difficulty;
+        String token;
 
-        String token = null;
         try {
             token = exchange.getRequestHeaders().get("token").getFirst();
         } catch (Exception e) {
             throw new NoTokenError("No token provided");
         }
         AuthenticationToken.getInstance().authenticate(token);
-
 
         if (exchange.getRequestMethod().equals("GET")) {
             userID = AuthenticationToken.getInstance().getUserID(token);
@@ -264,7 +256,6 @@ public class MatchController {
             }
             difficulty = match.getDifficulty();
 
-
             match = new Match();
             match.setStatus(MatchStatus.RUNNING);
             match.setDifficulty(difficulty);
@@ -276,7 +267,6 @@ public class MatchController {
 
             int matchID = DBMatch.insertNewMatch(match, userID, dataSource);
             match.setMatchID(matchID);
-
 
         } else {
             throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
@@ -290,17 +280,10 @@ public class MatchController {
         responseBody.close();
     }
 
-
-
-
     private static int getIDFromPath(String path) {
         String[] parts = path.split("/");
         String id = parts[parts.length - 1];
         return Integer.parseInt(id);
     }
-
-
-
-
 
 }

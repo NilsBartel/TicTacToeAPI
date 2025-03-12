@@ -1,7 +1,5 @@
 package tictactoe.game;
 
-import ch.qos.logback.core.model.Model;
-import tictactoe.board.Board;
 import tictactoe.board.Position;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.Database;

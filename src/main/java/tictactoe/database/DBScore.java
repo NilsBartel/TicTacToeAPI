@@ -47,7 +47,7 @@ public class DBScore {
 
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT player, computer, draw FROM score WHERE user_id = "+ userID +" ");
+             ResultSet resultSet = statement.executeQuery("SELECT player, computer, draw FROM score WHERE user_id = "+ userID +" ")
         ) {
             while (resultSet.next()) {
                 player = resultSet.getInt("player");
@@ -67,7 +67,7 @@ public class DBScore {
 
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT exists(SELECT 1 FROM score WHERE user_id = '"+ userID +"') AS exists ");
+             ResultSet resultSet = statement.executeQuery("SELECT exists(SELECT 1 FROM score WHERE user_id = '"+ userID +"') AS exists ")
         ) {
             while (resultSet.next()) {
                 bool = resultSet.getBoolean("exists");

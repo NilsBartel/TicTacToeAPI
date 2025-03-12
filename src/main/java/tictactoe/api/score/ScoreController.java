@@ -10,7 +10,6 @@ import tictactoe.api.errors.ErrorHandler;
 import tictactoe.api.errors.LoginError;
 import tictactoe.api.errors.MethodNotAllowed;
 import tictactoe.api.errors.NoTokenError;
-import tictactoe.database.ConnectionPool;
 import tictactoe.database.DBScore;
 import tictactoe.game.Score;
 
@@ -34,16 +33,14 @@ public class ScoreController {
         ErrorHandler errorHandler = new ErrorHandler();
         server.createContext("/score/", exchange ->
                 Try.run(() -> handeScore(exchange))
-                        .onFailure(t -> {
-                            errorHandler.handle(t, exchange);
-                        })
+                        .onFailure(t -> errorHandler.handle(t, exchange))
         );
     }
     private void handeScore(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
         ObjectMapper objectMapper = new ObjectMapper();
         Score score;
 
-        String token = null;
+        String token;
         try {
             token = exchange.getRequestHeaders().get("token").getFirst();
         } catch (Exception e) {
@@ -52,11 +49,7 @@ public class ScoreController {
         AuthenticationToken.getInstance().authenticate(token);
         if (exchange.getRequestMethod().equals("GET")) {
             int userID = AuthenticationToken.getInstance().getUserID(token);
-
             score = DBScore.getScore(userID, dataSource);
-
-
-
 
             exchange.sendResponseHeaders(200, 0);
         } else {

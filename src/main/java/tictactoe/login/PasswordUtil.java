@@ -1,6 +1,5 @@
 package tictactoe.login;
 
-//import tictactoe.PlayerInput;
 import ch.qos.logback.core.util.StringUtil;
 import tictactoe.api.errors.InputError;
 import tictactoe.api.errors.LoginError;
@@ -10,7 +9,6 @@ import tictactoe.user.User;
 
 import com.zaxxer.hikari.HikariDataSource;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class PasswordUtil {
@@ -18,7 +16,6 @@ public final class PasswordUtil {
     private final static int PASSWORD_MIN_LENGTH = 8;
 
     private PasswordUtil() {}
-
 
 
     public static boolean isPasswordValid(String password) {

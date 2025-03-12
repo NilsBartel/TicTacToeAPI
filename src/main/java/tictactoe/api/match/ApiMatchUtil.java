@@ -49,7 +49,7 @@ public class ApiMatchUtil{
         return positions;
     }
 
-    public static Match returnRunningOrNewMatch(DifficultyState difficulty, int userID, HikariDataSource dataSource) throws MatchError, SQLException {
+    public static Match returnRunningOrNewMatch(DifficultyState difficulty, int userID, HikariDataSource dataSource) throws MatchError {
         Match match;
 
         if (difficulty != DifficultyState.EASY && difficulty != DifficultyState.MEDIUM && difficulty != DifficultyState.IMPOSSIBLE) {
