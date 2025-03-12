@@ -18,8 +18,6 @@ import java.sql.SQLException;
 
 public class MatchDataTest {
 
-
-
     static ObjectMapper objectMapper;
     static HikariDataSource dataSource;
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine").withUsername("postgres");

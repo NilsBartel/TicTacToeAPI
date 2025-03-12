@@ -117,7 +117,12 @@ public class MatchController {
         int userID;
         Match match;
 
-        String token = exchange.getRequestHeaders().getFirst("token");
+        String token = null;
+        try {
+            token = exchange.getRequestHeaders().get("token").getFirst();
+        } catch (Exception e) {
+            throw new NoTokenError("No token provided");
+        }
         AuthenticationToken.getInstance().handleAuthentication(exchange, token);
 
 
@@ -154,7 +159,12 @@ public class MatchController {
         int userID;
         Match match;
 
-        String token = exchange.getRequestHeaders().getFirst("token");
+        String token = null;
+        try {
+            token = exchange.getRequestHeaders().get("token").getFirst();
+        } catch (Exception e) {
+            throw new NoTokenError("No token provided");
+        }
         AuthenticationToken.getInstance().handleAuthentication(exchange, token);
 
 
@@ -200,7 +210,12 @@ public class MatchController {
         int userID;
         List<Match> matchHistory;
 
-        String token = exchange.getRequestHeaders().getFirst("token");
+        String token = null;
+        try {
+            token = exchange.getRequestHeaders().get("token").getFirst();
+        } catch (Exception e) {
+            throw new NoTokenError("No token provided");
+        }
         AuthenticationToken.getInstance().handleAuthentication(exchange, token);
 
         if (exchange.getRequestMethod().equals("GET")) {
@@ -231,7 +246,12 @@ public class MatchController {
         Match match;
         DifficultyState difficulty;
 
-        String token = exchange.getRequestHeaders().getFirst("token");
+        String token = null;
+        try {
+            token = exchange.getRequestHeaders().get("token").getFirst();
+        } catch (Exception e) {
+            throw new NoTokenError("No token provided");
+        }
         AuthenticationToken.getInstance().handleAuthentication(exchange, token);
 
 

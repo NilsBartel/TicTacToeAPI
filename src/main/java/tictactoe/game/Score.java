@@ -1,5 +1,6 @@
 package tictactoe.game;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import tictactoe.database.*;
 
 import java.util.Objects;
@@ -61,6 +62,7 @@ public class Score {
         this.drawCount = drawCount;
     }
 
+    @JsonIgnore
     public int getRoundCounter(){
         return playerScore + computerScore + drawCount;
     }

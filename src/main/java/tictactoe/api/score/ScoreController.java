@@ -8,6 +8,7 @@ import io.vavr.control.Try;
 import tictactoe.api.AuthenticationToken;
 import tictactoe.api.errors.ErrorHandler;
 import tictactoe.api.errors.MethodNotAllowed;
+import tictactoe.api.errors.NoTokenError;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.DBScore;
 import tictactoe.game.Score;
@@ -41,7 +42,12 @@ public class ScoreController {
         ObjectMapper objectMapper = new ObjectMapper();
         Score score;
 
-        String token = exchange.getRequestHeaders().get("token").getFirst();
+        String token = null;
+        try {
+            token = exchange.getRequestHeaders().get("token").getFirst();
+        } catch (Exception e) {
+            throw new NoTokenError("No token provided");
+        }
         AuthenticationToken.getInstance().handleAuthentication(exchange, token);
 
         if (exchange.getRequestMethod().equals("GET")) {

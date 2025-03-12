@@ -1,8 +1,8 @@
-package api.match;
+package api.score;
 
 import api.ApiUtil;
 import api.databaseData.DatabaseUtil;
-import api.databaseData.MatchData;
+import api.databaseData.ScoreData;
 import api.databaseData.UsersData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -21,14 +21,14 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import tictactoe.api.Server;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.LiquibaseMigrationService;
-import tictactoe.game.Match;
+import tictactoe.game.Score;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class GetMatchTest {
+public class ScoreTest {
 
     static ObjectMapper objectMapper;
     static HikariDataSource dataSource;
@@ -74,8 +74,8 @@ public class GetMatchTest {
 
 
     @Test
-    void PostRequestFalse() throws IOException {
-        HttpUriRequest request = new HttpPost("http://localhost:8080/match/1");
+    void postRequestFalseTest() throws IOException {
+        HttpUriRequest request = new HttpPost("http://localhost:8080/score/");
         request.setHeader("token", ApiUtil.getToken("test", "test"));
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
@@ -84,35 +84,24 @@ public class GetMatchTest {
         Assertions.assertEquals(405, httpResponse.getCode());
     }
 
-
     @Test
-    void getMatch() throws IOException {
-        HttpUriRequest request = new HttpGet("http://localhost:8080/match/3");
-        request.setHeader("token", ApiUtil.getToken(UsersData.getUser2().getUserName(), UsersData.getUser2().getPassword()));
+    void getScoreTest() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/score/");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser1().getUserName(), UsersData.getUser1().getPassword()));
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 
         Assertions.assertEquals(200, httpResponse.getCode());
 
         String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
-        Match match = objectMapper.readValue(entitiystring, Match.class);
-        Assertions.assertEquals(match, MatchData.getMatch3());
-    }
-
-
-    @Test
-    void getMatchFromWrongUser() throws IOException {
-        HttpUriRequest request = new HttpGet("http://localhost:8080/match/1");
-        request.setHeader("token", ApiUtil.getToken(UsersData.getUser2().getUserName(), UsersData.getUser2().getPassword()));
-
-        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
-
-        Assertions.assertEquals(422, httpResponse.getCode());
+        Score score = objectMapper.readValue(entitiystring, Score.class);
+        Assertions.assertEquals(score, ScoreData.getScore1());
     }
 
     @Test
-    void noTokenProvidedTest() throws IOException {
-        HttpUriRequest request = new HttpGet("http://localhost:8080/match/1");
+    void wrongTokenTest() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/score/");
+        request.setHeader("token", "laskdasdj0397");
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 
@@ -120,23 +109,11 @@ public class GetMatchTest {
     }
 
     @Test
-    void wrongTokenProvidedTest() throws IOException {
-        HttpUriRequest request = new HttpGet("http://localhost:8080/match/1");
-        request.setHeader("token", "wrongToken");
+    void noTokenTest() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/score/");
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 
         Assertions.assertEquals(401, httpResponse.getCode());
     }
-
-
-
-
-
-
-
-
-
-
-
 }

@@ -1,16 +1,16 @@
 
 
-
+In tests:
+change the assertEqual(ErrorCode, Code) -> to the Throws error (see PasswordUtilTest)
 
 deserialization error?  wrong JSON input and so on
 
+clean up System.out  (double press shift for "search Everywhere")
 
+have error messages NOT show up in tests
 
-
-
-
+Analyze returns Positions and not ints
 -> analyzeController: gebe ich sie als Position weiter oder als int?
-
 
 
 

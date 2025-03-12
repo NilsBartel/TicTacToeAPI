@@ -160,5 +160,24 @@ public class StartTest {
         Assertions.assertEquals(405, httpResponse.getCode());
     }
 
+    @Test
+    void noTokenProvidedTest() throws IOException {
+        HttpUriRequest request = new HttpPost("http://localhost:8080/match/start");
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+
+        Assertions.assertEquals(401, httpResponse.getCode());
+    }
+
+    @Test
+    void wrongTokenProvidedTest() throws IOException {
+        HttpUriRequest request = new HttpPost("http://localhost:8080/match/start");
+        request.setHeader("token", "wrongToken");
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+
+        Assertions.assertEquals(401, httpResponse.getCode());
+    }
+
 
 }

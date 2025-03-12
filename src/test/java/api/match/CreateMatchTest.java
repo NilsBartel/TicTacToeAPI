@@ -79,7 +79,7 @@ public class CreateMatchTest {
 
 
     @Test
-    void PostRequestFalse() throws IOException {
+    void postRequestFalse() throws IOException {
         HttpUriRequest request = new HttpPost("http://localhost:8080/match/create");
         request.setHeader("token", ApiUtil.getToken("test", "test"));
 
@@ -145,6 +145,27 @@ public class CreateMatchTest {
         Assertions.assertEquals(200, httpResponse.getCode());
         Assertions.assertTrue(matches.getFirst().getBoard().isEmpty());
     }
+
+    @Test
+    void noTokenProvidedTest() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/create");
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+
+        Assertions.assertEquals(401, httpResponse.getCode());
+    }
+
+    @Test
+    void wrongTokenProvidedTest() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/create");
+        request.setHeader("token", "wrongToken");
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+
+        Assertions.assertEquals(401, httpResponse.getCode());
+    }
+
+
 
 
 

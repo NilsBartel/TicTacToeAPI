@@ -4,6 +4,7 @@ package tictactoe.login;
 import ch.qos.logback.core.util.StringUtil;
 import tictactoe.api.errors.InputError;
 import tictactoe.api.errors.LoginError;
+import tictactoe.api.errors.PasswordStrengthError;
 import tictactoe.database.*;
 import tictactoe.user.User;
 
@@ -15,7 +16,6 @@ import java.util.regex.Pattern;
 public final class PasswordUtil {
 
     private final static int PASSWORD_MIN_LENGTH = 8;
-    private final static int PASSWORD_MAX_LENGTH = 32;
 
     private PasswordUtil() {}
 
@@ -23,25 +23,41 @@ public final class PasswordUtil {
 
     public static boolean isPasswordValid(String password) {
         if (StringUtil.isNullOrEmpty(password)) {
-            throw new InputError("password is empty or null");
+            throw new PasswordStrengthError("password is empty or null");
         }
 
-        if(password.length() >= PASSWORD_MIN_LENGTH && password.length() < PASSWORD_MAX_LENGTH) {
+        if (password.length() < PASSWORD_MIN_LENGTH) {
+            throw new PasswordStrengthError("password is too short");
+        }
+
+
 
             Pattern lowerCaseLetterPattern = Pattern.compile("[a-zäüöß]");
             Pattern upperCaseLetterPattern = Pattern.compile("[A-ZÄÖÜ]");
             Pattern digitPattern = Pattern.compile("[0-9]");
             Pattern specialPattern = Pattern.compile ("[!@#$%&*()_+=|<>?{}\\[\\]~\\-.,\"^°'´`]");
 
+            if (!lowerCaseLetterPattern.matcher(password).find()) {
+                throw new PasswordStrengthError("password needs lower case letter");
+            }
+            if (!upperCaseLetterPattern.matcher(password).find()) {
+                throw new PasswordStrengthError("password needs upper case letter");
+            }
+            if (!digitPattern.matcher(password).find()) {
+                throw new PasswordStrengthError("password needs digit");
+            }
+            if (!specialPattern.matcher(password).find()) {
+                throw new PasswordStrengthError("password needs special character");
+            }
 
             Matcher lowerLetterMatcher = lowerCaseLetterPattern.matcher(password);
             Matcher upperLetterMatcher = upperCaseLetterPattern.matcher(password);
             Matcher digitMatcher = digitPattern.matcher(password);
             Matcher specialMatcher = specialPattern.matcher(password);
 
-            return lowerLetterMatcher.find() && upperLetterMatcher.find() && digitMatcher.find() && specialMatcher.find();
-        }
-        return false;
+            //return lowerLetterMatcher.find() && upperLetterMatcher.find() && digitMatcher.find() && specialMatcher.find();
+
+        return true;
     }
 
 

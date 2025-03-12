@@ -136,7 +136,7 @@ public class ResetPasswordTest {
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 
-        Assertions.assertEquals(401, httpResponse.getCode());
+        Assertions.assertEquals(403, httpResponse.getCode());
     }
 
     @Test
@@ -152,7 +152,7 @@ public class ResetPasswordTest {
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 
-        Assertions.assertEquals(400, httpResponse.getCode());
+        Assertions.assertEquals(403, httpResponse.getCode());
     }
 
     @Test
@@ -185,7 +185,7 @@ public class ResetPasswordTest {
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 
-        Assertions.assertEquals(400, httpResponse.getCode());
+        Assertions.assertEquals(403, httpResponse.getCode());
     }
 
     @Test
@@ -201,7 +201,7 @@ public class ResetPasswordTest {
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 
-        Assertions.assertEquals(400, httpResponse.getCode());
+        Assertions.assertEquals(403, httpResponse.getCode());
     }
 
     @Test
