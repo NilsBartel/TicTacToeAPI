@@ -10,7 +10,6 @@ import tictactoe.game.DifficultyState;
 import tictactoe.game.Match;
 import tictactoe.game.MatchStatus;
 
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;

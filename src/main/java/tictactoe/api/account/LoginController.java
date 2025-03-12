@@ -73,6 +73,7 @@ public class LoginController {
             loginResponse.setToken(authToken);
 
             exchange.sendResponseHeaders(200, 0);
+
         } else {
             throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
         }
@@ -98,9 +99,9 @@ public class LoginController {
             }
 
             LogIn.getInstance().createUser(user, dataSource);
-
             loginResponse.setMessage("account creation successful");
             exchange.sendResponseHeaders(200, 0);
+
         } else {
             throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
         }
@@ -126,9 +127,9 @@ public class LoginController {
             int userID = DBUser.getUserId(user.getUserName(), dataSource);
 
             PasswordUtil.checkSecurityQuestions(userID, user, dataSource);
+
             if (PasswordUtil.isPasswordValid(user.getPassword())) {
                 PasswordUtil.resetPassword(userID, user, dataSource);
-
                 loginResponse.setMessage("password reset successful");
                 exchange.sendResponseHeaders(200, 0);
             } else {

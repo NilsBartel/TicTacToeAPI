@@ -15,7 +15,6 @@ public class ErrorHandler {
         try {
             throwable.printStackTrace();
             ErrorResponse response = getErrorResponse(throwable, exchange);
-
             OutputStream responseBody = exchange.getResponseBody();
 
             responseBody.write(mapper.writeValueAsBytes(response));

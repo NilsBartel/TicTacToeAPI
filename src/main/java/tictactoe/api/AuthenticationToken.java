@@ -1,6 +1,5 @@
 package tictactoe.api;
 
-
 import net.bytebuddy.utility.RandomString;
 import tictactoe.api.errors.LoginError;
 
@@ -9,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class AuthenticationToken {
+public final class AuthenticationToken {
     private final int TOKEN_LENGTH = 32;
     private final int TOKEN_LIFETIME = 60;  // in minutes
     private final Map<String, Map.Entry<Integer, Timestamp>> authMap = new HashMap<>();
