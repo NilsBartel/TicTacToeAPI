@@ -12,8 +12,11 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class AuthenticationToken {
-
+    private final int TOKEN_LENGTH = 32;
+    private final int TOKEN_LIFETIME = 60;  // in minutes
+    private final Map<String, Map.Entry<Integer, Timestamp>> authMap = new HashMap<>();
     private static AuthenticationToken instance;
+
     private AuthenticationToken() {}
     public static AuthenticationToken getInstance() {
         if (instance == null) {
@@ -22,19 +25,7 @@ public class AuthenticationToken {
         return instance;
     }
 
-    private final int TOKEN_LENGTH = 32;
-    private final int TOKEN_LIFETIME = 60;  // in minutes
-    private final Map<String, Map.Entry<Integer, Timestamp>> authMap = new HashMap<>();
 
-
-
-
-
-    ErrorHandler errorHandler = new ErrorHandler();
-    public boolean handleAuthentication(HttpExchange exchange, String authToken) {
-        Try.run(() -> authenticate(authToken)).onFailure(t -> {errorHandler.handle(t, exchange);});
-        return true;
-    }
 
 
     public String create(int userID){
@@ -44,16 +35,12 @@ public class AuthenticationToken {
     }
 
 
-    public boolean authenticate(String authToken) throws LoginError {
-        if (!authMap.containsKey(authToken) || !timestampValid(authMap.get(authToken).getValue())) throw new LoginError("Invalid or expired token");
-        return true;
-
-
+    public void authenticate(String authToken) throws LoginError {
+        if (!authMap.containsKey(authToken) || !timestampValid(authMap.get(authToken).getValue())) {
+            throw new LoginError("Invalid or expired token");
+        }
     }
 
-    public int getUserId(String authToken){
-        return authMap.get(authToken).getKey();
-    }
 
     private boolean timestampValid(Timestamp timestamp){
         Timestamp now = new Timestamp(System.currentTimeMillis());
@@ -66,12 +53,6 @@ public class AuthenticationToken {
 
 
 
-
-
-
-    public Map<String, Map.Entry<Integer, Timestamp>> getAuthMap() {
-        return authMap;
-    }
 
     public int getUserID(String authToken){
         return authMap.get(authToken).getKey();

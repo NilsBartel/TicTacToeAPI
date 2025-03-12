@@ -23,10 +23,8 @@ public final class AnalyseService {
     }
 
     public Map<List<Position>, Integer> findBestWinningLine(int userID, HikariDataSource dataSource) {
-
         Map<List<Position>, Integer> map = new HashMap<>();
         List<List<Position>> wins = new ArrayList<>();
-        //List<Match> matches = DB_Match.getAllMatchesFromUserWhereWin(userID, dataSource);
         List<Match> matches = DBMatch.getAllMatchesFromUser(userID, dataSource);
 
         for (Match match : matches) {
@@ -36,7 +34,6 @@ public final class AnalyseService {
         }
 
         for (List<Position> win : wins) {
-
             if (map.containsKey(win)) {
                 map.put(win, map.get(win) + 1);
             } else {

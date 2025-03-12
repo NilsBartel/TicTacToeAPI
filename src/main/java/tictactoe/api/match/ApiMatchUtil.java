@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import tictactoe.api.errors.MatchError;
 import tictactoe.board.Board;
 import tictactoe.board.Position;
-import tictactoe.database.ConnectionPool;
 import tictactoe.database.DBMatch;
 import tictactoe.database.DBScore;
 import tictactoe.game.DifficultyState;
@@ -26,8 +25,6 @@ public class ApiMatchUtil{
         if (!match.equalsWithoutBoard(dbMatch)) throw new MatchError("Something changed with the match that wasn't allowed");
 
         List<Position> positions = positionsThatChanged(dbMatch.getBoard(), match.getBoard());
-        System.out.println(positions);
-
 
         if (positions.isEmpty()) throw new MatchError("No new input found");
         if (positions.size() != 1) throw new MatchError("Wrong number of positions");
@@ -75,26 +72,12 @@ public class ApiMatchUtil{
         return match;
     }
 
-
     private static boolean userHasRunningMatch(int userID, HikariDataSource dataSource) {
         List<Match> match = DBMatch.getLastNMatchesFromUser(userID, 1, dataSource);
         if (match.isEmpty()) {
             return false;
         }
         return match.getFirst().getStatus() == MatchStatus.RUNNING || match.getLast().getStatus() == MatchStatus.NOT_STARTED;
-    }
-    
-    public static Match createNewMatch(int userID, DifficultyState difficulty, HikariDataSource dataSource) {
-        Match match = new Match();
-        match.setStatus(MatchStatus.RUNNING);
-        match.setDifficulty(difficulty);
-        match.setStartTime(new Timestamp(System.currentTimeMillis()));
-        match.setPlayerTurn(DBScore.getScore(userID, dataSource));
-
-        int matchID = DBMatch.insertNewMatch(match, userID, dataSource);
-        match.setMatchID(matchID);
-        
-        return match;
     }
 
 

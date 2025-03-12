@@ -9,9 +9,6 @@ import java.io.OutputStream;
 public class ErrorHandler {
 
 
-
-
-
     public void handle(Throwable throwable, HttpExchange exchange) {
         ObjectMapper mapper = new ObjectMapper();
 
@@ -51,15 +48,9 @@ public class ErrorHandler {
             exchange.sendResponseHeaders(403, 0);
         } else {
             response = new ErrorResponse(throwable.getMessage(), 500);
-            exchange.sendResponseHeaders(500, 0);
+            exchange.   sendResponseHeaders(500, 0);
         }
         return response;
     }
-
-    // LoginError = 400
-    // wrong token error = 405
-
-
-
 
 }

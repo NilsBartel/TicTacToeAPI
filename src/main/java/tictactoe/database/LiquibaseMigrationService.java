@@ -21,10 +21,6 @@ public class LiquibaseMigrationService {
         try (Connection connection = openConnection(dataSource)) {
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
             Liquibase liquibase = new Liquibase("liquibase-outputChangeLog.xml", new ClassLoaderResourceAccessor(), database);
-//            liquibase.setShowSummaryOutput(UpdateSummaryOutputEnum.LOG);
-//            CommandScope commandScope = new CommandScope();
-//
-//            commandScope.addArgumentValue(DbUrlConnectionArgumentsCommandStep.DATABASE_ARG, database);
             liquibase.update(new Contexts(), new LabelExpression());
 
             System.out.println("Datenbankmigration abgeschlossen.");

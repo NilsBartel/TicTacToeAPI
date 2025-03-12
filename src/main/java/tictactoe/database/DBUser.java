@@ -25,29 +25,12 @@ public class DBUser {
         }
     }
 
-    public static void insertUserTEST(User user, HikariDataSource dataSource) {
-
-
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()
-        ) {
-            String sql = "INSERT INTO users(username, password, answer1, answer2) " +
-                              "VALUES ('"+user.getUserName()+"', '"+ user.getPassword() +"', '"+ user.getAnswer1() +"', '"+ user.getAnswer2() +"')";
-            statement.executeUpdate(sql);
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-
     public static boolean userExists(String username, HikariDataSource dataSource) {
         boolean bool = false;
+
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT exists(SELECT 1 FROM users WHERE username = '"+ username +"') AS exists ");
-
         ) {
             while (resultSet.next()) {
                 bool = resultSet.getBoolean("exists");
@@ -66,7 +49,6 @@ public class DBUser {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT password FROM users WHERE username = '"+ username +"'");
-
         ) {
             while (resultSet.next()) {
                 password = resultSet.getString("password");
@@ -84,7 +66,6 @@ public class DBUser {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()
         ) {
-
             for (int i = 0; i < 3; i++) {
                 String sql =
                         "UPDATE users " +
@@ -124,7 +105,6 @@ public class DBUser {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT answer1 FROM users WHERE user_id = "+ userID +" ");
-
         ) {
             while (resultSet.next()) {
                 answer1 = resultSet.getString("answer1");
@@ -142,7 +122,6 @@ public class DBUser {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT answer2 FROM users WHERE user_id = "+ userID +" ");
-
         ) {
             while (resultSet.next()) {
                 answer2 = resultSet.getString("answer2");
@@ -153,8 +132,5 @@ public class DBUser {
         }
         return answer2;
     }
-
-
-
 
 }

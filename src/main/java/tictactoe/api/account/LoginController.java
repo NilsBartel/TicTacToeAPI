@@ -58,8 +58,9 @@ public class LoginController {
 
 
         if (exchange.getRequestMethod().equals("POST")) {
-            String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
             User user = null;
+            String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
+
             try {
                 user = objectMapper.readValue(requestBody, User.class);
             } catch (JsonProcessingException e) {
@@ -72,7 +73,6 @@ public class LoginController {
             loginResponse.setToken(authToken);
 
             exchange.sendResponseHeaders(200, 0);
-
         } else {
             throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
         }
@@ -88,8 +88,9 @@ public class LoginController {
         LoginResponse loginResponse = new LoginResponse();
 
         if (exchange.getRequestMethod().equals("POST")) {
-            String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
             User user = null;
+            String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
+
             try {
                 user = objectMapper.readValue(requestBody, User.class);
             } catch (JsonProcessingException e) {
@@ -97,9 +98,9 @@ public class LoginController {
             }
 
             LogIn.getInstance().createUser(user, dataSource);
+
             loginResponse.setMessage("account creation successful");
             exchange.sendResponseHeaders(200, 0);
-
         } else {
             throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
         }
@@ -114,8 +115,9 @@ public class LoginController {
         LoginResponse loginResponse = new LoginResponse();
 
         if (exchange.getRequestMethod().equals("POST")) {
-            String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
             User user = null;
+            String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
+
             try {
                 user = objectMapper.readValue(requestBody, User.class);
             } catch (JsonProcessingException e) {
@@ -123,17 +125,15 @@ public class LoginController {
             }
             int userID = DBUser.getUserId(user.getUserName(), dataSource);
 
-
             PasswordUtil.checkSecurityQuestions(userID, user, dataSource);
-
             if (PasswordUtil.isPasswordValid(user.getPassword())) {
                 PasswordUtil.resetPassword(userID, user, dataSource);
+
                 loginResponse.setMessage("password reset successful");
                 exchange.sendResponseHeaders(200, 0);
             } else {
                 throw new LoginError("password is too weak");
             }
-
 
         } else {
             throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());

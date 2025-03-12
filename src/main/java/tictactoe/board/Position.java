@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Objects;
 
 public class Position {
-
     private final int index;
     @JsonIgnore
     private final int row;
@@ -37,7 +36,6 @@ public class Position {
     public int hashCode() {
         return Objects.hashCode(index);
     }
-
     public int getIndex() {
         return index;
     }

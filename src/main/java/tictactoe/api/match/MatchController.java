@@ -72,7 +72,7 @@ public class MatchController {
 
 
 
-    public void handleMatch(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError {
+    public void handleMatch(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError, LoginError {
 
         String token = null;
         try {
@@ -80,7 +80,7 @@ public class MatchController {
         } catch (Exception e) {
             throw new NoTokenError("No token provided");
         }
-        AuthenticationToken.getInstance().handleAuthentication(exchange, token);
+        AuthenticationToken.getInstance().authenticate(token);
 
         Match match;
 
@@ -113,7 +113,7 @@ public class MatchController {
 
 
 
-    public void handlePlay(HttpExchange exchange) throws IOException, MatchError, MethodNotAllowed {
+    public void handlePlay(HttpExchange exchange) throws IOException, MatchError, MethodNotAllowed, LoginError {
         int userID;
         Match match;
 
@@ -123,8 +123,7 @@ public class MatchController {
         } catch (Exception e) {
             throw new NoTokenError("No token provided");
         }
-        AuthenticationToken.getInstance().handleAuthentication(exchange, token);
-
+        AuthenticationToken.getInstance().authenticate(token);
 
         if (exchange.getRequestMethod().equals("POST")) {
             userID = AuthenticationToken.getInstance().getUserID(token);
@@ -155,7 +154,7 @@ public class MatchController {
         responseBody.close();
     }
 
-    public void handleStart(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError, SQLException {
+    public void handleStart(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError, SQLException, LoginError {
         int userID;
         Match match;
 
@@ -165,8 +164,7 @@ public class MatchController {
         } catch (Exception e) {
             throw new NoTokenError("No token provided");
         }
-        AuthenticationToken.getInstance().handleAuthentication(exchange, token);
-
+        AuthenticationToken.getInstance().authenticate(token);
 
         if (exchange.getRequestMethod().equals("GET")) {
             DifficultyState difficulty;
@@ -206,7 +204,7 @@ public class MatchController {
     }
 
 
-    public void handleMatchHistory(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError {
+    public void handleMatchHistory(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError, LoginError {
         int userID;
         List<Match> matchHistory;
 
@@ -216,8 +214,7 @@ public class MatchController {
         } catch (Exception e) {
             throw new NoTokenError("No token provided");
         }
-        AuthenticationToken.getInstance().handleAuthentication(exchange, token);
-
+        AuthenticationToken.getInstance().authenticate(token);
         if (exchange.getRequestMethod().equals("GET")) {
             int matchHistorySize;
             try {
@@ -241,7 +238,7 @@ public class MatchController {
         responseBody.close();
     }
 
-    public void handleCreateMatch(HttpExchange exchange) throws IOException, MethodNotAllowed {
+    public void handleCreateMatch(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
         int userID;
         Match match;
         DifficultyState difficulty;
@@ -252,8 +249,7 @@ public class MatchController {
         } catch (Exception e) {
             throw new NoTokenError("No token provided");
         }
-        AuthenticationToken.getInstance().handleAuthentication(exchange, token);
-
+        AuthenticationToken.getInstance().authenticate(token);
 
 
         if (exchange.getRequestMethod().equals("GET")) {

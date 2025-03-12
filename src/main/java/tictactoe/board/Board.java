@@ -8,13 +8,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class Board {
-
     public static final List<Position> DIAGONAL_TOP_RIGHT_BOTTOM_LEFT = new ArrayList<>(List.of(new Position(3), new Position(5), new Position(7)));
     public static final List<Position> DIAGONAL_TOP_LEFT_BOTTOM_RIGHT = new ArrayList<>(List.of(new Position(1), new Position(5), new Position(9)));
-
     List<Row> rows = new ArrayList<>();
 
     public Board(List<Character> symbols) {
@@ -45,23 +42,10 @@ public class Board {
         }
     }
 
-    @JsonIgnore
-    public String getBoardAsString(){
-        String boardString = "";
-        for(Row row : rows){
-            //row.print();
-            //row.getRowsAsString();
-            boardString = boardString.concat(row.getRowsAsString() + "\n");
-        }
-
-        return boardString;
-    }
-
     public boolean isValid(int index){
         if(index < 1 || index > 9) {
             return false;
         }
-
         Position position = new Position(index);
         return rows.get(position.getRow()).getSymbol(position.getColumn()) == ' ';
     }
@@ -106,9 +90,6 @@ public class Board {
         return rows;
     }
 
-//    public List<Field> getFieldsInRow(int row){
-//        return rows.get(row).getFields();
-//    }
     public List<Field> getFieldsInRow(Row row){
         return row.getFields();
     }

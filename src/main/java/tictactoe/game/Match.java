@@ -1,14 +1,8 @@
 package tictactoe.game;
 
-import tictactoe.api.errors.MatchError;
 import tictactoe.board.Board;
-import tictactoe.board.Position;
-import tictactoe.database.ConnectionPool;
-import tictactoe.database.*;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class Match {
@@ -36,88 +30,10 @@ public class Match {
         this.endTime = endTime;
     }
 
-
-
     public Match() {
         this.board = new Board();
         this.status = MatchStatus.NOT_STARTED;
     }
-
-
-//    public boolean validateMatch(int userID) throws MatchError {
-//        Match dbMatch = DBMatch.getMatch(userID, this.matchID, ConnectionPool.getInstance().getDataSource());
-//
-//        if (!this.equalsWithoutBoard(dbMatch)) throw new MatchError("Something changed with the match that wasn't allowed");
-//
-//        List<Position> positions = positionsThatChanged(dbMatch.getBoard());
-//        System.out.println(positions);
-//
-//
-//        if (positions.isEmpty()) throw new MatchError("No new input found");
-//        if (positions.size() != 1) throw new MatchError("Wrong number of positions");
-//        if (board.getSymbol(positions.getFirst()) != PLAYER_SYMBOL) throw new MatchError("Wrong symbol, player symbol is: " + Match.PLAYER_SYMBOL);
-//
-//        return true;
-//    }
-//
-//    public List<Position> positionsThatChanged(Board board) throws MatchError {
-//        List<Position> positions = new ArrayList<>();
-//
-//        for (int i = 1; i <= 9; i++) {
-//            char oldSymbol = board.getSymbol(new Position(i));
-//            char newSymbol = this.board.getSymbol(new Position(i));
-//            if (oldSymbol != newSymbol) {
-//                positions.add(new Position(i));
-//
-//                if (oldSymbol != EMPTY_SYMBOL) throw new MatchError("The field at position " + i + " was overwritten");
-//            }
-//        }
-//
-//        return positions;
-//    }
-
-    //TODO: can I move the game over if's out of this function?
-    // where do I update the score
-
-    public void computerPlay(int userID) {
-        System.out.println("player move:");
-        board.print();
-
-        char currentSymbol = PLAYER_SYMBOL;
-        if (isGameOver(board, currentSymbol)){
-            System.out.println("Game Over");
-            endTime = new Timestamp(System.currentTimeMillis());
-            Database.updateDB_Match(this, userID, ConnectionPool.getInstance().getDataSource());
-            return;
-        }
-
-        Position position;
-        currentSymbol = COMPUTER_SYMBOL;
-
-        position = Difficulty.returnMove(board, difficulty);
-
-        board.setSymbol(position.getRow(), position.getColumn(), currentSymbol);
-
-        System.out.println();
-        System.out.println("Computer move:");
-        board.print();
-
-        Database.updateBoard(this, userID, ConnectionPool.getInstance().getDataSource());
-
-        if(isGameOver(board, currentSymbol)){
-            System.out.println("Game Over");
-            endTime = new Timestamp(System.currentTimeMillis());
-        }
-
-        Database.updateDB_Match(this, userID, ConnectionPool.getInstance().getDataSource());
-    }
-
-
-
-
-
-
-
 
     public boolean isGameOver(Board board, char currentSymbol) {
 
@@ -219,17 +135,6 @@ public class Match {
     public void setEndTime(Timestamp endTime) {
         this.endTime = endTime;
     }
-
-//    @Override
-//    public boolean equals(Object object) {
-//        if (this == object) {
-//            return true;
-//        }
-//        if (!(object instanceof tictactoe.game.Match match)) {
-//            return false;
-//        }
-//        return isPlayerTurn == match.isPlayerTurn && startTime == match.startTime && endTime == match.endTime && board.equals(match.board) && status == match.status && difficulty == match.difficulty;
-//    }
 
     public boolean equalsWithoutBoard(Object o) {
         if (!(o instanceof Match match)) return false;

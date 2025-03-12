@@ -17,14 +17,13 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import tictactoe.api.Server;
 import tictactoe.database.ConnectionPool;
-import tictactoe.database.DBUser;
 import tictactoe.database.LiquibaseMigrationService;
 
 import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class Play {
+public class PlayTest {
 
     static ObjectMapper objectMapper;
     static HikariDataSource dataSource;
@@ -71,17 +70,35 @@ public class Play {
 
 
 
-//    @Test
-//    void GetRequestFalse() throws IOException {
-//        HttpUriRequest request = new HttpGet("http://localhost:8080/match/play");
-//        request.setHeader("token", ApiUtil.getToken("test", "test"));
-//
-//
-//        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
-//
-//        //MethodNotAllowed error
-//        Assertions.assertEquals(405, httpResponse.getCode());
-//    }
+    @Test
+    void GetRequestFalseTest() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/play");
+        request.setHeader("token", ApiUtil.getToken("test", "test"));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+
+        //MethodNotAllowed error
+        Assertions.assertEquals(405, httpResponse.getCode());
+    }
+
+    @Test
+    void noTokenTest() throws IOException {
+        HttpUriRequest request = new HttpPost("http://localhost:8080/match/play");
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+
+        Assertions.assertEquals(401, httpResponse.getCode());
+    }
+
+    @Test
+    void wrongTokenTest() throws IOException {
+        HttpUriRequest request = new HttpPost("http://localhost:8080/match/play");
+        request.setHeader("token", "wrongToken");
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+
+        Assertions.assertEquals(401, httpResponse.getCode());
+    }
 
     // wrong/no token
     // wrong method GET/POST

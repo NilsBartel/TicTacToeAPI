@@ -3,7 +3,6 @@ package tictactoe.board;
 import java.util.Objects;
 
 public class Field {
-
     private char symbol;
 
     public Field(char symbol) {
@@ -13,9 +12,6 @@ public class Field {
     public Field() {
         this.symbol = ' ';
     }
-
-
-
 
     public char getSymbol() {
         return symbol;

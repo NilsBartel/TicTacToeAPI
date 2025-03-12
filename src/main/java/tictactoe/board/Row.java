@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class Row {
-
     List<Field> fields = new ArrayList<>();
 
     public Row(List<Character> symbols) {
@@ -22,7 +21,6 @@ public class Row {
         }
     }
 
-
     public void print(){
         List<String> symbols = new ArrayList<>();
         for(Field field : fields){
@@ -31,17 +29,6 @@ public class Row {
 
         String line = String.join(" | ", symbols);
         System.out.println(line);
-    }
-
-    @JsonIgnore
-    public String getRowsAsString(){
-        List<String> symbols = new ArrayList<>();
-        for(Field field : fields){
-            symbols.add(String.valueOf(field.getSymbol()));
-        }
-
-        String line = String.join(" | ", symbols);
-        return line;
     }
 
     public List<Field> getFields() {
@@ -59,7 +46,6 @@ public class Row {
     public char getSymbol(int column){
         return fields.get(column).getSymbol();
     }
-
 
     @Override
     public boolean equals(Object object) {

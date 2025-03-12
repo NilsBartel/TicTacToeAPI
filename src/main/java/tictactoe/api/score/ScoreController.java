@@ -7,6 +7,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.vavr.control.Try;
 import tictactoe.api.AuthenticationToken;
 import tictactoe.api.errors.ErrorHandler;
+import tictactoe.api.errors.LoginError;
 import tictactoe.api.errors.MethodNotAllowed;
 import tictactoe.api.errors.NoTokenError;
 import tictactoe.database.ConnectionPool;
@@ -38,7 +39,7 @@ public class ScoreController {
                         })
         );
     }
-    private void handeScore(HttpExchange exchange) throws IOException, MethodNotAllowed {
+    private void handeScore(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
         ObjectMapper objectMapper = new ObjectMapper();
         Score score;
 
@@ -48,8 +49,7 @@ public class ScoreController {
         } catch (Exception e) {
             throw new NoTokenError("No token provided");
         }
-        AuthenticationToken.getInstance().handleAuthentication(exchange, token);
-
+        AuthenticationToken.getInstance().authenticate(token);
         if (exchange.getRequestMethod().equals("GET")) {
             int userID = AuthenticationToken.getInstance().getUserID(token);
 

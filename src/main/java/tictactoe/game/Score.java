@@ -23,7 +23,6 @@ public class Score {
         System.out.println("Score");
         switch (status) {
             case PLAYER_WON -> {
-                System.out.println("Player won");
                 DBScore.updateScore("player", userID, ConnectionPool.getInstance().getDataSource());
             }
             case COMPUTER_WON -> DBScore.updateScore("computer", userID, ConnectionPool.getInstance().getDataSource());
@@ -32,8 +31,6 @@ public class Score {
             default -> {
                 System.out.println("Wrong score!");
             }
-
-//            default -> PrintService.getInstance().printInvalidStatus();
         }
     }
 
@@ -42,24 +39,12 @@ public class Score {
         return playerScore;
     }
 
-    public void setPlayerScore(int playerScore) {
-        this.playerScore = playerScore;
-    }
-
     public int getComputerScore() {
         return computerScore;
     }
 
-    public void setComputerScore(int computerScore) {
-        this.computerScore = computerScore;
-    }
-
     public int getDrawCount() {
         return drawCount;
-    }
-
-    public void setDrawCount(int drawCount) {
-        this.drawCount = drawCount;
     }
 
     @JsonIgnore

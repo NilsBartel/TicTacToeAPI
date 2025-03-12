@@ -6,6 +6,7 @@ import tictactoe.board.Board;
 
 public final class Difficulty {
     public static final int MEDIUM_DIFFICULTY_PERCENTAGE = 40;
+
     private Difficulty() {
     }
 

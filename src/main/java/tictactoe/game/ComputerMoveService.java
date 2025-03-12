@@ -13,9 +13,9 @@ public final class ComputerMoveService {
     }
 
     public static Position randomMove(Board board) {
-
         Random rand = new Random();
         int randomNum;
+
         do{
             randomNum = rand.nextInt(9) + 1;
         } while (!board.isValid(randomNum));
@@ -24,6 +24,7 @@ public final class ComputerMoveService {
     }
 
     public static Position impossibleComputerMove(Board board) {
+
         //checks if computer can win with the next move
         Position bestMove = returnWhereSymbolCanWin(board, Match.COMPUTER_SYMBOL);
         if(bestMove != null) {
@@ -42,11 +43,9 @@ public final class ComputerMoveService {
             return bestMove;
         }
 
-
         if(!board.isEmpty() && board.isValid(5)){
             return new Position(5);
         }
-
 
         // find 2 forks for opponent
         List<Position> forks;
@@ -157,7 +156,6 @@ public final class ComputerMoveService {
 
             board.setSymbol(row, column, symbol);
 
-
             //checks the second level
             if (checkForTwoWins(board, symbol)) {
                 board.setSymbol(row, column, Match.EMPTY_SYMBOL);
@@ -168,7 +166,6 @@ public final class ComputerMoveService {
 
         }
         return null;
-
     }
 
     private static List<Position> findMultipleForks(Board board, char symbol) {
@@ -186,7 +183,6 @@ public final class ComputerMoveService {
             int column = position.getColumn();
             board.setSymbol(row, column, symbol);
 
-
             //checks the second level
             if (checkForTwoWins(board, symbol)) {
                 board.setSymbol(row, column, Match.EMPTY_SYMBOL);
@@ -202,7 +198,6 @@ public final class ComputerMoveService {
     }
 
     private static boolean checkForTwoWins(Board board, char symbol) {
-
         int counter = 0;
 
         for (int i = 1; i < 9+1; i++) {

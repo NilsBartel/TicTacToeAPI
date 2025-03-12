@@ -11,12 +11,6 @@ public final class Winner {
 
     public static boolean thereIsWinner(Board board,char currentSymbol) {
 
-
-//        int row = position.getRow();
-//        if(allEqualsSymbol(board.getFieldsInRow(row), currentSymbol)) {
-//            return true;
-//        }
-
         for (Row row : board.getRows()) {
             if(allEqualsSymbol(board.getFieldsInRow(row), currentSymbol)) {
                 return true;
@@ -33,21 +27,12 @@ public final class Winner {
             }
         }
 
-
-//        List<Field> column = new ArrayList<>();
-//        for(Row line : board.getRows()) {
-//            column.add(line.getField(position.getColumn()));
-//        }
-//        if(allEqualsSymbol(column, currentSymbol)) {
-//            return true;
-//        }
-
-
         return checkDiagonalTopLeftBottomRight(board, currentSymbol) || checkDiagonalTopRightBottomLeft(board, currentSymbol);
     }
 
     private static boolean checkDiagonalTopLeftBottomRight(Board board, char currentSymbol){
         List<Field> diagonalLeftRight = new ArrayList<>();
+
         for(Position pos : Board.DIAGONAL_TOP_LEFT_BOTTOM_RIGHT){
             diagonalLeftRight.add(board.getField(pos.getRow(), pos.getColumn()));
         }
@@ -56,6 +41,7 @@ public final class Winner {
 
     private static boolean checkDiagonalTopRightBottomLeft(Board board, char currentSymbol){
         List<Field> diagonalRightLeft = new ArrayList<>();
+
         for(Position pos : Board.DIAGONAL_TOP_RIGHT_BOTTOM_LEFT){
             diagonalRightLeft.add(board.getField(pos.getRow(), pos.getColumn()));
         }
@@ -76,8 +62,6 @@ public final class Winner {
 
 
     public static List<Position> findWinningRow(Board board, char winningSymbol) {
-
-        
         List<Position> positions = new ArrayList<>();
 
         //Row
@@ -95,7 +79,6 @@ public final class Winner {
             positions.clear();
         }
 
-
         //Column
         for (int column = 0; column<3; column++) {
             for (int row = 0; row<3; row++) {
@@ -110,30 +93,15 @@ public final class Winner {
             positions.clear();
         }
 
-
         if (checkDiagonalTopLeftBottomRight(board, winningSymbol)) {
             return Board.DIAGONAL_TOP_LEFT_BOTTOM_RIGHT;
         }
-
 
         if (checkDiagonalTopRightBottomLeft(board, winningSymbol)) {
             return Board.DIAGONAL_TOP_RIGHT_BOTTOM_LEFT;
         }
 
-
         return positions;
     }
-
-//    public static void printWhoWon(MatchStatus matchStatus) {
-//        PrintService printService = PrintService.getInstance();
-//        switch (matchStatus) {
-//            case COMPUTER_WON -> printService.printComputerWon();
-//            case PLAYER_WON -> printService.printPlayerWon();
-//            case DRAW -> printService.printDraw();
-//            case NOT_STARTED, RUNNING, MATCH_ALREADY_FINISHED -> System.out.println("Match not finished!");
-//
-//            default -> printService.printInvalidStatus();
-//        }
-//    }
 
 }

@@ -7,9 +7,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.vavr.control.Try;
 import tictactoe.api.AuthenticationToken;
 import tictactoe.api.errors.ErrorHandler;
+import tictactoe.api.errors.LoginError;
 import tictactoe.api.errors.MethodNotAllowed;
 import tictactoe.board.Position;
-import tictactoe.database.ConnectionPool;
 import tictactoe.game.AnalyseService;
 
 import java.io.IOException;
@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 public class AnalyzeController {
-    
     private final HttpServer server;
     private final HikariDataSource dataSource;
     
@@ -28,9 +27,7 @@ public class AnalyzeController {
     }
 
 
-
     public void endPoint() {
-
         ErrorHandler errorHandler = new ErrorHandler();
         server.createContext("/analyze/", exchange ->
                 Try.run(() -> handleAnalyze(exchange))
@@ -39,18 +36,17 @@ public class AnalyzeController {
                         })
         );
     }
-    private void handleAnalyze(HttpExchange exchange) throws IOException, MethodNotAllowed {
+
+    private void handleAnalyze(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<List<Position>, Integer> positionMap;
 
         String token = exchange.getRequestHeaders().get("token").getFirst();
-        AuthenticationToken.getInstance().handleAuthentication(exchange, token);
-
+        AuthenticationToken.getInstance().authenticate(token);
         if (exchange.getRequestMethod().equals("GET")) {
             int userID = AuthenticationToken.getInstance().getUserID(token);
 
             positionMap = AnalyseService.getInstance().findBestWinningLine(userID, dataSource);
-
 
             exchange.sendResponseHeaders(200, 0);
         } else {

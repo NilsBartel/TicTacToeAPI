@@ -6,7 +6,6 @@ import tictactoe.api.account.LoginController;
 import tictactoe.api.analyze.AnalyzeController;
 import tictactoe.api.match.MatchController;
 import tictactoe.api.score.ScoreController;
-import tictactoe.database.ConnectionPool;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -40,8 +39,6 @@ public class Server {
 
     public void close() {
         this.server.stop(1);
-
-
     }
 
 
