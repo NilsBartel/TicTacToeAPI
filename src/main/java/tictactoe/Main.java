@@ -11,9 +11,6 @@ import java.io.IOException;
 
 public class Main {
 
-
-
-
     public static void main(String[] args) throws IOException{
         ch.qos.logback.classic.Logger hikariLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.zaxxer.hikari");
         hikariLogger.setLevel(Level.ERROR);
