@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import com.sun.net.httpserver.HttpExchange;
-import io.vavr.control.Try;
 import net.bytebuddy.utility.RandomString;
 import tictactoe.api.errors.LoginError;
 

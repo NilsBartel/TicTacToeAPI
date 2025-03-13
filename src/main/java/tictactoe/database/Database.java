@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.zaxxer.hikari.HikariDataSource;
-import tictactoe.board.Position;
 import tictactoe.game.Match;
 
 public class Database {

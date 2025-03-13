@@ -22,7 +22,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import tictactoe.api.Server;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.DBMatch;
-import tictactoe.database.DBUser;
 import tictactoe.database.LiquibaseMigrationService;
 import tictactoe.game.DifficultyState;
 import tictactoe.game.Match;

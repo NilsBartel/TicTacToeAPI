@@ -13,16 +13,13 @@ import com.sun.net.httpserver.HttpServer;
 import com.zaxxer.hikari.HikariDataSource;
 import logger.LoggerConfig;
 import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 import org.testcontainers.containers.PostgreSQLContainer;
 import tictactoe.api.Server;
 import tictactoe.api.account.LoginResponse;
-import tictactoe.api.errors.MethodNotAllowed;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.LiquibaseMigrationService;
 
