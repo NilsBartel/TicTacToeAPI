@@ -1,5 +1,8 @@
 package tictactoe.api.score;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -13,34 +16,23 @@ import tictactoe.api.errors.NoTokenError;
 import tictactoe.database.DBScore;
 import tictactoe.game.Score;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 public class ScoreController {
-    
-    private final HttpServer server;
-    private final HikariDataSource dataSource;
-    
-    public ScoreController(HttpServer server, HikariDataSource dataSource) {
-        this.server = server;
-        this.dataSource = dataSource;
-    }
 
-
-
-    public void endPoint() {
+    public static void endPoint(HttpServer server, HikariDataSource dataSource) {
 
         ErrorHandler errorHandler = new ErrorHandler();
         server.createContext("/score/", exchange ->
-                Try.run(() -> handeScore(exchange))
-                        .onFailure(t -> errorHandler.handle(t, exchange))
+            Try.run(() -> handeScore(exchange, dataSource))
+                .onFailure(t -> {
+                    errorHandler.handle(t, exchange);
+                })
         );
     }
-    private void handeScore(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
+    private static void handeScore(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, LoginError {
         ObjectMapper objectMapper = new ObjectMapper();
         Score score;
-
         String token;
+
         try {
             token = exchange.getRequestHeaders().get("token").getFirst();
         } catch (Exception e) {
@@ -53,7 +45,7 @@ public class ScoreController {
 
             exchange.sendResponseHeaders(200, 0);
         } else {
-            throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
+            throw new MethodNotAllowed("Method " + exchange.getRequestMethod() + " not allowed for " + exchange.getRequestURI());
         }
 
         OutputStream responseBody = exchange.getResponseBody();

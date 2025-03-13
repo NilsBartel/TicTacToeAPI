@@ -9,9 +9,6 @@ public class ErrorResponse {
         this.code = code;
     }
 
-
-
-
     public String getMessage() {
         return message;
     }

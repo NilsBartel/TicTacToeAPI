@@ -1,18 +1,17 @@
 package tictactoe.login;
 
-import tictactoe.api.errors.LoginError;
-import tictactoe.user.User;
-//import tictactoe.PlayerInput;
-import tictactoe.database.*;
-
 import com.zaxxer.hikari.HikariDataSource;
+import tictactoe.api.errors.LoginError;
+import tictactoe.database.DBUser;
+import tictactoe.user.User;
 
 public final class LogIn {
 
     public static final int USERNAME_MIN_LENGTH = 3;
     private static LogIn instance;
 
-    private LogIn() {}
+    private LogIn() {
+    }
 
     public static LogIn getInstance() {
         if (instance == null) {
@@ -23,7 +22,10 @@ public final class LogIn {
 
     public void logInUser(String userName, String password, HikariDataSource dataSource) throws LoginError {
 
-        if (!DBUser.userExists(userName, dataSource) || !PasswordUtil.checkPassword(password, DBUser.getPassword(userName, dataSource))) {
+        if (!DBUser.userExists(userName, dataSource) || !PasswordUtil.checkPassword(
+            password,
+            DBUser.getPassword(userName, dataSource)
+        )) {
             throw new LoginError("Username or Password is incorrect!");
         }
 
@@ -59,7 +61,5 @@ public final class LogIn {
         user = new User(userName, HashService.hash(password), HashService.hash(question1), HashService.hash(question2));
         DBUser.insertUser(user, dataSource);
     }
-
-
 
 }

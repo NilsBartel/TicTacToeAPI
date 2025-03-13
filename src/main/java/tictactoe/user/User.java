@@ -12,9 +12,9 @@ public class User {
         this.answer1 = answer1;
         this.answer2 = answer2;
     }
-    public User(){
+
+    public User() {
     }
-    
 
     public String getUserName() {
         return userName;

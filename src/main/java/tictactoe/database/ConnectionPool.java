@@ -3,10 +3,11 @@ package tictactoe.database;
 import com.zaxxer.hikari.HikariDataSource;
 
 public class ConnectionPool {
-    private static HikariDataSource dataSource;
     private static ConnectionPool instance;
+    private static HikariDataSource dataSource;
 
-    private ConnectionPool() {}
+    private ConnectionPool() {
+    }
 
     public static ConnectionPool getInstance() {
         if (instance == null) {
@@ -14,7 +15,6 @@ public class ConnectionPool {
         }
         return instance;
     }
-
 
     public void initPool(String jdbcUrl, String username, String password) {
         dataSource = new HikariDataSource();

@@ -1,8 +1,7 @@
 package tictactoe.game;
 
-import tictactoe.board.*;
 import tictactoe.board.Board;
-
+import tictactoe.board.Position;
 
 public final class Difficulty {
     public static final int MEDIUM_DIFFICULTY_PERCENTAGE = 40;
@@ -12,7 +11,7 @@ public final class Difficulty {
 
     public static Position returnMove(Board board, DifficultyState difficulty) {
 
-        switch (difficulty){
+        switch (difficulty) {
             case EASY -> {
                 return ComputerMoveService.easyComputerMove(board);
             }
@@ -22,7 +21,9 @@ public final class Difficulty {
             case IMPOSSIBLE -> {
                 return ComputerMoveService.impossibleComputerMove(board);
             }
-            default -> {throw new IllegalStateException("Unexpected value: " + MEDIUM_DIFFICULTY_PERCENTAGE);}
+            default -> {
+                throw new IllegalStateException("Unexpected value: " + MEDIUM_DIFFICULTY_PERCENTAGE);
+            }
         }
     }
 }

@@ -9,6 +9,7 @@ import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.classic.m
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.io.entity.StringEntity;
+import com.sun.net.httpserver.HttpServer;
 import com.zaxxer.hikari.HikariDataSource;
 import logger.LoggerConfig;
 import org.apache.commons.io.IOUtils;
@@ -34,7 +35,7 @@ public class LoginTest {
 
     static ObjectMapper objectMapper;
     static HikariDataSource dataSource;
-    static Server server;
+    static HttpServer server;
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine").withUsername("postgres");
 
     @BeforeAll
@@ -64,14 +65,13 @@ public class LoginTest {
 
         DatabaseUtil.populateDatabase(postgres, dataSource);
 
-        server = new Server();
-        server.start(dataSource);
+        server = Server.start(dataSource);
     }
 
     @AfterAll
-    static void close() {
+    static void close() throws InterruptedException {
         dataSource.close();
-        server.close();
+        Server.close(server);
     }
 
 

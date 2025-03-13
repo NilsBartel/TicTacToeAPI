@@ -1,13 +1,12 @@
 package tictactoe.api.errors;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.net.httpserver.HttpExchange;
-
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class ErrorHandler {
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.net.httpserver.HttpExchange;
 
+public class ErrorHandler {
 
     public void handle(Throwable throwable, HttpExchange exchange) {
         ObjectMapper mapper = new ObjectMapper();

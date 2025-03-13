@@ -11,11 +11,16 @@ import java.io.IOException;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException{
-        ch.qos.logback.classic.Logger hikariLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.zaxxer.hikari");
+
+    public static void main(String[] args) throws IOException {
+
+        ch.qos.logback.classic.Logger hikariLogger =
+            (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.zaxxer.hikari");
         hikariLogger.setLevel(Level.ERROR);
 
-
+        ch.qos.logback.classic.Logger testcontainerLogger =
+            (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.github.dockerjava");
+        testcontainerLogger.setLevel(Level.ERROR);
 
         ConnectionPool pool = ConnectionPool.getInstance();
         pool.initPool(Config.getURL(), Config.getUSERNAME(), Config.getPASSWORD());
@@ -23,8 +28,7 @@ public class Main {
         LiquibaseMigrationService migrationService = new LiquibaseMigrationService();
         migrationService.runMigration(pool.getDataSource());
 
-        Server server = new Server();
-        server.start(pool.getDataSource());
+        Server.start(pool.getDataSource());
     }
 
 }

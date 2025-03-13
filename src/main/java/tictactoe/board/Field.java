@@ -3,6 +3,7 @@ package tictactoe.board;
 import java.util.Objects;
 
 public class Field {
+
     private char symbol;
 
     public Field(char symbol) {

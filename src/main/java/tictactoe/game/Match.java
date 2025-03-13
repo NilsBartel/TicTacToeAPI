@@ -1,12 +1,11 @@
 package tictactoe.game;
 
-import tictactoe.board.Board;
-
 import java.sql.Timestamp;
 import java.util.Objects;
 
-public class Match {
+import tictactoe.board.Board;
 
+public class Match {
 
     public static final char PLAYER_SYMBOL = 'o';
     public static final char COMPUTER_SYMBOL = 'x';
@@ -38,9 +37,9 @@ public class Match {
     public boolean isGameOver(Board board, char currentSymbol) {
 
         if (Winner.thereIsWinner(board, currentSymbol)) {
-            if (currentSymbol == COMPUTER_SYMBOL){
+            if (currentSymbol == COMPUTER_SYMBOL) {
                 this.status = MatchStatus.COMPUTER_WON;
-            } else{
+            } else {
                 this.status = MatchStatus.PLAYER_WON;
             }
             return true;
@@ -53,7 +52,14 @@ public class Match {
         return false;
     }
 
-
+    public static char getOpponentsSymbol(char symbol) {
+        if (symbol == COMPUTER_SYMBOL){
+            return PLAYER_SYMBOL;
+        } else if (symbol == PLAYER_SYMBOL){
+            return COMPUTER_SYMBOL;
+        }
+        return symbol;
+    }
 
     public void setPlayerTurn(Score score) {
         this.isPlayerTurn = score.getRoundCounter() % 2 == 0;
@@ -69,15 +75,6 @@ public class Match {
 
     public boolean isStatusEqual(MatchStatus newStatus) {
         return this.status == newStatus;
-    }
-
-    public static char getOpponentsSymbol(char symbol) {
-        if (symbol == COMPUTER_SYMBOL){
-            return PLAYER_SYMBOL;
-        } else if (symbol == PLAYER_SYMBOL){
-            return COMPUTER_SYMBOL;
-        }
-        return symbol;
     }
 
     public Board getBoard() {
@@ -137,14 +134,27 @@ public class Match {
     }
 
     public boolean equalsWithoutBoard(Object o) {
-        if (!(o instanceof Match match)) return false;
-        return isPlayerTurn == match.isPlayerTurn && matchID == match.matchID &&  status == match.status && difficulty == match.difficulty && Objects.equals(startTime, match.startTime) && Objects.equals(endTime, match.endTime);
+        if (!(o instanceof Match match)) {
+            return false;
+        }
+        return isPlayerTurn == match.isPlayerTurn && matchID == match.matchID && status == match.status && difficulty == match.difficulty && Objects.equals(
+            startTime,
+            match.startTime
+        ) && Objects.equals(endTime, match.endTime);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Match match)) return false;
-        return isPlayerTurn == match.isPlayerTurn && matchID == match.matchID && Objects.equals(board, match.board) && status == match.status && difficulty == match.difficulty && Objects.equals(startTime, match.startTime) && Objects.equals(endTime, match.endTime);
+        if (!(o instanceof Match match)) {
+            return false;
+        }
+        return isPlayerTurn == match.isPlayerTurn && matchID == match.matchID && Objects.equals(
+            board,
+            match.board
+        ) && status == match.status && difficulty == match.difficulty && Objects.equals(
+            startTime,
+            match.startTime
+        ) && Objects.equals(endTime, match.endTime);
     }
 
     @Override

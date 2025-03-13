@@ -1,4 +1,4 @@
-create table public.users
+create table if not exists public.users
 (
     user_id serial
             primary key,
@@ -11,7 +11,7 @@ create table public.users
 alter table public.users
     owner to postgres;
 
-create table public.score
+create table if not exists public.score
 (
     score_id serial
         primary key,
@@ -25,7 +25,7 @@ create table public.score
 alter table public.score
     owner to postgres;
 
-create table public.match
+create table if not exists public.match
 (
     match_id     serial
         primary key,
@@ -39,7 +39,7 @@ create table public.match
 alter table public.match
     owner to postgres;
 
-create table public.board
+create table if not exists public.board
 (
     board_id serial
         primary key,
@@ -50,7 +50,7 @@ create table public.board
 alter table public.board
     owner to postgres;
 
-create table public.row
+create table if not exists public.row
 (
     row_id   serial
         primary key,
@@ -62,7 +62,7 @@ create table public.row
 alter table public.row
     owner to postgres;
 
-create table public.field
+create table if not exists public.field
 (
     field_id serial
         primary key,
@@ -75,7 +75,7 @@ create table public.field
 alter table public.field
     owner to postgres;
 
-create table public.time
+create table if not exists public.time
 (
     time_id   serial
         primary key,

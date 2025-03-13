@@ -1,12 +1,20 @@
 package tictactoe.api.match;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import com.zaxxer.hikari.HikariDataSource;
 import io.vavr.control.Try;
-import org.apache.commons.io.IOUtils;
 import tictactoe.api.AuthenticationToken;
 import tictactoe.api.errors.*;
 import tictactoe.database.DBMatch;
@@ -17,62 +25,51 @@ import tictactoe.game.Game;
 import tictactoe.game.Match;
 import tictactoe.game.MatchStatus;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.List;
-
 public class MatchController {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final HttpServer server;
-    private final HikariDataSource dataSource;
-    
-    public MatchController(HttpServer server, HikariDataSource datasource) {
-        this.server = server;
-        this.dataSource = datasource;
-    }
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-
-
-    public void endPoint() {
+    public static void endPoint(HttpServer server, HikariDataSource dataSource) {
 
         ErrorHandler errorHandler = new ErrorHandler();
         server.createContext("/match/", exchange ->
-                Try.run(() -> handleMatch(exchange))
-                        .onFailure(t -> {errorHandler.handle(t, exchange);})
+            Try.run(() -> handleMatch(exchange, dataSource))
+                .onFailure(t -> {
+                    errorHandler.handle(t, exchange);
+                })
         );
 
         server.createContext("/match/play", exchange ->
-                Try.run(() -> handlePlay(exchange))
-                        .onFailure(t -> {errorHandler.handle(t, exchange);})
+            Try.run(() -> handlePlay(exchange, dataSource))
+                .onFailure(t -> {
+                    errorHandler.handle(t, exchange);
+                })
         );
 
         server.createContext("/match/create", exchange ->
-                Try.run(() -> handleCreateMatch(exchange))
-                        .onFailure(t -> {errorHandler.handle(t, exchange);})
+            Try.run(() -> handleCreateMatch(exchange, dataSource))
+                .onFailure(t -> {
+                    errorHandler.handle(t, exchange);
+                })
         );
 
         server.createContext("/match/start", exchange ->
-                Try.run(() -> handleStart(exchange))
-                        .onFailure(t -> {errorHandler.handle(t, exchange);})
+            Try.run(() -> handleStart(exchange, dataSource))
+                .onFailure(t -> {
+                    errorHandler.handle(t, exchange);
+                })
         );
 
         server.createContext("/match/matchHistory", exchange ->
-                Try.run(() -> handleMatchHistory(exchange))
-                        .onFailure(t -> {errorHandler.handle(t, exchange);})
+            Try.run(() -> handleMatchHistory(exchange, dataSource))
+                .onFailure(t -> {
+                    errorHandler.handle(t, exchange);
+                })
         );
 
     }
 
-
-
-
-
-
-    public void handleMatch(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError, LoginError {
+    public static void handleMatch(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, LoginError {
         String token;
         Match match;
 
@@ -100,7 +97,7 @@ public class MatchController {
 
             exchange.sendResponseHeaders(200, 0);
         } else {
-            throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
+            throw new MethodNotAllowed("Method " + exchange.getRequestMethod() + " not allowed for " + exchange.getRequestURI());
         }
 
         OutputStream responseBody = exchange.getResponseBody();
@@ -109,9 +106,7 @@ public class MatchController {
         responseBody.close();
     }
 
-
-
-    public void handlePlay(HttpExchange exchange) throws IOException, MatchError, MethodNotAllowed, LoginError {
+    public static void handlePlay(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MatchError, MethodNotAllowed, LoginError {
         int userID;
         Match match;
         String token;
@@ -140,19 +135,22 @@ public class MatchController {
             }
 
         } else {
-            throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
+            throw new MethodNotAllowed("Method " + exchange.getRequestMethod() + " not allowed for " + exchange.getRequestURI());
         }
-
 
         exchange.sendResponseHeaders(200, 0);
 
         OutputStream responseBody = exchange.getResponseBody();
-        responseBody.write(objectMapper.writeValueAsBytes(DBMatch.getMatch(userID, match.getMatchID(), dataSource)));
+        responseBody.write(objectMapper.writeValueAsBytes(DBMatch.getMatch(
+            userID,
+            match.getMatchID(),
+            dataSource
+        )));
         responseBody.flush();
         responseBody.close();
     }
 
-    public void handleStart(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError, SQLException, LoginError {
+    public static void handleStart(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, LoginError {
         int userID;
         Match match;
         String token;
@@ -185,7 +183,7 @@ public class MatchController {
             Database.updateDB_Match(match, userID, dataSource);
 
         } else {
-            throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
+            throw new MethodNotAllowed("Method " + exchange.getRequestMethod() + " not allowed for " + exchange.getRequestURI());
         }
 
         exchange.sendResponseHeaders(200, 0);
@@ -196,8 +194,7 @@ public class MatchController {
         responseBody.close();
     }
 
-
-    public void handleMatchHistory(HttpExchange exchange) throws IOException, MethodNotAllowed, MatchError, LoginError {
+    public static void handleMatchHistory(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, LoginError {
         int userID;
         List<Match> matchHistory;
         String token;
@@ -213,14 +210,17 @@ public class MatchController {
             try {
                 matchHistorySize = getIDFromPath(exchange.getRequestURI().getPath());
             } catch (NumberFormatException e) {
-                throw new MatchError("No number input found. Please input the number of matches for the match history. (/match/matchHistory/20)");
+                throw new MatchError(
+                    "No number input found. Please input the number of matches for the match history. " +
+                        "(/match/matchHistory/20)");
             }
 
             userID = AuthenticationToken.getInstance().getUserID(token);
-            matchHistory = DBMatch.getLastNMatchesFromUser(userID, matchHistorySize, dataSource);
+            matchHistory =
+                DBMatch.getLastNMatchesFromUser(userID, matchHistorySize, dataSource);
 
         } else {
-            throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() + " not allowed for "+ exchange.getRequestURI());
+            throw new MethodNotAllowed("Method " + exchange.getRequestMethod() + " not allowed for " + exchange.getRequestURI());
         }
 
         exchange.sendResponseHeaders(200, 0);
@@ -231,7 +231,7 @@ public class MatchController {
         responseBody.close();
     }
 
-    public void handleCreateMatch(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
+    public static void handleCreateMatch(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, LoginError {
         int userID;
         Match match;
         DifficultyState difficulty;
@@ -269,7 +269,7 @@ public class MatchController {
             match.setMatchID(matchID);
 
         } else {
-            throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
+            throw new MethodNotAllowed("Method " + exchange.getRequestMethod() + " not allowed for " + exchange.getRequestURI());
         }
 
         exchange.sendResponseHeaders(200, 0);

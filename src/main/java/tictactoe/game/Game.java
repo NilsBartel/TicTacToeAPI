@@ -1,13 +1,12 @@
 package tictactoe.game;
 
+import java.sql.Timestamp;
+
 import tictactoe.board.Position;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.Database;
 
-import java.sql.Timestamp;
-
 public class Game {
-
 
     public static void play(int userID, Match match) {
 
@@ -29,7 +28,7 @@ public class Game {
         System.out.println("Computer move:");
         match.printBoard();
 
-        if(match.isGameOver(match.getBoard(), currentSymbol)){
+        if (match.isGameOver(match.getBoard(), currentSymbol)) {
             endGame(userID, match);
             return;
         }

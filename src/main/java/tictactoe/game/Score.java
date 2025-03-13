@@ -1,9 +1,10 @@
 package tictactoe.game;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import tictactoe.database.*;
-
 import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import tictactoe.database.ConnectionPool;
+import tictactoe.database.DBScore;
 
 public class Score {
 
@@ -11,7 +12,8 @@ public class Score {
     private int computerScore;
     private int drawCount;
 
-    public Score() {}
+    public Score() {
+    }
 
     public Score(int playerScore, int computerScore, int drawCount) {
         this.playerScore = playerScore;
@@ -22,14 +24,19 @@ public class Score {
     public static void updateScore(MatchStatus status, int userID) {
         System.out.println("Score");
         switch (status) {
-            case PLAYER_WON -> DBScore.updateScore("player", userID, ConnectionPool.getInstance().getDataSource());
+            case PLAYER_WON -> {
+                System.out.println("Player won");
+                DBScore.updateScore("player", userID, ConnectionPool.getInstance().getDataSource());
+            }
             case COMPUTER_WON -> DBScore.updateScore("computer", userID, ConnectionPool.getInstance().getDataSource());
             case DRAW -> DBScore.updateScore("draw", userID, ConnectionPool.getInstance().getDataSource());
             case NOT_STARTED, RUNNING, MATCH_ALREADY_FINISHED -> System.out.println("Match not finished!");
-            default -> System.out.println("Wrong score!");
+            default -> {
+                System.out.println("Wrong score!");
+            }
+
         }
     }
-
 
     public int getPlayerScore() {
         return playerScore;
@@ -50,7 +57,9 @@ public class Score {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Score score)) return false;
+        if (!(o instanceof Score score)) {
+            return false;
+        }
         return playerScore == score.playerScore && computerScore == score.computerScore && drawCount == score.drawCount;
     }
 

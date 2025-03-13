@@ -1,12 +1,17 @@
 package tictactoe.api.account;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+
+import org.apache.commons.io.IOUtils;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import com.zaxxer.hikari.HikariDataSource;
 import io.vavr.control.Try;
-import org.apache.commons.io.IOUtils;
 import tictactoe.api.AuthenticationToken;
 import tictactoe.api.errors.ErrorHandler;
 import tictactoe.api.errors.InputError;
@@ -17,45 +22,36 @@ import tictactoe.login.LogIn;
 import tictactoe.login.PasswordUtil;
 import tictactoe.user.User;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-
 public class LoginController {
-    
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final HikariDataSource dataSource;
-    private final HttpServer server;
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public LoginController(HttpServer server, HikariDataSource dataSource) {
-        this.server = server;
-        this.dataSource = dataSource;
-    }
-
-
-    public void endPoint() {
+    public static void endPoint(HttpServer server, HikariDataSource dataSource) {
         ErrorHandler errorHandler = new ErrorHandler();
 
         server.createContext("/account/login", exchange ->
-                Try.run(() -> handleLogin(exchange))
-                        .onFailure(t -> {errorHandler.handle(t, exchange);})
+            Try.run(() -> handleLogin(exchange, dataSource))
+                .onFailure(t -> {
+                    errorHandler.handle(t, exchange);
+                })
         );
 
         server.createContext("/account/register", exchange ->
-                Try.run(() -> handleRegister(exchange))
-                        .onFailure(t -> {errorHandler.handle(t, exchange);})
+            Try.run(() -> handleRegister(exchange, dataSource))
+                .onFailure(t -> {
+                    errorHandler.handle(t, exchange);
+                })
         );
 
         server.createContext("/account/resetPassword", exchange ->
-                Try.run(() -> handlePasswordReset(exchange))
-                        .onFailure(t -> {errorHandler.handle(t, exchange);})
+            Try.run(() -> handlePasswordReset(exchange, dataSource))
+                .onFailure(t -> {
+                    errorHandler.handle(t, exchange);
+                })
         );
     }
 
-
-    private void handleLogin(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
+    private static void handleLogin(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, LoginError {
         LoginResponse loginResponse = new LoginResponse();
-
 
         if (exchange.getRequestMethod().equals("POST")) {
             User user;
@@ -75,7 +71,7 @@ public class LoginController {
             exchange.sendResponseHeaders(200, 0);
 
         } else {
-            throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
+            throw new MethodNotAllowed("Method " + exchange.getRequestMethod() + " not allowed for " + exchange.getRequestURI());
         }
 
         OutputStream responseBody = exchange.getResponseBody();
@@ -84,8 +80,7 @@ public class LoginController {
         responseBody.close();
     }
 
-
-    private void handleRegister(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
+    private static void handleRegister(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, LoginError {
         LoginResponse loginResponse = new LoginResponse();
 
         if (exchange.getRequestMethod().equals("POST")) {
@@ -103,7 +98,7 @@ public class LoginController {
             exchange.sendResponseHeaders(200, 0);
 
         } else {
-            throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
+            throw new MethodNotAllowed("Method " + exchange.getRequestMethod() + " not allowed for " + exchange.getRequestURI());
         }
 
         OutputStream responseBody = exchange.getResponseBody();
@@ -112,7 +107,7 @@ public class LoginController {
         responseBody.close();
     }
 
-    private void handlePasswordReset(HttpExchange exchange) throws IOException, MethodNotAllowed, LoginError {
+    private static void handlePasswordReset(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, LoginError {
         LoginResponse loginResponse = new LoginResponse();
 
         if (exchange.getRequestMethod().equals("POST")) {
@@ -137,7 +132,7 @@ public class LoginController {
             }
 
         } else {
-            throw new MethodNotAllowed("Method "+ exchange.getRequestMethod() +" not allowed for "+ exchange.getRequestURI());
+            throw new MethodNotAllowed("Method " + exchange.getRequestMethod() + " not allowed for " + exchange.getRequestURI());
         }
 
         OutputStream responseBody = exchange.getResponseBody();
