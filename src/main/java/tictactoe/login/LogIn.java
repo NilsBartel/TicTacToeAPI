@@ -31,7 +31,6 @@ public final class LogIn {
             DBUser.getPassword(userName, dataSource)
         )) {
             throw new LoginError(ErrorCodes.USERNAME_OR_PASSWORD_INCORRECT);
-            //throw new LoginError("Username or Password is incorrect!");
         }
 
     }
@@ -40,27 +39,22 @@ public final class LogIn {
 
         if (DBUser.userExists(user.getUserName(), dataSource)) {
             throw new SignUpError(ErrorCodes.USERNAME_ALREADY_EXISTS);
-            //throw new LoginError("This user already exists");
         }
 
         if (user.getUserName().length() < USERNAME_MIN_LENGTH) {
             throw new SignUpError(ErrorCodes.USERNAME_TOO_SHORT);
-            //throw new LoginError("Username too short");
         }
 
         if (!PasswordUtil.isPasswordValid(user.getPassword())) {
             throw new SignUpError(ErrorCodes.PASSWORD_WEAK);
-            //throw new LoginError("Password is not strong enough");
         }
 
         if (user.getAnswer1().isEmpty()) {
             throw new LoginError(ErrorCodes.QUESTION_NOT_FOUND);
-            //throw new LoginError("Security answer1 is Empty");
         }
 
         if (user.getAnswer2().isEmpty()) {
             throw new LoginError(ErrorCodes.QUESTION_NOT_FOUND);
-            //throw new LoginError("Security answer2 is Empty");
         }
 
         String userName = user.getUserName();

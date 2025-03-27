@@ -82,7 +82,6 @@ public class MatchController {
                 token = exchange.getRequestHeaders().get("token").getFirst();
             } catch (Exception e) {
                 throw new RequestIncompleteError(ErrorCodes.NO_TOKEN);
-                //throw new NoTokenError("No token provided");
             }
             AuthenticationToken.getInstance().authenticate(token);
             int userID = AuthenticationToken.getInstance().getUserID(token);
@@ -129,7 +128,6 @@ public class MatchController {
                 token = exchange.getRequestHeaders().get("token").getFirst();
             } catch (Exception e) {
                 throw new RequestIncompleteError(ErrorCodes.NO_TOKEN);
-                //throw new NoTokenError("No token provided");
             }
             AuthenticationToken.getInstance().authenticate(token);
             userID = AuthenticationToken.getInstance().getUserID(token);
@@ -140,7 +138,6 @@ public class MatchController {
                 match = objectMapper.readValue(requestBody, Match.class);
             } catch (JsonProcessingException e) {
                 throw new RequestIncompleteError(ErrorCodes.INVALID_REQUEST_BODY);
-                //throw new InputError("No request body provided");
             }
             match.printBoard();
 
@@ -188,7 +185,6 @@ public class MatchController {
                 token = exchange.getRequestHeaders().get("token").getFirst();
             } catch (Exception e) {
                 throw new RequestIncompleteError(ErrorCodes.NO_TOKEN);
-                //throw new NoTokenError("No token provided");
             }
             AuthenticationToken.getInstance().authenticate(token);
 
@@ -199,7 +195,6 @@ public class MatchController {
                 match = objectMapper.readValue(requestBody, Match.class);
             } catch (JsonProcessingException e) {
                 throw new RequestIncompleteError(ErrorCodes.INVALID_REQUEST_BODY);
-                    //throw new InputError("Invalid request body provided. Need a difficulty. {\"difficulty\": \"EASY\"}");
             }
 
             difficulty = match.getDifficulty();
@@ -244,7 +239,6 @@ public class MatchController {
                 token = exchange.getRequestHeaders().get("token").getFirst();
             } catch (Exception e) {
                 throw new RequestIncompleteError(ErrorCodes.NO_TOKEN);
-                //throw new NoTokenError("No token provided");
             }
             AuthenticationToken.getInstance().authenticate(token);
 
@@ -289,7 +283,6 @@ public class MatchController {
             token = exchange.getRequestHeaders().get("token").getFirst();
         } catch (Exception e) {
             throw new RequestIncompleteError(ErrorCodes.NO_TOKEN);
-            //throw new NoTokenError("No token provided");
         }
         AuthenticationToken.getInstance().authenticate(token);
 
@@ -302,7 +295,6 @@ public class MatchController {
                 match = objectMapper.readValue(requestBody, Match.class);
             } catch (JsonProcessingException e) {
                 throw new RequestIncompleteError(ErrorCodes.INVALID_REQUEST_BODY);
-                //throw new InputError("Wrong or no request body provided. Need a difficulty. {\"difficulty\": \"EASY\"}");
             }
             difficulty = match.getDifficulty();
 

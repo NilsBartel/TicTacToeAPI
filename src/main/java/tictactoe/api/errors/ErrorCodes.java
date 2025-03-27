@@ -7,7 +7,6 @@ public enum ErrorCodes {
 
     INVALID_REQUEST_BODY(2, "Request Body Incomplete"),
 
-
     USERNAME_NOT_FOUND(4, "Username does not Exist"),
     USERNAME_OR_PASSWORD_INCORRECT(5, "Username or Password is incorrect"),
     USERNAME_ALREADY_EXISTS(6, "Username already exists"),

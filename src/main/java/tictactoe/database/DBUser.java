@@ -101,7 +101,6 @@ public class DBUser {
             throw new RuntimeException(e);
         }
         if (userID == 0) {
-            //throw new LoginError("Username does not exist");
             throw new LoginError(ErrorCodes.USERNAME_NOT_FOUND);
         }
         return userID;

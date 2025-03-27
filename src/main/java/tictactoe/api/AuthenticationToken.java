@@ -38,7 +38,6 @@ public final class AuthenticationToken {
 
     public void authenticate(String authToken) throws AuthorisationError {
         if (!authMap.containsKey(authToken) || !timestampValid(authMap.get(authToken).getValue())) {
-            //throw new LoginError("Invalid or expired token", 1);
             throw new AuthorisationError(ErrorCodes.TOKEN_INVALID);
         }
     }

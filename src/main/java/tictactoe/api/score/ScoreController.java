@@ -34,7 +34,7 @@ public class ScoreController {
             token = exchange.getRequestHeaders().get("token").getFirst();
         } catch (Exception e) {
             throw new RequestIncompleteError(ErrorCodes.NO_TOKEN);
-            //throw new NoTokenError("No token provided");
+
         }
         AuthenticationToken.getInstance().authenticate(token);
         if (exchange.getRequestMethod().equals("GET")) {

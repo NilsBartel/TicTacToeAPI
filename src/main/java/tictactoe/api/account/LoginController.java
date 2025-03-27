@@ -62,7 +62,7 @@ public class LoginController {
                 System.out.println(user.getPassword());
             } catch (JsonProcessingException e) {
                 throw new RequestIncompleteError(ErrorCodes.INVALID_REQUEST_BODY);
-                //throw new InputError("Invalid request body");
+
             }
 
             LogIn.getInstance().logInUser(user.getUserName(), user.getPassword(), dataSource);
@@ -107,7 +107,6 @@ public class LoginController {
                 user = objectMapper.readValue(requestBody, User.class);
             } catch (JsonProcessingException e) {
                 System.out.println(requestBody);
-                //throw new LoginError("Invalid request body");
                 throw new RequestIncompleteError(ErrorCodes.INVALID_REQUEST_BODY);
             }
 
@@ -143,7 +142,6 @@ public class LoginController {
                 user = objectMapper.readValue(requestBody, User.class);
             } catch (JsonProcessingException e) {
                 throw new RequestIncompleteError(ErrorCodes.INVALID_REQUEST_BODY);
-                //throw new InputError("Invalid request body");
             }
             int userID = DBUser.getUserId(user.getUserName(), dataSource);
 
@@ -154,7 +152,6 @@ public class LoginController {
                 loginResponse.setMessage("password reset successful");
                 exchange.sendResponseHeaders(200, 0);
             } else {
-                //throw new LoginError("password is too weak");
                 throw new SignUpError(ErrorCodes.PASSWORD_WEAK);
             }
 
