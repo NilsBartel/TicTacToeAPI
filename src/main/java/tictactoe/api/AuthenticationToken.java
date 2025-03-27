@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import net.bytebuddy.utility.RandomString;
+import tictactoe.api.errors.ErrorCodes;
 import tictactoe.api.errors.LoginError;
 
 public final class AuthenticationToken {
@@ -36,7 +37,8 @@ public final class AuthenticationToken {
 
     public void authenticate(String authToken) throws LoginError {
         if (!authMap.containsKey(authToken) || !timestampValid(authMap.get(authToken).getValue())) {
-            throw new LoginError("Invalid or expired token");
+            //throw new LoginError("Invalid or expired token", 1);
+            throw new LoginError(ErrorCodes.TOKEN_INVALID);
         }
     }
 

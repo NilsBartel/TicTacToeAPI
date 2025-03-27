@@ -21,6 +21,7 @@ their own account where their match history and their score is saved in a databa
 2. log in and receive the Authentication token (/account/login)
 3. start a match (/match/start)
 4. play back and forth (/match/play)
+5. check matchStatus for "COMPUTER_WIN", "PLAYER_WIN" or "DRAW"
 
 
 

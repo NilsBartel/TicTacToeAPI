@@ -71,18 +71,21 @@ public class MatchController {
     public static void handleMatch(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, LoginError {
         String token;
         Match match;
+        OutputStream responseBody = exchange.getResponseBody();
 
-        try {
-            token = exchange.getRequestHeaders().get("token").getFirst();
-        } catch (Exception e) {
-            throw new NoTokenError("No token provided");
-        }
-        AuthenticationToken.getInstance().authenticate(token);
+
 
         if (exchange.getRequestMethod().equals("GET")) {
+            int matchId;
+
+            try {
+                token = exchange.getRequestHeaders().get("token").getFirst();
+            } catch (Exception e) {
+                throw new NoTokenError("No token provided");
+            }
+            AuthenticationToken.getInstance().authenticate(token);
             int userID = AuthenticationToken.getInstance().getUserID(token);
 
-            int matchId;
             try {
                 matchId = getIDFromPath(exchange.getRequestURI().getPath());
             } catch (NumberFormatException e) {
@@ -95,12 +98,19 @@ public class MatchController {
             }
 
             exchange.sendResponseHeaders(200, 0);
+            responseBody.write(objectMapper.writeValueAsBytes(match));
+        } else if (exchange.getRequestMethod().equals("OPTIONS")) {
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Headers","origin, X-PINGOTHER, access-control-allow-origin, content-type, accept, authorization");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET , OPTIONS");
+            exchange.sendResponseHeaders(200, 0);
+
         } else {
             throw new MethodNotAllowed("Method " + exchange.getRequestMethod() + " not allowed for " + exchange.getRequestURI());
         }
 
-        OutputStream responseBody = exchange.getResponseBody();
-        responseBody.write(objectMapper.writeValueAsBytes(match));
+
         responseBody.flush();
         responseBody.close();
     }
@@ -109,18 +119,21 @@ public class MatchController {
         int userID;
         Match match;
         String token;
+        OutputStream responseBody = exchange.getResponseBody();
 
-        try {
-            token = exchange.getRequestHeaders().get("token").getFirst();
-        } catch (Exception e) {
-            throw new NoTokenError("No token provided");
-        }
-        AuthenticationToken.getInstance().authenticate(token);
+
 
         if (exchange.getRequestMethod().equals("POST")) {
+            try {
+                token = exchange.getRequestHeaders().get("token").getFirst();
+            } catch (Exception e) {
+                throw new NoTokenError("No token provided");
+            }
+            AuthenticationToken.getInstance().authenticate(token);
             userID = AuthenticationToken.getInstance().getUserID(token);
 
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
+            System.out.println("requestBody " + requestBody);
             try {
                 match = objectMapper.readValue(requestBody, Match.class);
             } catch (JsonProcessingException e) {
@@ -133,18 +146,26 @@ public class MatchController {
                 Game.play(userID, match);
             }
 
+            exchange.sendResponseHeaders(200, 0);
+            responseBody.write(objectMapper.writeValueAsBytes(DBMatch.getMatch(
+                    userID,
+                    match.getMatchID(),
+                    dataSource
+            )));
+
+
+        } else if (exchange.getRequestMethod().equals("OPTIONS")) {
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Headers","origin, X-PINGOTHER, access-control-allow-origin, content-type, accept, authorization");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "POST , OPTIONS");
+            exchange.sendResponseHeaders(200, 0);
+
         } else {
             throw new MethodNotAllowed("Method " + exchange.getRequestMethod() + " not allowed for " + exchange.getRequestURI());
         }
 
-        exchange.sendResponseHeaders(200, 0);
 
-        OutputStream responseBody = exchange.getResponseBody();
-        responseBody.write(objectMapper.writeValueAsBytes(DBMatch.getMatch(
-            userID,
-            match.getMatchID(),
-            dataSource
-        )));
         responseBody.flush();
         responseBody.close();
     }
@@ -153,16 +174,20 @@ public class MatchController {
         int userID;
         Match match;
         String token;
+        OutputStream responseBody = exchange.getResponseBody();
 
-        try {
-            token = exchange.getRequestHeaders().get("token").getFirst();
-        } catch (Exception e) {
-            throw new NoTokenError("No token provided");
-        }
-        AuthenticationToken.getInstance().authenticate(token);
 
-        if (exchange.getRequestMethod().equals("GET")) {
+
+        if (exchange.getRequestMethod().equals("POST")) {
             DifficultyState difficulty;
+
+            try {
+                token = exchange.getRequestHeaders().get("token").getFirst();
+            } catch (Exception e) {
+                throw new NoTokenError("No token provided");
+            }
+            AuthenticationToken.getInstance().authenticate(token);
+
             userID = AuthenticationToken.getInstance().getUserID(token);
             String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
 
@@ -181,14 +206,21 @@ public class MatchController {
 
             Database.updateDB_Match(match, userID, dataSource);
 
+            exchange.sendResponseHeaders(200, 0);
+            responseBody.write(objectMapper.writeValueAsBytes(match));
+
+        } else if (exchange.getRequestMethod().equals("OPTIONS")) {
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Headers","origin, X-PINGOTHER, access-control-allow-origin, content-type, accept, authorization");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "POST , OPTIONS");
+            exchange.sendResponseHeaders(200, 0);
+
         } else {
             throw new MethodNotAllowed("Method " + exchange.getRequestMethod() + " not allowed for " + exchange.getRequestURI());
         }
 
-        exchange.sendResponseHeaders(200, 0);
 
-        OutputStream responseBody = exchange.getResponseBody();
-        responseBody.write(objectMapper.writeValueAsBytes(match));
         responseBody.flush();
         responseBody.close();
     }
@@ -197,15 +229,19 @@ public class MatchController {
         int userID;
         List<Match> matchHistory;
         String token;
+        OutputStream responseBody = exchange.getResponseBody();
 
-        try {
-            token = exchange.getRequestHeaders().get("token").getFirst();
-        } catch (Exception e) {
-            throw new NoTokenError("No token provided");
-        }
-        AuthenticationToken.getInstance().authenticate(token);
+
         if (exchange.getRequestMethod().equals("GET")) {
             int matchHistorySize;
+
+            try {
+                token = exchange.getRequestHeaders().get("token").getFirst();
+            } catch (Exception e) {
+                throw new NoTokenError("No token provided");
+            }
+            AuthenticationToken.getInstance().authenticate(token);
+
             try {
                 matchHistorySize = getIDFromPath(exchange.getRequestURI().getPath());
             } catch (NumberFormatException e) {
@@ -218,14 +254,21 @@ public class MatchController {
             matchHistory =
                 DBMatch.getLastNMatchesFromUser(userID, matchHistorySize, dataSource);
 
+            exchange.sendResponseHeaders(200, 0);
+            responseBody.write(objectMapper.writeValueAsBytes(matchHistory));
+
+        } else if (exchange.getRequestMethod().equals("OPTIONS")) {
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Headers","origin, X-PINGOTHER, access-control-allow-origin, content-type, accept, authorization");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "POST , OPTIONS");
+            exchange.sendResponseHeaders(200, 0);
+
         } else {
             throw new MethodNotAllowed("Method " + exchange.getRequestMethod() + " not allowed for " + exchange.getRequestURI());
         }
 
-        exchange.sendResponseHeaders(200, 0);
 
-        OutputStream responseBody = exchange.getResponseBody();
-        responseBody.write(objectMapper.writeValueAsBytes(matchHistory));
         responseBody.flush();
         responseBody.close();
     }

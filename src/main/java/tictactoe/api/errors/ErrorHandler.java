@@ -33,7 +33,7 @@ public class ErrorHandler {
                 exchange.sendResponseHeaders(422, 0);
             }
             case LoginError loginError -> {
-                response = new ErrorResponse(throwable.getMessage(), 401);
+                response = new ErrorResponse(ErrorCodes.decodeMessage(throwable.getMessage()), ErrorCodes.decodeCode(throwable.getMessage()));
                 exchange.sendResponseHeaders(401, 0);
             }
             case MethodNotAllowed methodNotAllowed -> {

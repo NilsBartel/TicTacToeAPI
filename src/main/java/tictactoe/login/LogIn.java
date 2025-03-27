@@ -21,6 +21,8 @@ public final class LogIn {
     }
 
     public void logInUser(String userName, String password, HikariDataSource dataSource) throws LoginError {
+        System.out.println("userName " + userName);
+        System.out.println("password " + password);
 
         if (!DBUser.userExists(userName, dataSource) || !PasswordUtil.checkPassword(
             password,
