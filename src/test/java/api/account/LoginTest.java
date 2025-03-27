@@ -20,6 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import tictactoe.api.Server;
 import tictactoe.api.account.LoginResponse;
+import tictactoe.api.errors.ErrorCodes;
+import tictactoe.api.errors.ErrorResponse;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.LiquibaseMigrationService;
 
@@ -139,9 +141,12 @@ public class LoginTest {
 
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
 
 
-        Assertions.assertEquals(400, httpResponse.getCode());
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.INVALID_REQUEST_BODY.getCode(), errorResponse.getCode());
     }
 
     @Test
@@ -150,7 +155,11 @@ public class LoginTest {
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 
-        Assertions.assertEquals(400, httpResponse.getCode());
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.INVALID_REQUEST_BODY.getCode(), errorResponse.getCode());
     }
 
 

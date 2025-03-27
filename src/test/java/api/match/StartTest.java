@@ -21,6 +21,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import tictactoe.api.Server;
+import tictactoe.api.errors.ErrorCodes;
+import tictactoe.api.errors.ErrorResponse;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.DBMatch;
 import tictactoe.database.LiquibaseMigrationService;
@@ -77,12 +79,13 @@ public class StartTest {
 
 
     @Test
-    void PostRequestFalse() throws IOException {
-        HttpUriRequest request = new HttpPost("http://localhost:8080/match/start");
+    void getRequestFalse() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/start");
         request.setHeader("token", ApiUtil.getToken(UsersData.getUser1().getUserName(), UsersData.getUser1().getPassword()));
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 
+        //TODO
         //MethodNotAllowed error
         Assertions.assertEquals(405, httpResponse.getCode());
     }
@@ -91,7 +94,7 @@ public class StartTest {
     @Test
     void returnsRunningMatch() throws IOException {
         String json = "{\"difficulty\":\"EASY\"}";
-        HttpUriRequest request = new HttpGet("http://localhost:8080/match/start");
+        HttpUriRequest request = new HttpPost("http://localhost:8080/match/start");
         request.setHeader("token", ApiUtil.getToken(UsersData.getUser3().getUserName(), UsersData.getUser3().getPassword()));
         request.setEntity(new StringEntity(json));
 
@@ -107,7 +110,7 @@ public class StartTest {
     @Test
     void returnsEmptyMatch() throws IOException {
         String json = "{\"difficulty\":\"EASY\"}";
-        HttpUriRequest request = new HttpGet("http://localhost:8080/match/start");
+        HttpUriRequest request = new HttpPost("http://localhost:8080/match/start");
         request.setHeader("token", ApiUtil.getToken(UsersData.getUser2().getUserName(), UsersData.getUser2().getPassword()));
         request.setEntity(new StringEntity(json));
 
@@ -124,7 +127,7 @@ public class StartTest {
     @Test
     void newEmptyMatchGetsAddedToDB() throws IOException {
         String json = "{\"difficulty\":\"EASY\"}";
-        HttpUriRequest request = new HttpGet("http://localhost:8080/match/start");
+        HttpUriRequest request = new HttpPost("http://localhost:8080/match/start");
         request.setHeader("token", ApiUtil.getToken(UsersData.getUser2().getUserName(), UsersData.getUser2().getPassword()));
         request.setEntity(new StringEntity(json));
 
@@ -144,8 +147,12 @@ public class StartTest {
         request.setHeader("token", ApiUtil.getToken(UsersData.getUser3().getUserName(), UsersData.getUser3().getPassword()));
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
 
-        Assertions.assertEquals(405, httpResponse.getCode());
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.INVALID_REQUEST_BODY.getCode(), errorResponse.getCode());
     }
 
     @Test
@@ -156,8 +163,12 @@ public class StartTest {
         request.setEntity(new StringEntity(json));
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
 
-        Assertions.assertEquals(405, httpResponse.getCode());
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.INVALID_REQUEST_BODY.getCode(), errorResponse.getCode());
     }
 
     @Test
@@ -165,8 +176,12 @@ public class StartTest {
         HttpUriRequest request = new HttpPost("http://localhost:8080/match/start");
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
 
-        Assertions.assertEquals(401, httpResponse.getCode());
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.NO_TOKEN.getCode(), errorResponse.getCode());
     }
 
     @Test

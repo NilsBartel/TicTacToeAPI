@@ -4,7 +4,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import tictactoe.api.errors.PasswordStrengthError;
+import tictactoe.api.errors.ErrorCodes;
 import tictactoe.api.errors.SignUpError;
 import tictactoe.login.HashService;
 import tictactoe.login.PasswordUtil;
@@ -35,18 +35,22 @@ public class PasswordUtilTest {
     private static Stream<Arguments> generatePasswordsForFalseTest() {
         return Stream.of(
 
-                Arguments.of(""),
-                Arguments.of("1dQ!"),
-                Arguments.of("hallo123456"),
-                Arguments.of("hallo.....()("),
-                Arguments.of("hallo123..-="),
-                Arguments.of("HALLO11223..-?"),
-                Arguments.of("123.....jjjjjjjjj"),
-                Arguments.of("aaa"),
-                Arguments.of("AAA"),
-                Arguments.of("..."),
-                Arguments.of("111"),
-                Arguments.of("aaaaaaaaaaaaaaaaaasasasasasasasasasasasasasasasasasasa")
+                Arguments.of("", 8), //empty
+                Arguments.of("1dQ!", 9),  //too short
+                Arguments.of("hallo123456", 11),  //no uppercase
+                Arguments.of("hallo..122", 11),  //no uppercase
+                Arguments.of("hallo123..-=", 11),  //no uppercase
+                Arguments.of("HALLO11223..-?", 10),  //no lowercase
+                Arguments.of("PASSWORD1122!!.", 10),  //no lowercase
+                Arguments.of("PASSword!!.", 12),  //no digit
+                Arguments.of("NoNumber!!.", 12),  //no digit
+                Arguments.of("NoSpecial1212", 13),  //no special character
+                Arguments.of("Password1212", 13),  //no special character
+                Arguments.of("aaa", 9), //too short
+                Arguments.of("AAA", 9), //too short
+                Arguments.of("...", 9), //too short
+                Arguments.of("111", 9), //too short
+                Arguments.of("aaaaaaaaaaaaaaaaaasasasasasasasasasasasasasasasasasasa", 11) //no uppercase
         );
     }
 
@@ -57,12 +61,13 @@ public class PasswordUtilTest {
 
     @ParameterizedTest
     @MethodSource("generatePasswordsForFalseTest")
-    void passwordsFalseTest(String password) {
+    void passwordsFalseTest(String password, int code) {
 
         Exception exception = assertThrows(Exception.class, () ->
                 PasswordUtil.isPasswordValid(password));
 
-        assertInstanceOf(PasswordStrengthError.class, exception);
+        assertEquals(ErrorCodes.decodeCode(exception.getMessage()), code);
+        //assertInstanceOf(PasswordStrengthError.class, exception);
     }
 
     @ParameterizedTest

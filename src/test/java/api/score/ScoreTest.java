@@ -20,6 +20,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import tictactoe.api.Server;
+import tictactoe.api.errors.ErrorCodes;
+import tictactoe.api.errors.ErrorResponse;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.LiquibaseMigrationService;
 import tictactoe.game.Score;
@@ -116,7 +118,11 @@ public class ScoreTest {
         HttpUriRequest request = new HttpGet("http://localhost:8080/score/");
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
 
-        Assertions.assertEquals(401, httpResponse.getCode());
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.NO_TOKEN.getCode(), errorResponse.getCode());
     }
 }

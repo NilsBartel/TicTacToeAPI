@@ -12,17 +12,21 @@ import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.io.entity.S
 import com.sun.net.httpserver.HttpServer;
 import com.zaxxer.hikari.HikariDataSource;
 import logger.LoggerConfig;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import tictactoe.api.Server;
+import tictactoe.api.errors.ErrorCodes;
+import tictactoe.api.errors.ErrorResponse;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.DBUser;
 import tictactoe.database.LiquibaseMigrationService;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -97,8 +101,12 @@ public class RegisterTest {
 
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
 
-        Assertions.assertEquals(401, httpResponse.getCode());
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.INVALID_REQUEST_BODY.getCode(), errorResponse.getCode());
     }
 
     @Test
@@ -106,8 +114,11 @@ public class RegisterTest {
         HttpUriRequest request = new HttpPost("http://localhost:8080/account/register");
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
 
-        Assertions.assertEquals(401, httpResponse.getCode());
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.INVALID_REQUEST_BODY.getCode(), errorResponse.getCode());
     }
 
     @Test
@@ -130,19 +141,25 @@ public class RegisterTest {
         request.setEntity(new StringEntity(json));
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
 
-        Assertions.assertEquals(401, httpResponse.getCode());
+        Assertions.assertEquals(409, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.USERNAME_ALREADY_EXISTS.getCode(), errorResponse.getCode());
     }
 
     @Test
     void passwordTooWeakTest() throws IOException {
-        String json = "{\"userName\":\""+ UsersData.getUser1().getUserName() +"\", \"password\":\"Test1234\", \"answer1\":\"bruno\", \"answer2\":\"hamburg\"}";
+        String json = "{\"userName\":\"randomUserName\", \"password\":\"Test1234\", \"answer1\":\"bruno\", \"answer2\":\"hamburg\"}";
         HttpUriRequest request = new HttpPost("http://localhost:8080/account/register");
         request.setEntity(new StringEntity(json));
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
 
-        Assertions.assertEquals(401, httpResponse.getCode());
+        Assertions.assertEquals(409, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.PASSWORD_NO_SPECIAL.getCode(), errorResponse.getCode());
     }
 
     @Test
@@ -152,8 +169,11 @@ public class RegisterTest {
         request.setEntity(new StringEntity(json));
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
 
-        Assertions.assertEquals(401, httpResponse.getCode());
+        Assertions.assertEquals(409, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.USERNAME_TOO_SHORT.getCode(), errorResponse.getCode());
     }
 
     @Test

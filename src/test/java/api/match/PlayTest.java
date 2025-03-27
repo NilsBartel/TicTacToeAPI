@@ -11,16 +11,20 @@ import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.impl.clas
 import com.sun.net.httpserver.HttpServer;
 import com.zaxxer.hikari.HikariDataSource;
 import logger.LoggerConfig;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import tictactoe.api.Server;
+import tictactoe.api.errors.ErrorCodes;
+import tictactoe.api.errors.ErrorResponse;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.LiquibaseMigrationService;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -86,8 +90,12 @@ public class PlayTest {
         HttpUriRequest request = new HttpPost("http://localhost:8080/match/play");
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
 
-        Assertions.assertEquals(401, httpResponse.getCode());
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.NO_TOKEN.getCode(), errorResponse.getCode());
     }
 
     @Test
