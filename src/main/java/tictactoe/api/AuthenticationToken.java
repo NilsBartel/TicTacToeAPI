@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 import net.bytebuddy.utility.RandomString;
 import tictactoe.api.errors.AuthorisationError;
 import tictactoe.api.errors.ErrorCodes;
-import tictactoe.api.errors.LoginError;
 
 public final class AuthenticationToken {
 

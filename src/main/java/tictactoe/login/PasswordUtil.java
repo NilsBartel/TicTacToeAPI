@@ -56,7 +56,7 @@ public final class PasswordUtil {
     }
 
 
-    public static Boolean checkSecurityQuestions(int userID, User user, HikariDataSource dataSource) throws LoginError, RequestIncompleteError {
+    public static Boolean checkSecurityQuestions(int userID, User user, HikariDataSource dataSource) throws RequestIncompleteError {
         if (StringUtil.isNullOrEmpty(user.getAnswer1()) || StringUtil.isNullOrEmpty(user.getAnswer2())) {
             throw new RequestIncompleteError(ErrorCodes.QUESTION_NOT_FOUND);
         }

@@ -25,7 +25,7 @@ public class ScoreController {
                 })
         );
     }
-    private static void handeScore(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, LoginError, AuthorisationError, RequestIncompleteError {
+    private static void handeScore(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, AuthorisationError, RequestIncompleteError {
         ObjectMapper objectMapper = new ObjectMapper();
         Score score;
         String token;

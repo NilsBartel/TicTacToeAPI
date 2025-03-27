@@ -85,7 +85,6 @@ public class StartTest {
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 
-        //TODO
         //MethodNotAllowed error
         Assertions.assertEquals(405, httpResponse.getCode());
     }

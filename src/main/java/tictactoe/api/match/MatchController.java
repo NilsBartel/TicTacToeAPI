@@ -273,7 +273,7 @@ public class MatchController {
         responseBody.close();
     }
 
-    public static void handleCreateMatch(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, LoginError, AuthorisationError, RequestIncompleteError {
+    public static void handleCreateMatch(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, AuthorisationError, RequestIncompleteError {
         int userID;
         Match match;
         DifficultyState difficulty;

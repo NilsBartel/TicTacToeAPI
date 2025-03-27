@@ -53,9 +53,8 @@ public class ErrorHandler {
                 exchange.sendResponseHeaders(422, 0);
             }
             default -> {
-                //TODO:
-                response = new ErrorResponse("still working on it", 0);
-                exchange.sendResponseHeaders(400, 0);
+                response = new ErrorResponse("Internal server Error", -1);
+                exchange.sendResponseHeaders(500, 0);
             }
         }
         return response;
