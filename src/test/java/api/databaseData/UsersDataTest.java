@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import tictactoe.api.errors.LoginError;
+import tictactoe.api.errors.RequestIncompleteError;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.DBUser;
 import tictactoe.database.LiquibaseMigrationService;
@@ -60,7 +61,7 @@ class UsersDataTest {
 
 
     @Test
-    void user1Test() throws LoginError {
+    void user1Test() throws LoginError, RequestIncompleteError {
         User user = UsersData.getUser1();
 
         Assertions.assertTrue(DBUser.userExists(user.getUserName(), dataSource));
@@ -69,7 +70,7 @@ class UsersDataTest {
     }
 
     @Test
-    void user2Test() throws LoginError {
+    void user2Test() throws LoginError, RequestIncompleteError {
         User user = UsersData.getUser2();
 
         Assertions.assertTrue(DBUser.userExists(user.getUserName(), dataSource));
@@ -78,7 +79,7 @@ class UsersDataTest {
     }
 
     @Test
-    void user3Test() throws LoginError {
+    void user3Test() throws LoginError, RequestIncompleteError {
         User user = UsersData.getUser3();
 
         Assertions.assertTrue(DBUser.userExists(user.getUserName(), dataSource));

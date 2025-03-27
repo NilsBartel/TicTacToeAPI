@@ -13,10 +13,7 @@ import com.sun.net.httpserver.HttpServer;
 import com.zaxxer.hikari.HikariDataSource;
 import io.vavr.control.Try;
 import tictactoe.api.AuthenticationToken;
-import tictactoe.api.errors.ErrorHandler;
-import tictactoe.api.errors.InputError;
-import tictactoe.api.errors.LoginError;
-import tictactoe.api.errors.MethodNotAllowed;
+import tictactoe.api.errors.*;
 import tictactoe.database.DBUser;
 import tictactoe.login.LogIn;
 import tictactoe.login.PasswordUtil;
@@ -50,7 +47,7 @@ public class LoginController {
         );
     }
 
-    private static void handleLogin(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, LoginError {
+    private static void handleLogin(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, LoginError, RequestIncompleteError {
         LoginResponse loginResponse = new LoginResponse();
         OutputStream responseBody = exchange.getResponseBody();
 
@@ -64,7 +61,8 @@ public class LoginController {
                 System.out.println(user.getUserName());
                 System.out.println(user.getPassword());
             } catch (JsonProcessingException e) {
-                throw new InputError("Invalid request body");
+                throw new RequestIncompleteError(ErrorCodes.INVALID_REQUEST_BODY);
+                //throw new InputError("Invalid request body");
             }
 
             LogIn.getInstance().logInUser(user.getUserName(), user.getPassword(), dataSource);
@@ -98,7 +96,7 @@ public class LoginController {
         responseBody.close();
     }
 
-    private static void handleRegister(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, LoginError {
+    private static void handleRegister(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, LoginError, RequestIncompleteError, SignUpError {
         LoginResponse loginResponse = new LoginResponse();
 
         if (exchange.getRequestMethod().equals("POST")) {
@@ -109,7 +107,8 @@ public class LoginController {
                 user = objectMapper.readValue(requestBody, User.class);
             } catch (JsonProcessingException e) {
                 System.out.println(requestBody);
-                throw new LoginError("Invalid request body");
+                //throw new LoginError("Invalid request body");
+                throw new RequestIncompleteError(ErrorCodes.INVALID_REQUEST_BODY);
             }
 
             LogIn.getInstance().createUser(user, dataSource);
@@ -133,7 +132,7 @@ public class LoginController {
         responseBody.close();
     }
 
-    private static void handlePasswordReset(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, LoginError {
+    private static void handlePasswordReset(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, LoginError, SignUpError, RequestIncompleteError {
         LoginResponse loginResponse = new LoginResponse();
 
         if (exchange.getRequestMethod().equals("POST")) {
@@ -143,7 +142,8 @@ public class LoginController {
             try {
                 user = objectMapper.readValue(requestBody, User.class);
             } catch (JsonProcessingException e) {
-                throw new InputError("Invalid request body");
+                throw new RequestIncompleteError(ErrorCodes.INVALID_REQUEST_BODY);
+                //throw new InputError("Invalid request body");
             }
             int userID = DBUser.getUserId(user.getUserName(), dataSource);
 
@@ -154,7 +154,8 @@ public class LoginController {
                 loginResponse.setMessage("password reset successful");
                 exchange.sendResponseHeaders(200, 0);
             } else {
-                throw new LoginError("password is too weak");
+                //throw new LoginError("password is too weak");
+                throw new SignUpError(ErrorCodes.PASSWORD_WEAK);
             }
 
         } else if (exchange.getRequestMethod().equals("OPTIONS")) {

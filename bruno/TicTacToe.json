@@ -1,0 +1,312 @@
+{
+  "name": "TicTacToe",
+  "version": "1",
+  "items": [
+    {
+      "type": "folder",
+      "name": "Match",
+      "items": [
+        {
+          "type": "http",
+          "name": "MatchHistory",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:8080/match/matchHistory/2",
+            "method": "GET",
+            "headers": [
+              {
+                "name": "token",
+                "value": "88ssFhHlMXpMY6hvQfGmdNukXLz9yBSg",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "create Match",
+          "seq": 3,
+          "request": {
+            "url": "http://localhost:8080/match/create",
+            "method": "GET",
+            "headers": [
+              {
+                "name": "token",
+                "value": "EJz2VFLLvq6qd5N0IbRHWu3it0e6Ki2O",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\"difficulty\":\"EASY\"}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "match",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8080/match/1",
+            "method": "GET",
+            "headers": [
+              {
+                "name": "token",
+                "value": "0ZlDuSMGX7WiEmsBK4IcIlU3gduD68Mq",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "play",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/match/play/",
+            "method": "POST",
+            "headers": [
+              {
+                "name": "token",
+                "value": "7NNcpg1f3d4RPKqiYLKhnerzdpXAfcVB",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"board\": {\n    \"rows\": [\n      {\n        \"fields\": [\n          {\n            \"symbol\": \" \"\n          },\n          {\n            \"symbol\": \" \"\n          },\n          {\n            \"symbol\": \" \"\n          }\n        ]\n      },\n      {\n        \"fields\": [\n          {\n            \"symbol\": \" \"\n          },\n          {\n            \"symbol\": \" \"\n          },\n          {\n            \"symbol\": \" \"\n          }\n        ]\n      },\n      {\n        \"fields\": [\n          {\n            \"symbol\": \" \"\n          },\n          {\n            \"symbol\": \" \"\n          },\n          {\n            \"symbol\": \" \"\n          }\n        ]\n      }\n    ]\n  },\n  \"status\": \"RUNNING\",\n  \"difficulty\": \"EASY\",\n  \"isPlayerTurn\": true,\n  \"matchID\": 1,\n  \"startTime\": 1741780699448,\n  \"endTime\": null\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "start",
+          "seq": 5,
+          "request": {
+            "url": "http://localhost:8080/match/start",
+            "method": "GET",
+            "headers": [
+              {
+                "name": "token",
+                "value": "6VW35zkNpIUvg1CP2Z2SgpVakPtBRVW0",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\"difficulty\": \"EASY\"}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "login",
+      "items": [
+        {
+          "type": "http",
+          "name": "login",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8080/account/login",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\"userName\":\"test\", \"password\":\"Test1234!\"}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "register",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/account/register",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\"userName\":\"test\", \"password\":\"Test1234!\", \"answer1\":\"bruno\", \"answer2\":\"berlin\"}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "reset",
+          "seq": 3,
+          "request": {
+            "url": "http://localhost:8080/account/resetPassword",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\"userName\":\"test\", \"password\":\"tEst123456!\", \"answer1\":\"bruno\", \"answer2\":\"berlin\"}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "util",
+      "items": [
+        {
+          "type": "http",
+          "name": "Score",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8080/score/",
+            "method": "GET",
+            "headers": [
+              {
+                "name": "token",
+                "value": "VS8qRy5ZIbXFdvZNSA2LoR4Hgj65Ab",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Analyze",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/analyze/",
+            "method": "GET",
+            "headers": [
+              {
+                "name": "token",
+                "value": "h6LIoNIIUscckXAp0kz7ffO5etJiVwd4",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "environments": [],
+  "brunoConfig": {
+    "version": "1",
+    "name": "TicTacToe",
+    "type": "collection",
+    "ignore": [
+      "node_modules",
+      ".git"
+    ]
+  }
+}

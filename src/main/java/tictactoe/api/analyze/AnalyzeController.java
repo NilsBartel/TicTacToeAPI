@@ -11,6 +11,7 @@ import com.sun.net.httpserver.HttpServer;
 import com.zaxxer.hikari.HikariDataSource;
 import io.vavr.control.Try;
 import tictactoe.api.AuthenticationToken;
+import tictactoe.api.errors.AuthorisationError;
 import tictactoe.api.errors.ErrorHandler;
 import tictactoe.api.errors.LoginError;
 import tictactoe.api.errors.MethodNotAllowed;
@@ -29,7 +30,7 @@ public class AnalyzeController {
                         })
         );
     }
-    private static void handleAnalyze(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, LoginError {
+    private static void handleAnalyze(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, AuthorisationError {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<List<Position>, Integer> positionMap;
 

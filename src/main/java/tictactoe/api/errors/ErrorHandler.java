@@ -28,35 +28,69 @@ public class ErrorHandler {
         ErrorResponse response;
 
         switch (throwable) {
-            case MatchError matchError -> {
-                response = new ErrorResponse(throwable.getMessage(), 422);
+            case AuthorisationError authorisationError -> {
+                response = new ErrorResponse(ErrorCodes.decodeMessage(throwable.getMessage()), ErrorCodes.decodeCode(throwable.getMessage()));
+                exchange.sendResponseHeaders(401, 0);
+            }
+            case RequestIncompleteError requestIncompleteError -> {
+                response = new ErrorResponse(ErrorCodes.decodeMessage(throwable.getMessage()), ErrorCodes.decodeCode(throwable.getMessage()));
                 exchange.sendResponseHeaders(422, 0);
+            }
+            case SignUpError signUpError -> {
+                response = new ErrorResponse(ErrorCodes.decodeMessage(throwable.getMessage()), ErrorCodes.decodeCode(throwable.getMessage()));
+                exchange.sendResponseHeaders(409, 0);
             }
             case LoginError loginError -> {
                 response = new ErrorResponse(ErrorCodes.decodeMessage(throwable.getMessage()), ErrorCodes.decodeCode(throwable.getMessage()));
                 exchange.sendResponseHeaders(401, 0);
             }
             case MethodNotAllowed methodNotAllowed -> {
-                response = new ErrorResponse(throwable.getMessage(), 405);
+                response = new ErrorResponse(throwable.getMessage(), -1);
                 exchange.sendResponseHeaders(405, 0);
             }
-            case NoTokenError noTokenError -> {
-                response = new ErrorResponse(throwable.getMessage(), 401);
-                exchange.sendResponseHeaders(401, 0);
+            case MatchError matchError -> {
+                response = new ErrorResponse(throwable.getMessage(), 422);
+                exchange.sendResponseHeaders(422, 0);
             }
-            case InputError inputError -> {
-                response = new ErrorResponse(throwable.getMessage(), 400);
+            default -> {
+                //TODO:
+                response = new ErrorResponse("still working on it", 0);
                 exchange.sendResponseHeaders(400, 0);
             }
-            case PasswordStrengthError passwordStrengthError -> {
-                response = new ErrorResponse(throwable.getMessage(), 403);
-                exchange.sendResponseHeaders(403, 0);
-            }
-            case null, default -> {
-                response = new ErrorResponse(throwable.getMessage(), 500);
-                exchange.sendResponseHeaders(500, 0);
-            }
         }
+
+
+
+//        switch (throwable) {
+//            case MatchError matchError -> {
+//                response = new ErrorResponse(throwable.getMessage(), 422);
+//                exchange.sendResponseHeaders(422, 0);
+//            }
+//            case LoginError loginError -> {
+//                response = new ErrorResponse(ErrorCodes.decodeMessage(throwable.getMessage()), ErrorCodes.decodeCode(throwable.getMessage()));
+//                exchange.sendResponseHeaders(401, 0);
+//            }
+//            case MethodNotAllowed methodNotAllowed -> {
+//                response = new ErrorResponse(throwable.getMessage(), 405);
+//                exchange.sendResponseHeaders(405, 0);
+//            }
+//            case NoTokenError noTokenError -> {
+//                response = new ErrorResponse(throwable.getMessage(), 401);
+//                exchange.sendResponseHeaders(401, 0);
+//            }
+//            case InputError inputError -> {
+//                response = new ErrorResponse(throwable.getMessage(), 400);
+//                exchange.sendResponseHeaders(400, 0);
+//            }
+//            case PasswordStrengthError passwordStrengthError -> {
+//                response = new ErrorResponse(throwable.getMessage(), 403);
+//                exchange.sendResponseHeaders(403, 0);
+//            }
+//            case null, default -> {
+//                response = new ErrorResponse(throwable.getMessage(), 500);
+//                exchange.sendResponseHeaders(500, 0);
+//            }
+//        }
         return response;
     }
 

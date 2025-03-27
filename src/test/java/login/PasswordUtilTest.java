@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import tictactoe.api.errors.PasswordStrengthError;
+import tictactoe.api.errors.SignUpError;
 import tictactoe.login.HashService;
 import tictactoe.login.PasswordUtil;
 
@@ -66,7 +67,7 @@ public class PasswordUtilTest {
 
     @ParameterizedTest
     @MethodSource("generatePasswordsForTrueTest")
-    void passwordsTrueTest(String password, boolean expected) {
+    void passwordsTrueTest(String password, boolean expected) throws SignUpError {
 
         boolean bool = PasswordUtil.isPasswordValid(password);
 

@@ -68,7 +68,7 @@ public class MatchController {
 
     }
 
-    public static void handleMatch(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, LoginError {
+    public static void handleMatch(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, AuthorisationError, RequestIncompleteError {
         String token;
         Match match;
         OutputStream responseBody = exchange.getResponseBody();
@@ -81,7 +81,8 @@ public class MatchController {
             try {
                 token = exchange.getRequestHeaders().get("token").getFirst();
             } catch (Exception e) {
-                throw new NoTokenError("No token provided");
+                throw new RequestIncompleteError(ErrorCodes.NO_TOKEN);
+                //throw new NoTokenError("No token provided");
             }
             AuthenticationToken.getInstance().authenticate(token);
             int userID = AuthenticationToken.getInstance().getUserID(token);
@@ -115,7 +116,7 @@ public class MatchController {
         responseBody.close();
     }
 
-    public static void handlePlay(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MatchError, MethodNotAllowed, LoginError {
+    public static void handlePlay(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MatchError, MethodNotAllowed, AuthorisationError, RequestIncompleteError {
         int userID;
         Match match;
         String token;
@@ -127,7 +128,8 @@ public class MatchController {
             try {
                 token = exchange.getRequestHeaders().get("token").getFirst();
             } catch (Exception e) {
-                throw new NoTokenError("No token provided");
+                throw new RequestIncompleteError(ErrorCodes.NO_TOKEN);
+                //throw new NoTokenError("No token provided");
             }
             AuthenticationToken.getInstance().authenticate(token);
             userID = AuthenticationToken.getInstance().getUserID(token);
@@ -137,7 +139,8 @@ public class MatchController {
             try {
                 match = objectMapper.readValue(requestBody, Match.class);
             } catch (JsonProcessingException e) {
-                throw new InputError("No request body provided");
+                throw new RequestIncompleteError(ErrorCodes.INVALID_REQUEST_BODY);
+                //throw new InputError("No request body provided");
             }
             match.printBoard();
 
@@ -170,7 +173,7 @@ public class MatchController {
         responseBody.close();
     }
 
-    public static void handleStart(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, LoginError {
+    public static void handleStart(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, AuthorisationError, RequestIncompleteError {
         int userID;
         Match match;
         String token;
@@ -184,7 +187,8 @@ public class MatchController {
             try {
                 token = exchange.getRequestHeaders().get("token").getFirst();
             } catch (Exception e) {
-                throw new NoTokenError("No token provided");
+                throw new RequestIncompleteError(ErrorCodes.NO_TOKEN);
+                //throw new NoTokenError("No token provided");
             }
             AuthenticationToken.getInstance().authenticate(token);
 
@@ -194,7 +198,8 @@ public class MatchController {
             try {
                 match = objectMapper.readValue(requestBody, Match.class);
             } catch (JsonProcessingException e) {
-                    throw new InputError("Invalid request body provided. Need a difficulty. {\"difficulty\": \"EASY\"}");
+                throw new RequestIncompleteError(ErrorCodes.INVALID_REQUEST_BODY);
+                    //throw new InputError("Invalid request body provided. Need a difficulty. {\"difficulty\": \"EASY\"}");
             }
 
             difficulty = match.getDifficulty();
@@ -225,7 +230,7 @@ public class MatchController {
         responseBody.close();
     }
 
-    public static void handleMatchHistory(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, LoginError {
+    public static void handleMatchHistory(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, AuthorisationError, RequestIncompleteError {
         int userID;
         List<Match> matchHistory;
         String token;
@@ -238,7 +243,8 @@ public class MatchController {
             try {
                 token = exchange.getRequestHeaders().get("token").getFirst();
             } catch (Exception e) {
-                throw new NoTokenError("No token provided");
+                throw new RequestIncompleteError(ErrorCodes.NO_TOKEN);
+                //throw new NoTokenError("No token provided");
             }
             AuthenticationToken.getInstance().authenticate(token);
 
@@ -273,7 +279,7 @@ public class MatchController {
         responseBody.close();
     }
 
-    public static void handleCreateMatch(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, LoginError {
+    public static void handleCreateMatch(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, LoginError, AuthorisationError, RequestIncompleteError {
         int userID;
         Match match;
         DifficultyState difficulty;
@@ -282,7 +288,8 @@ public class MatchController {
         try {
             token = exchange.getRequestHeaders().get("token").getFirst();
         } catch (Exception e) {
-            throw new NoTokenError("No token provided");
+            throw new RequestIncompleteError(ErrorCodes.NO_TOKEN);
+            //throw new NoTokenError("No token provided");
         }
         AuthenticationToken.getInstance().authenticate(token);
 
@@ -294,7 +301,8 @@ public class MatchController {
             try {
                 match = objectMapper.readValue(requestBody, Match.class);
             } catch (JsonProcessingException e) {
-                throw new InputError("Wrong or no request body provided. Need a difficulty. {\"difficulty\": \"EASY\"}");
+                throw new RequestIncompleteError(ErrorCodes.INVALID_REQUEST_BODY);
+                //throw new InputError("Wrong or no request body provided. Need a difficulty. {\"difficulty\": \"EASY\"}");
             }
             difficulty = match.getDifficulty();
 
