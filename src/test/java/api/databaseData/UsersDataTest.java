@@ -61,7 +61,7 @@ class UsersDataTest {
 
 
     @Test
-    void user1Test() throws LoginError, RequestIncompleteError {
+    void user1Test() throws RequestIncompleteError {
         User user = UsersData.getUser1();
 
         Assertions.assertTrue(DBUser.userExists(user.getUserName(), dataSource));
@@ -70,7 +70,7 @@ class UsersDataTest {
     }
 
     @Test
-    void user2Test() throws LoginError, RequestIncompleteError {
+    void user2Test() throws RequestIncompleteError {
         User user = UsersData.getUser2();
 
         Assertions.assertTrue(DBUser.userExists(user.getUserName(), dataSource));
@@ -79,12 +79,21 @@ class UsersDataTest {
     }
 
     @Test
-    void user3Test() throws LoginError, RequestIncompleteError {
+    void user3Test() throws RequestIncompleteError {
         User user = UsersData.getUser3();
 
         Assertions.assertTrue(DBUser.userExists(user.getUserName(), dataSource));
         Assertions.assertTrue(PasswordUtil.checkPassword(user.getPassword(), DBUser.getPassword(user.getUserName(), dataSource)));
         Assertions.assertTrue(PasswordUtil.checkSecurityQuestions(3, user, dataSource));
+    }
+
+    @Test
+    void user4Test() throws RequestIncompleteError {
+        User user = UsersData.getUser4();
+
+        Assertions.assertTrue(DBUser.userExists(user.getUserName(), dataSource));
+        Assertions.assertTrue(PasswordUtil.checkPassword(user.getPassword(), DBUser.getPassword(user.getUserName(), dataSource)));
+        Assertions.assertTrue(PasswordUtil.checkSecurityQuestions(4, user, dataSource));
     }
 
 

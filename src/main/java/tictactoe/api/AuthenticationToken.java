@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import net.bytebuddy.utility.RandomString;
-import tictactoe.api.errors.AuthorisationError;
+import tictactoe.api.errors.AuthenticationError;
 import tictactoe.api.errors.ErrorCodes;
 
 public final class AuthenticationToken {
@@ -35,9 +35,9 @@ public final class AuthenticationToken {
     }
 
 
-    public void authenticate(String authToken) throws AuthorisationError {
+    public void authenticate(String authToken) throws AuthenticationError {
         if (!authMap.containsKey(authToken) || !timestampValid(authMap.get(authToken).getValue())) {
-            throw new AuthorisationError(ErrorCodes.TOKEN_INVALID);
+            throw new AuthenticationError(ErrorCodes.TOKEN_INVALID);
         }
     }
 

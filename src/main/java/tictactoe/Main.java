@@ -6,6 +6,7 @@ import ch.qos.logback.classic.Level;
 import tictactoe.database.LiquibaseMigrationService;
 import tictactoe.api.Server;
 import tictactoe.database.*;
+import tictactoe.login.HashService;
 
 import java.io.IOException;
 

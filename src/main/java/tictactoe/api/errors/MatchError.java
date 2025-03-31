@@ -14,4 +14,8 @@ public class MatchError extends Exception {
         super(message, cause);
     }
 
+    public MatchError(ErrorCodes errorCode) {
+        super(errorCode.getMessage());
+    }
+
 }

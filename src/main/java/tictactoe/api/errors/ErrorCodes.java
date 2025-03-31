@@ -21,7 +21,9 @@ public enum ErrorCodes {
     PASSWORD_NO_SPECIAL(13, "Password needs special character"),
 
     QUESTION_NOT_FOUND(14, "Security Questions Empty"),
-    QUESTION_WRONG(15, "Security Question is wrong");
+    QUESTION_WRONG(15, "Security Question is wrong"),
+
+    MATCH_HISTORY_EMPTY(16, "Match History is Empty.");
 
 
 

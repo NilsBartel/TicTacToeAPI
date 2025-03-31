@@ -28,7 +28,7 @@ public class ErrorHandler {
         ErrorResponse response;
 
         switch (throwable) {
-            case AuthorisationError authorisationError -> {
+            case AuthenticationError authenticationError -> {
                 response = new ErrorResponse(ErrorCodes.decodeMessage(throwable.getMessage()), ErrorCodes.decodeCode(throwable.getMessage()));
                 exchange.sendResponseHeaders(401, 0);
             }

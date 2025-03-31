@@ -68,7 +68,7 @@ public class MatchController {
 
     }
 
-    public static void handleMatch(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, AuthorisationError, RequestIncompleteError {
+    public static void handleMatch(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, AuthenticationError, RequestIncompleteError {
         String token;
         Match match;
         OutputStream responseBody = exchange.getResponseBody();
@@ -115,7 +115,7 @@ public class MatchController {
         responseBody.close();
     }
 
-    public static void handlePlay(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MatchError, MethodNotAllowed, AuthorisationError, RequestIncompleteError {
+    public static void handlePlay(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MatchError, MethodNotAllowed, AuthenticationError, RequestIncompleteError {
         int userID;
         Match match;
         String token;
@@ -170,7 +170,7 @@ public class MatchController {
         responseBody.close();
     }
 
-    public static void handleStart(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, AuthorisationError, RequestIncompleteError {
+    public static void handleStart(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, AuthenticationError, RequestIncompleteError {
         int userID;
         Match match;
         String token;
@@ -225,7 +225,7 @@ public class MatchController {
         responseBody.close();
     }
 
-    public static void handleMatchHistory(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, AuthorisationError, RequestIncompleteError {
+    public static void handleMatchHistory(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, AuthenticationError, RequestIncompleteError {
         int userID;
         List<Match> matchHistory;
         String token;
@@ -253,6 +253,10 @@ public class MatchController {
             userID = AuthenticationToken.getInstance().getUserID(token);
             matchHistory =
                 DBMatch.getLastNMatchesFromUser(userID, matchHistorySize, dataSource);
+            if (matchHistory.isEmpty()) {
+                throw new MatchError(ErrorCodes.MATCH_HISTORY_EMPTY);
+            }
+
 
             exchange.sendResponseHeaders(200, 0);
             responseBody.write(objectMapper.writeValueAsBytes(matchHistory));
@@ -273,7 +277,7 @@ public class MatchController {
         responseBody.close();
     }
 
-    public static void handleCreateMatch(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, AuthorisationError, RequestIncompleteError {
+    public static void handleCreateMatch(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, AuthenticationError, RequestIncompleteError {
         int userID;
         Match match;
         DifficultyState difficulty;
