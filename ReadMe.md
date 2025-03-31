@@ -142,3 +142,26 @@ Example of a match Object:
   "endTime": null
 }
 ```
+
+
+
+## Errors:
+| code: | message                           |
+|-------|-----------------------------------|
+| 0     | No Token provided.                |
+| 1     | Provided Token invalid.           |
+| 2     | Request Body Incomplete           |
+| 4     | Username does not Exist           |
+| 5     | Username or Password is incorrect |
+| 6     | Username already exists           |
+| 7     | Username too short                |
+| 3     | Username too short                |
+| 8     | Password is empty                 |
+| 9     | Password too short                |
+| 10    | Password needs lowercase letter   |
+| 11    | Password needs uppercase letter   |
+| 12    | Password needs digit              |
+| 13    | Password needs special character  |
+| 14    | Security Questions Empty          |
+| 15    | Security Question is wrong        |
+| 16    | Match History is Empty.           |
