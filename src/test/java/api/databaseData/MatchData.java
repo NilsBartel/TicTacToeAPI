@@ -22,10 +22,6 @@ public class MatchData {
     private static final Match match4 = new Match(board4, MatchStatus.RUNNING, DifficultyState.MEDIUM, true, 4, new Timestamp(1741608125524L), new Timestamp(1741608143177L));
 
 
-
-
-
-
     public static Match getMatch1() {
         return match1;
     }

@@ -27,7 +27,6 @@ public class ApiMatchUtil {
 
         List<Position> positions = positionsThatChanged(dbMatch.getBoard(), match.getBoard());
 
-
         if (positions.isEmpty()) {
             throw new MatchError("No new input found");
         }

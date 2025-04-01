@@ -95,6 +95,15 @@ class UsersDataTest {
         Assertions.assertTrue(PasswordUtil.checkPassword(user.getPassword(), DBUser.getPassword(user.getUserName(), dataSource)));
         Assertions.assertTrue(PasswordUtil.checkSecurityQuestions(4, user, dataSource));
     }
+    
+    @Test
+    void user5Test() throws RequestIncompleteError {
+        User user = UsersData.getUser5();
+
+        Assertions.assertTrue(DBUser.userExists(user.getUserName(), dataSource));
+        Assertions.assertTrue(PasswordUtil.checkPassword(user.getPassword(), DBUser.getPassword(user.getUserName(), dataSource)));
+        Assertions.assertTrue(PasswordUtil.checkSecurityQuestions(5, user, dataSource));
+    }
 
 
 

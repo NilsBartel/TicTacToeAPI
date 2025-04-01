@@ -9,6 +9,8 @@ public class UsersData {
     private static final User user2 = new User("nils", "Password123.", "hamburg", "bruno");
     private static final User user3 = new User("robert", "RobertsPassword345!", "berlin", "WauWau");
     private static final User user4 = new User("bruno", "Password123!", "berlin", "hundi");
+    private static final User user5 = new User("history", "Password123!", "berlin", "hundi");
+
 
 
 
@@ -27,4 +29,7 @@ public class UsersData {
     public static User getUser4() {
         return user4;
     }
+
+    public static User getUser5() { return user5; }
 }
+
