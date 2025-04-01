@@ -58,8 +58,6 @@ public class LoginController {
 
             try {
                 user = objectMapper.readValue(requestBody, User.class);
-                System.out.println(user.getUserName());
-                System.out.println(user.getPassword());
             } catch (JsonProcessingException e) {
                 throw new RequestIncompleteError(ErrorCodes.INVALID_REQUEST_BODY);
 

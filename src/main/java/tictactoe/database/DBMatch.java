@@ -212,20 +212,12 @@ public class DBMatch {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
         return board;
     }
 
     public static List<Match> getMatchHistoryWithParams(int userID, Map<String, String> map , HikariDataSource dataSource) {
         List<Match> matches = new ArrayList<>();
-        int n = Integer.parseInt(map.get("seconds"));
-        String seconds = map.get("seconds");
-
         String sql = buildSQLString(map);
-//                "SELECT * FROM match LEFT JOIN time ON match.match_id = time.match_id WHERE match.user_id = ? " +
-//                        "AND starttime > now() - CONCAT(?, ' seconds')::interval";
-
-        System.out.println(sql);
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement prepStatement = connection.prepareStatement(sql)
@@ -250,24 +242,11 @@ public class DBMatch {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        System.out.println(matches);
         return matches;
     }
 
 
     public static String buildSQLString(Map<String, String> map) {
-
-//        String sql = "SELECT * FROM match " +
-//                "LEFT JOIN time ON match.match_id = time.match_id " +
-//                "WHERE match.user_id = ? " +
-//                "AND difficulty = '" + map.get("difficulty") + "' " +
-//                "AND status = '" + map.get("status") + "' " +
-//                "AND starttime > now() - CONCAT('" + map.get("seconds") + " ',' seconds')::interval " +
-//                "ORDER BY match.match_id DESC LIMIT " + map.get("amount");
-
-
-            //TODO: add the different things with if statements
-
 
         String sql = "SELECT * FROM match " +
                 "LEFT JOIN time ON match.match_id = time.match_id " +
@@ -290,11 +269,7 @@ public class DBMatch {
             if (map.containsKey("amount")) {
                 sql = sql.concat("LIMIT " + map.get("amount"));
             }
-
-
-
         return sql;
-
     }
 
 }
