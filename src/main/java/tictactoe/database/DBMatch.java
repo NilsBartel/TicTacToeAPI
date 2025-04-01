@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.zaxxer.hikari.HikariDataSource;
 import tictactoe.board.Board;
@@ -213,6 +214,87 @@ public class DBMatch {
         }
 
         return board;
+    }
+
+    public static List<Match> getMatchHistoryWithParams(int userID, Map<String, String> map , HikariDataSource dataSource) {
+        List<Match> matches = new ArrayList<>();
+        int n = Integer.parseInt(map.get("seconds"));
+        String seconds = map.get("seconds");
+
+        String sql = buildSQLString(map);
+//                "SELECT * FROM match LEFT JOIN time ON match.match_id = time.match_id WHERE match.user_id = ? " +
+//                        "AND starttime > now() - CONCAT(?, ' seconds')::interval";
+
+        System.out.println(sql);
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement prepStatement = connection.prepareStatement(sql)
+        ) {
+            prepStatement.setInt(1, userID);
+            ResultSet resultSet = prepStatement.executeQuery();
+            while (resultSet.next()) {
+                Match match = new Match();
+                int matchID = resultSet.getInt("match_id");
+                match.setDifficulty(DifficultyState.valueOf(resultSet.getString("difficulty")));
+                match.setStatus(MatchStatus.valueOf(resultSet.getString("status")));
+                match.setIsPlayerTurn(resultSet.getBoolean("isplayerturn"));
+                match.setMatchID(resultSet.getInt("match_id"));
+                match.setStartTime(resultSet.getTimestamp("starttime"));
+                match.setEndTime(resultSet.getTimestamp("endtime"));
+
+                match.setBoard(getBoard(matchID, dataSource));
+
+                matches.add(match);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println(matches);
+        return matches;
+    }
+
+
+    public static String buildSQLString(Map<String, String> map) {
+
+//        String sql = "SELECT * FROM match " +
+//                "LEFT JOIN time ON match.match_id = time.match_id " +
+//                "WHERE match.user_id = ? " +
+//                "AND difficulty = '" + map.get("difficulty") + "' " +
+//                "AND status = '" + map.get("status") + "' " +
+//                "AND starttime > now() - CONCAT('" + map.get("seconds") + " ',' seconds')::interval " +
+//                "ORDER BY match.match_id DESC LIMIT " + map.get("amount");
+
+
+            //TODO: add the different things with if statements
+
+
+        String sql = "SELECT * FROM match " +
+                "LEFT JOIN time ON match.match_id = time.match_id " +
+                "WHERE match.user_id = ? ";
+
+            if (map.containsKey("difficulty")) {
+                sql = sql.concat("AND difficulty = '" + map.get("difficulty") + "' ");
+            }
+
+            if (map.containsKey("status")) {
+                sql = sql.concat("AND status = '" + map.get("status") + "' ");
+            }
+
+            if (map.containsKey("seconds") && Integer.parseInt(map.get("seconds")) != 0) {
+                sql = sql.concat("AND starttime > now() - CONCAT('" + map.get("seconds") + " ',' seconds')::interval ");
+            }
+
+            sql = sql.concat("ORDER BY match.match_id DESC ");
+
+            if (map.containsKey("amount")) {
+                sql = sql.concat("LIMIT " + map.get("amount"));
+            }
+
+
+
+        return sql;
+
     }
 
 }

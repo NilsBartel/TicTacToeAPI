@@ -3,12 +3,15 @@ package tictactoe;
 import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Level;
 
+import tictactoe.api.match.MatchController;
 import tictactoe.database.LiquibaseMigrationService;
 import tictactoe.api.Server;
 import tictactoe.database.*;
 import tictactoe.login.HashService;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main {
 
