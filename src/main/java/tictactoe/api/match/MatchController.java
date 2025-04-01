@@ -3,7 +3,6 @@ package tictactoe.api.match;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -20,14 +19,11 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.vavr.control.Try;
 import tictactoe.api.AuthenticationToken;
 import tictactoe.api.errors.*;
-import tictactoe.database.ConnectionPool;
 import tictactoe.database.DBMatch;
-import tictactoe.database.DBScore;
 import tictactoe.database.Database;
 import tictactoe.game.DifficultyState;
 import tictactoe.game.Game;
 import tictactoe.game.Match;
-import tictactoe.game.MatchStatus;
 
 public class MatchController {
 
@@ -51,13 +47,6 @@ public class MatchController {
                 })
         );
 
-        server.createContext("/match/create", exchange ->
-            Try.run(() -> handleCreateMatch(exchange, dataSource))
-                .onFailure(t -> {
-                    errorHandler.handle(t, exchange);
-                })
-        );
-
         server.createContext("/match/start", exchange ->
             Try.run(() -> handleStart(exchange, dataSource))
                 .onFailure(t -> {
@@ -66,15 +55,7 @@ public class MatchController {
         );
 
         server.createContext("/match/matchHistory", exchange ->
-            Try.run(() -> handleMatchHistory(exchange, dataSource))
-                .onFailure(t -> {
-                    errorHandler.handle(t, exchange);
-                })
-        );
-
-
-        server.createContext("/test/matchHistory", exchange ->
-            Try.run(() -> testMatchHistory(exchange, dataSource))
+            Try.run(() -> matchHistory(exchange, dataSource))
                 .onFailure(t -> {
                     errorHandler.handle(t, exchange);
                 })
@@ -83,7 +64,7 @@ public class MatchController {
     }
 
 
-    public static void testMatchHistory(HttpExchange exchange, HikariDataSource dataSource) throws RequestIncompleteError, AuthenticationError, MatchError, IOException, MethodNotAllowed {
+    public static void matchHistory(HttpExchange exchange, HikariDataSource dataSource) throws RequestIncompleteError, AuthenticationError, MatchError, IOException, MethodNotAllowed {
         int userID;
         List<Match> matchHistory;
         String token;
@@ -351,107 +332,6 @@ public class MatchController {
         }
 
 
-        responseBody.flush();
-        responseBody.close();
-    }
-
-    public static void handleMatchHistory(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, AuthenticationError, RequestIncompleteError {
-        int userID;
-        List<Match> matchHistory;
-        String token;
-        OutputStream responseBody = exchange.getResponseBody();
-
-
-        if (exchange.getRequestMethod().equals("GET")) {
-            int matchHistorySize;
-
-            try {
-                token = exchange.getRequestHeaders().get("token").getFirst();
-            } catch (Exception e) {
-                throw new RequestIncompleteError(ErrorCodes.NO_TOKEN);
-            }
-            AuthenticationToken.getInstance().authenticate(token);
-
-            try {
-                matchHistorySize = getIDFromPath(exchange.getRequestURI().getPath());
-            } catch (NumberFormatException e) {
-                throw new MatchError(
-                    "No number input found. Please input the number of matches for the match history. " +
-                        "(/match/matchHistory/20)");
-            }
-
-            userID = AuthenticationToken.getInstance().getUserID(token);
-            matchHistory =
-                DBMatch.getLastNMatchesFromUser(userID, matchHistorySize, dataSource);
-            if (matchHistory.isEmpty()) {
-                throw new MatchError(ErrorCodes.MATCH_HISTORY_EMPTY);
-            }
-
-
-            exchange.sendResponseHeaders(200, 0);
-            responseBody.write(objectMapper.writeValueAsBytes(matchHistory));
-
-        } else if (exchange.getRequestMethod().equals("OPTIONS")) {
-            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Headers","origin, X-PINGOTHER, access-control-allow-origin, content-type, accept, authorization");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "POST , OPTIONS");
-            exchange.sendResponseHeaders(200, 0);
-
-        } else {
-            throw new MethodNotAllowed("Method " + exchange.getRequestMethod() + " not allowed for " + exchange.getRequestURI());
-        }
-
-
-        responseBody.flush();
-        responseBody.close();
-    }
-
-    public static void handleCreateMatch(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, AuthenticationError, RequestIncompleteError {
-        int userID;
-        Match match;
-        DifficultyState difficulty;
-        String token;
-
-        try {
-            token = exchange.getRequestHeaders().get("token").getFirst();
-        } catch (Exception e) {
-            throw new RequestIncompleteError(ErrorCodes.NO_TOKEN);
-        }
-        AuthenticationToken.getInstance().authenticate(token);
-
-        if (exchange.getRequestMethod().equals("GET")) {
-            userID = AuthenticationToken.getInstance().getUserID(token);
-
-            String requestBody = IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
-
-            try {
-                match = objectMapper.readValue(requestBody, Match.class);
-            } catch (JsonProcessingException e) {
-                throw new RequestIncompleteError(ErrorCodes.INVALID_REQUEST_BODY);
-            }
-            difficulty = match.getDifficulty();
-
-            match = new Match();
-            match.setStatus(MatchStatus.RUNNING);
-            match.setDifficulty(difficulty);
-            match.setStartTime(new Timestamp(System.currentTimeMillis()));
-            match.setPlayerTurn(DBScore.getScore(userID, dataSource));
-            if (!match.isIsPlayerTurn()) {
-                Game.play(userID, match);
-            }
-
-            int matchID = DBMatch.insertNewMatch(match, userID, dataSource);
-            match.setMatchID(matchID);
-
-        } else {
-            throw new MethodNotAllowed("Method " + exchange.getRequestMethod() + " not allowed for " + exchange.getRequestURI());
-        }
-
-        exchange.sendResponseHeaders(200, 0);
-
-        OutputStream responseBody = exchange.getResponseBody();
-        responseBody.write(objectMapper.writeValueAsBytes(match));
         responseBody.flush();
         responseBody.close();
     }
