@@ -52,6 +52,10 @@ public class ErrorHandler {
                 response = new ErrorResponse(throwable.getMessage(), 422);
                 exchange.sendResponseHeaders(422, 0);
             }
+            case QueryError queryError -> {
+                response = new ErrorResponse(ErrorCodes.decodeMessage(throwable.getMessage()), ErrorCodes.decodeCode(throwable.getMessage()));
+                exchange.sendResponseHeaders(422, 0);
+            }
             default -> {
                 response = new ErrorResponse("Internal server Error", -1);
                 exchange.sendResponseHeaders(500, 0);

@@ -3,11 +3,7 @@ package tictactoe.api.match;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
 
 import org.apache.commons.io.IOUtils;
 
@@ -24,6 +20,7 @@ import tictactoe.database.Database;
 import tictactoe.game.DifficultyState;
 import tictactoe.game.Game;
 import tictactoe.game.Match;
+import tictactoe.game.MatchStatus;
 
 public class MatchController {
 
@@ -85,7 +82,7 @@ public class MatchController {
 
 
             userID = AuthenticationToken.getInstance().getUserID(token);
-            matchHistory = handleQuery(query, userID, dataSource);
+            matchHistory = getMatchHistory(query, userID, dataSource);
 
             if (matchHistory.isEmpty()) {
                 throw new MatchError(ErrorCodes.MATCH_HISTORY_EMPTY);
@@ -111,22 +108,83 @@ public class MatchController {
 
 
 
-    private static List<Match> handleQuery(String query, int userID, HikariDataSource dataSource) {
+    private static List<Match> getMatchHistory(String query, int userID, HikariDataSource dataSource) {
 
         Map<String, String> queryMap = splitParams(query);
-        Map<String, String> mapWithSeconds = replaceTimeWithSeconds(queryMap);
+        validateParameters(queryMap);
 
-        return DBMatch.getMatchHistoryWithParams(userID, mapWithSeconds, dataSource);
+
+        return DBMatch.getMatchHistoryWithParams(userID, queryMap, dataSource);
+    }
+
+    private static void validateParameters(Map<String, String> queryMap) throws QueryError {
+
+        System.out.println(queryMap);
+
+
+
+        if (queryMap.containsKey("amount")) {
+                try {
+                if (Integer.parseInt(queryMap.get("amount")) <= 0) {
+                    throw new QueryError(ErrorCodes.QUERY_AMOUNT_NEGATIVE);
+                }
+                if (Integer.parseInt(queryMap.get("amount")) > 1000) {
+                    throw new QueryError(ErrorCodes.QUERY_AMOUNT_TO_LARGE);
+                }
+            } catch (NumberFormatException e) {
+                throw new QueryError(ErrorCodes.QUERY_AMOUNT_NOT_INT);
+            }
+        }
+
+        if (queryMap.containsKey("seconds")) {
+            try {
+                if (Long.parseLong(queryMap.get("seconds")) <= 0) {
+                    throw new QueryError(ErrorCodes.QUERY_TIME_NEGATIVE);
+                }
+                if (Long.parseLong(queryMap.get("seconds")) > 209999999999L) {
+                    throw new QueryError(ErrorCodes.QUERY_TIME_TO_LARGE);
+                }
+            } catch (NumberFormatException e) {
+                throw new QueryError(ErrorCodes.QUERY_TIME_NOT_LONG);
+            }
+        }
+
+
+
+        if (queryMap.containsKey("status")) {
+            String status = queryMap.get("status");
+            if (!status.equals(MatchStatus.PLAYER_WON.toString()) &&
+                    !status.equals(MatchStatus.COMPUTER_WON.toString()) &&
+                    !status.equals(MatchStatus.DRAW.toString())
+            ) {
+                throw new QueryError(ErrorCodes.QUERY_STATUS_INVALID);
+            }
+        }
+
+        if (queryMap.containsKey("difficulty")) {
+            String difficulty = queryMap.get("difficulty");
+            if (!difficulty.equals(DifficultyState.EASY.toString()) &&
+                    !difficulty.equals(DifficultyState.MEDIUM.toString()) &&
+                    !difficulty.equals(DifficultyState.IMPOSSIBLE.toString())
+            ) {
+                throw new QueryError(ErrorCodes.QUERY_DIFFICULTY_INVALID);
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
     }
 
     private static Map<String, String> splitParams(String query) {
         Map<String, String> map = new HashMap<>();
-//        if (query == null) {
-//            return map;
-//        }
-//        if (query.isBlank()) {
-//            return map;
-//        }
         try {
             List<String> list = Arrays.stream(query.split("&")).toList();
             for (String s : list) {
@@ -140,36 +198,7 @@ public class MatchController {
         return map;
     }
 
-    private static Map<String, String> replaceTimeWithSeconds(Map<String, String> map) {
-        long seconds = 0;
 
-        if (map.containsKey("minutes")) {
-            seconds += TimeUnit.MINUTES.toSeconds(Long.parseLong(map.get("minutes")));
-            map.remove("minutes");
-        }
-        if (map.containsKey("hours")) {
-            seconds += TimeUnit.HOURS.toSeconds(Long.parseLong(map.get("hours")));
-            map.remove("hours");
-        }
-        if (map.containsKey("days")) {
-            seconds += TimeUnit.DAYS.toSeconds(Long.parseLong(map.get("days")));
-            map.remove("days");
-        }
-        if (map.containsKey("weeks")) {
-            seconds += TimeUnit.DAYS.toSeconds(Integer.parseInt(map.get("weeks"))* 7L);
-            map.remove("weeks");
-        }
-        if (map.containsKey("months")) {
-            seconds += TimeUnit.DAYS.toSeconds(Integer.parseInt(map.get("months"))*30L);
-            map.remove("months");
-        }
-        if (map.containsKey("years")) {
-            seconds += TimeUnit.DAYS.toSeconds(Integer.parseInt(map.get("years"))*365L);
-            map.remove("years");
-        }
-        map.put("seconds", String.valueOf(seconds));
-        return map;
-    }
 
 
 

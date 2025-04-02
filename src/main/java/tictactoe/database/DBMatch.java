@@ -260,7 +260,7 @@ public class DBMatch {
                 sql = sql.concat("AND status = '" + map.get("status") + "' ");
             }
 
-            if (map.containsKey("seconds") && Integer.parseInt(map.get("seconds")) != 0) {
+            if (map.containsKey("seconds")) {
                 sql = sql.concat("AND starttime > now() - CONCAT('" + map.get("seconds") + " ',' seconds')::interval ");
             }
 
