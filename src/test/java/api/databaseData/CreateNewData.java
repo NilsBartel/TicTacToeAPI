@@ -22,14 +22,14 @@ public class CreateNewData {
 
     public static void create() {
         int userId = 5; //change
-        int matchId = 5; //change
+        int matchId = 14; //change
 
-        List<Character> boardList = List.of('o',  'x',  ' ',
+        List<Character> boardList = List.of('x',  'x',  'o',
                                             ' ',  'x',  ' ',
-                                            ' ',  'x',  'o'
+                                            'o',  ' ',  'x'
         ); //change
-        MatchStatus matchStatus = MatchStatus.PLAYER_WON; //change
-        DifficultyState difficultyState = DifficultyState.EASY; //change
+        MatchStatus matchStatus = MatchStatus.COMPUTER_WON; //change
+        DifficultyState difficultyState = DifficultyState.MEDIUM; //change
 
 
 

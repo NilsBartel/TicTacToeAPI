@@ -8,7 +8,7 @@ public class UsersData {
     private static final User user1 = new User("test", "test", "test", "test");
     private static final User user2 = new User("nils", "Password123.", "hamburg", "bruno");
     private static final User user3 = new User("robert", "RobertsPassword345!", "berlin", "WauWau");
-    private static final User user4 = new User("bruno", "Password123!", "berlin", "hundi");
+    private static final User user4 = new User("noHistory", "Password123!", "berlin", "hundi");
     private static final User user5 = new User("history", "Password123!", "berlin", "hundi");
 
 
