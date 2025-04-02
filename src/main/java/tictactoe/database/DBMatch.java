@@ -246,7 +246,7 @@ public class DBMatch {
     }
 
 
-    public static String buildSQLString(Map<String, String> map) {
+    private static String buildSQLString(Map<String, String> map) {
 
         String sql = "SELECT * FROM match " +
                 "LEFT JOIN time ON match.match_id = time.match_id " +

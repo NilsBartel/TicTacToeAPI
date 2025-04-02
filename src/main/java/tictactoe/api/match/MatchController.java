@@ -111,7 +111,7 @@ public class MatchController {
 
 
 
-    public static List<Match> handleQuery(String query, int userID, HikariDataSource dataSource) {
+    private static List<Match> handleQuery(String query, int userID, HikariDataSource dataSource) {
 
         Map<String, String> queryMap = splitParams(query);
         Map<String, String> mapWithSeconds = replaceTimeWithSeconds(queryMap);
@@ -119,7 +119,7 @@ public class MatchController {
         return DBMatch.getMatchHistoryWithParams(userID, mapWithSeconds, dataSource);
     }
 
-    public static Map<String, String> splitParams(String query) {
+    private static Map<String, String> splitParams(String query) {
         Map<String, String> map = new HashMap<>();
 //        if (query == null) {
 //            return map;
@@ -140,7 +140,7 @@ public class MatchController {
         return map;
     }
 
-    public static Map<String, String> replaceTimeWithSeconds(Map<String, String> map) {
+    private static Map<String, String> replaceTimeWithSeconds(Map<String, String> map) {
         long seconds = 0;
 
         if (map.containsKey("minutes")) {

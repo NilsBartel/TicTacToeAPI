@@ -26,7 +26,9 @@ import tictactoe.api.errors.ErrorCodes;
 import tictactoe.api.errors.ErrorResponse;
 import tictactoe.database.ConnectionPool;
 import tictactoe.database.LiquibaseMigrationService;
+import tictactoe.game.DifficultyState;
 import tictactoe.game.Match;
+import tictactoe.game.MatchStatus;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -114,36 +116,6 @@ public class MatchHistoryTest {
         Assertions.assertEquals(ErrorCodes.TOKEN_INVALID.getCode(), errorResponse.getCode());
     }
 
-
-//    @Test
-//    void oneMatchMatchHistory() throws IOException {
-//        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory/1");
-//        request.setHeader("token", ApiUtil.getToken(UsersData.getUser3().getUserName(), UsersData.getUser3().getPassword()));
-//
-//        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
-//        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
-//        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
-//
-//        Assertions.assertEquals(200, httpResponse.getCode());
-//        Assertions.assertEquals(MatchData.getMatch4(), myObjects.getFirst());
-//    }
-//
-//    @Test
-//    void multipleMatchMatchHistory() throws IOException {
-//        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory/2");
-//        request.setHeader("token", ApiUtil.getToken(UsersData.getUser1().getUserName(), UsersData.getUser1().getPassword()));
-//
-//        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
-//        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
-//        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
-//
-//        Assertions.assertEquals(200, httpResponse.getCode());
-//        Assertions.assertEquals(MatchData.getMatch2(), myObjects.getFirst());
-//        Assertions.assertEquals(MatchData.getMatch1(), myObjects.get(1));
-//    }
-
-
-
     @Test
     void noMatchHistory() throws IOException {
         HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory");
@@ -157,6 +129,225 @@ public class MatchHistoryTest {
         Assertions.assertEquals(422, httpResponse.getCode());
         Assertions.assertEquals(ErrorCodes.MATCH_HISTORY_EMPTY.getMessage(), errorResponse.getMessage());
     }
+
+
+    @Test
+    void getMatchHistoryDefault() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(MatchData.getMatch14(), myObjects.getFirst());
+        Assertions.assertEquals(MatchData.getMatch13(), myObjects.get(1));
+        Assertions.assertEquals(10, myObjects.size());
+    }
+
+
+
+    @Test
+    void getMatchHistoryPLayerWon() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?status=PLAYER_WON");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(2, myObjects.size());
+        for (Match match : myObjects) {
+            Assertions.assertEquals(MatchStatus.PLAYER_WON, match.getStatus());
+        }
+    }
+
+    @Test
+    void getMatchHistoryComputerWon() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?status=COMPUTER_WON");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(5, myObjects.size());
+        for (Match match : myObjects) {
+            Assertions.assertEquals(MatchStatus.COMPUTER_WON, match.getStatus());
+        }
+    }
+
+    @Test
+    void getMatchHistoryDraw() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?status=DRAW");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(3, myObjects.size());
+        for (Match match : myObjects) {
+            Assertions.assertEquals(MatchStatus.DRAW, match.getStatus());
+        }
+    }
+
+
+    @Test
+    void getMatchHistoryEasy() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?difficulty=EASY");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(3, myObjects.size());
+        for (Match match : myObjects) {
+            Assertions.assertEquals(DifficultyState.EASY, match.getDifficulty());
+        }
+    }
+
+    @Test
+    void getMatchHistoryMedium() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?difficulty=MEDIUM");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(4, myObjects.size());
+        for (Match match : myObjects) {
+            Assertions.assertEquals(DifficultyState.MEDIUM, match.getDifficulty());
+        }
+    }
+
+    @Test
+    void getMatchHistoryImpossible() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?difficulty=IMPOSSIBLE");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(3, myObjects.size());
+        for (Match match : myObjects) {
+            Assertions.assertEquals(DifficultyState.IMPOSSIBLE, match.getDifficulty());
+        }
+    }
+
+    @Test
+    void getMatchHistoryAmount3() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?amount=3");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(MatchData.getMatch14(), myObjects.get(0));
+        Assertions.assertEquals(MatchData.getMatch13(), myObjects.get(1));
+        Assertions.assertEquals(MatchData.getMatch12(), myObjects.get(2));
+        Assertions.assertEquals(3, myObjects.size());
+    }
+
+    @Test
+    void getMatchHistoryAmount1() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?amount=1");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(MatchData.getMatch14(), myObjects.getFirst());
+        Assertions.assertEquals(1, myObjects.size());
+    }
+
+    @Test
+    void getMatchHistoryPlayerWonAndEasy() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?status=PLAYER_WON&difficulty=EASY");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(MatchData.getMatch5(), myObjects.getFirst());
+        Assertions.assertEquals(1, myObjects.size());
+        for (Match match : myObjects) {
+            Assertions.assertEquals(DifficultyState.EASY, match.getDifficulty());
+            Assertions.assertEquals(MatchStatus.PLAYER_WON, match.getStatus());
+        }
+    }
+
+
+    @Test
+    void getMatchHistoryComputerWonAndImpossible() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?status=COMPUTER_WON&difficulty=IMPOSSIBLE");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(2, myObjects.size());
+        for (Match match : myObjects) {
+            Assertions.assertEquals(DifficultyState.IMPOSSIBLE, match.getDifficulty());
+            Assertions.assertEquals(MatchStatus.COMPUTER_WON, match.getStatus());
+        }
+    }
+
+    @Test
+    void getMatchHistoryComputerWonAndImpossibleAndAmount1() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?status=COMPUTER_WON&difficulty=IMPOSSIBLE&amount=1");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(1, myObjects.size());
+        for (Match match : myObjects) {
+            Assertions.assertEquals(DifficultyState.IMPOSSIBLE, match.getDifficulty());
+            Assertions.assertEquals(MatchStatus.COMPUTER_WON, match.getStatus());
+        }
+    }
+
+    @Test
+    void getMatchHistoryDrawAndImpossible() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?status=DRAW&difficulty=IMPOSSIBLE");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(1, myObjects.size());
+        for (Match match : myObjects) {
+            Assertions.assertEquals(DifficultyState.IMPOSSIBLE, match.getDifficulty());
+            Assertions.assertEquals(MatchStatus.DRAW, match.getStatus());
+        }
+    }
+
+
+
+
 
 
 

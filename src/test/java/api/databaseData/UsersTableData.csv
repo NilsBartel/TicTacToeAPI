@@ -2,5 +2,5 @@ user_id,username,password,answer1,answer2
 1,test,$2a$12$CPvs1sFQX5urdQFL1ndJge1DH1SmaLv/oIhEMUtniYehh339lAWo2,$2a$12$7nHYF5UTPMK9GGlN4iu6ue/NLwM3cAqEBi4wEZ7YCQfwGzGDYTAq.,$2a$12$PlNDxQUfdYZMrCOqFLB/Tu2J663w2VpRmAXObJT80aJTo6f1zGtyO
 2,nils,$2a$12$zZCkwKIJP5eElIerDHIEi.kkaQc/celieu5Ps1ntU1Lx0Zrzmw8bq,$2a$12$mdw5Wlf8OHfV5Nn4f0yZa.0sRT8z7nrj7ET2g8eXf6C4/JxNv5j2G,$2a$12$kh4Fjw/igyi5KErEhvS7sO/sehRQPg5mKFi5R5619Iqq3aNsSgF06
 3,robert,$2a$12$1y8EAVfM.9vbmKY6WuSS7u/KNFwX5yXoG9fgPk1gBSWtrxlC1KOIG,$2a$12$Ip30QSbx/FNf/bAsoUcCjuDRlhdSVTo92NBOFxrXAZzpfjNzDGLhW,$2a$12$aQHvaQZdBPMelpolmcGSXOXyIYFtFKj9atl7YfJ7x46.3TsTujDDa
-4,bruno,$2a$12$2aSukDPHvqInPJkH6ms9t.W5EWFDk4.PX36.6oKgwCxZOBKyYIU/e,$2a$12$80BTuvnziq8rfpdG8q3I0uPmylVsGym2mC3fkcfneH8t.N5lGHDwK,$2a$12$99.a8dPFEniHLxJB9Yyf8OySkvjEazyVniO9aUrwzDv5DMXb0E11i
+4,noHistory,$2a$12$2aSukDPHvqInPJkH6ms9t.W5EWFDk4.PX36.6oKgwCxZOBKyYIU/e,$2a$12$80BTuvnziq8rfpdG8q3I0uPmylVsGym2mC3fkcfneH8t.N5lGHDwK,$2a$12$99.a8dPFEniHLxJB9Yyf8OySkvjEazyVniO9aUrwzDv5DMXb0E11i
 5,history,$2a$12$35YbMd7xiPiIcokrM4OHGuZFaA9r9rt1AeC/YpoUJnzcTqEiuxw4W,$2a$12$668FH1cFdAaTsXX7H7mfq.BMB8vlck9GfkQDctxF0azVp0bZr8D.m,$2a$12$RsEFQxe/fBdeiTbaW0bTEOkwSPYnAFRNC2D.HXF5MF8Mq2O0eYAp2
