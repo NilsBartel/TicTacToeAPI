@@ -113,15 +113,10 @@ public class MatchController {
         Map<String, String> queryMap = splitParams(query);
         validateParameters(queryMap);
 
-
         return DBMatch.getMatchHistoryWithParams(userID, queryMap, dataSource);
     }
 
     private static void validateParameters(Map<String, String> queryMap) throws QueryError {
-
-        System.out.println(queryMap);
-
-
 
         if (queryMap.containsKey("amount")) {
                 try {
@@ -149,8 +144,6 @@ public class MatchController {
             }
         }
 
-
-
         if (queryMap.containsKey("status")) {
             String status = queryMap.get("status");
             if (!status.equals(MatchStatus.PLAYER_WON.toString()) &&
@@ -170,16 +163,6 @@ public class MatchController {
                 throw new QueryError(ErrorCodes.QUERY_DIFFICULTY_INVALID);
             }
         }
-
-
-
-
-
-
-
-
-
-
 
     }
 

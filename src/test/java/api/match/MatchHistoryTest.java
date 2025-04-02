@@ -346,6 +346,207 @@ public class MatchHistoryTest {
     }
 
 
+    @Test
+    void getMatchHistoryRandomInput() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?hours=10");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(10, myObjects.size());
+    }
+
+    @Test
+    void getMatchHistoryRandomInput2() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?hours=10&asdasd");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(10, myObjects.size());
+    }
+
+    @Test
+    void secondsInputLetters() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?seconds=hdhd");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.QUERY_TIME_NOT_LONG.getCode(), errorResponse.getCode());
+    }
+
+    @Test
+    void secondsInputDecimal() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?seconds=8.7");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.QUERY_TIME_NOT_LONG.getCode(), errorResponse.getCode());
+    }
+
+    @Test
+    void secondsInputNegative() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?seconds=-1");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.QUERY_TIME_NEGATIVE.getCode(), errorResponse.getCode());
+    }
+
+    @Test
+    void secondsInputZero() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?seconds=0");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.QUERY_TIME_NEGATIVE.getCode(), errorResponse.getCode());
+    }
+
+
+    @Test
+    void secondsInputToLong() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?seconds=1000000000001");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.QUERY_TIME_TO_LARGE.getCode(), errorResponse.getCode());
+    }
+
+
+    @Test
+    void amountInputLetter() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?amount=ajksdh");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.QUERY_AMOUNT_NOT_INT.getCode(), errorResponse.getCode());
+    }
+
+    @Test
+    void amountInputDecimal() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?amount=9.9");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.QUERY_AMOUNT_NOT_INT.getCode(), errorResponse.getCode());
+    }
+
+    @Test
+    void amountInputNegative() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?amount=-9");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.QUERY_AMOUNT_NEGATIVE.getCode(), errorResponse.getCode());
+    }
+
+    @Test
+    void amountInputToLarge() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?amount=2000");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.QUERY_AMOUNT_TO_LARGE.getCode(), errorResponse.getCode());
+    }
+
+
+    @Test
+    void statusInputWrong() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?status=wrong");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.QUERY_STATUS_INVALID.getCode(), errorResponse.getCode());
+    }
+
+    @Test
+    void statusInputNumber() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?status=23");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.QUERY_STATUS_INVALID.getCode(), errorResponse.getCode());
+    }
+
+    @Test
+    void difficultyInputWrong() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?difficulty=wrong");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.QUERY_DIFFICULTY_INVALID.getCode(), errorResponse.getCode());
+    }
+
+    @Test
+    void difficultyInputNumber() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?difficulty=25");
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
+
+        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(ErrorCodes.QUERY_DIFFICULTY_INVALID.getCode(), errorResponse.getCode());
+    }
+
+
+
+
 
 
 
