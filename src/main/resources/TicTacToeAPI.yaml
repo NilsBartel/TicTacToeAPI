@@ -2,7 +2,7 @@
 openapi: 3.0.4
 info:
   title: Tic Tac Toe API
-  description: A API to play Tic Tac Toe
+  description: An API to play Tic Tac Toe
   version: 1.0.0
 servers:
   - url: http://localhost:8080
@@ -253,7 +253,7 @@ paths:
       tags:
         - account
       summary: Registers a new User.
-      description: returns nothing.
+      description: returns success message.
       requestBody:
         description: UserName, Password, Security question 1 and Security question 2
         content:
@@ -264,6 +264,10 @@ paths:
       responses:
         "200":
           description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
         "422":
           description: Invalid request body.
           content:
@@ -294,7 +298,7 @@ paths:
       tags:
         - account
       summary: Resets the user password.
-      description: returns nothing.
+      description: returns success message.
       requestBody:
         description: UserName, new Password, Security question 1 and Security question 2
         content:
@@ -305,6 +309,10 @@ paths:
       responses:
         "200":
           description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
         "422":
           description: Invalid request body.
           content:
@@ -334,7 +342,7 @@ paths:
   /score:
     get:
       tags:
-        - util:
+        - util
       description: Returns the score of a player
       parameters:
         - name: token
@@ -347,6 +355,19 @@ paths:
         200:
           description: Successful
           content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  playerScore:
+                    type: integer
+                    example: 23
+                  computerScore:
+                    type: integer
+                    example: 12
+                  drawCount:
+                    type: integer
+                    example: 9
 
 
 
@@ -366,6 +387,17 @@ components:
         code:
           type: string
           example: "123"
+
+    Success:
+        type: object
+        properties:
+          message:
+            type: string
+            example: "Task done successfully"
+          code:
+            type: string
+            example: "null"
+
     User:
       type: object
       properties:
@@ -438,6 +470,7 @@ components:
           type: string
           enum: [ "x", "o", " " ]
           example: "x"
+
 
 
 
