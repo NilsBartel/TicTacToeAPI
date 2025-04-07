@@ -24,6 +24,7 @@ public enum ErrorCodes {
     QUESTION_WRONG(15, "Security Question is wrong"),
 
     MATCH_HISTORY_EMPTY(16, "Match History is Empty."),
+    MATCH_NOT_FOUND(25, "Match Not Found"),
 
     QUERY_TIME_NEGATIVE(17, "Parameter seconds can't be zero or negative."),
     QUERY_AMOUNT_NEGATIVE(18, "Parameter amount can't be zero or negative.."),
@@ -31,8 +32,8 @@ public enum ErrorCodes {
     QUERY_AMOUNT_NOT_INT(20, "Parameter amount can only be an Int"),
     QUERY_TIME_TO_LARGE(21, "Parameter seconds can only be 209.999.999.999 max"),
     QUERY_AMOUNT_TO_LARGE(22, "Parameter amount can only be 1.000 max"),
-    QUERY_STATUS_INVALID(21, "This Status does not exist."),
-    QUERY_DIFFICULTY_INVALID(21, "This Difficulty does not exist.");
+    QUERY_STATUS_INVALID(23, "This Status does not exist."),
+    QUERY_DIFFICULTY_INVALID(24, "This Difficulty does not exist.");
 
 
 

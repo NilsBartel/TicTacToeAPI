@@ -61,7 +61,7 @@ public class MatchController {
     }
 
 
-    public static void matchHistory(HttpExchange exchange, HikariDataSource dataSource) throws RequestIncompleteError, AuthenticationError, MatchError, IOException, MethodNotAllowed {
+    public static void matchHistory(HttpExchange exchange, HikariDataSource dataSource) throws RequestIncompleteError, AuthenticationError, MatchError, IOException, MethodNotAllowed, QueryError {
         int userID;
         List<Match> matchHistory;
         String token;
@@ -108,7 +108,7 @@ public class MatchController {
 
 
 
-    private static List<Match> getMatchHistory(String query, int userID, HikariDataSource dataSource) {
+    private static List<Match> getMatchHistory(String query, int userID, HikariDataSource dataSource) throws QueryError {
 
         Map<String, String> queryMap = splitParams(query);
         validateParameters(queryMap);
@@ -192,7 +192,7 @@ public class MatchController {
 
 
 
-    public static void handleMatch(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, AuthenticationError, RequestIncompleteError {
+    public static void handleMatch(HttpExchange exchange, HikariDataSource dataSource) throws IOException, MethodNotAllowed, MatchError, AuthenticationError, RequestIncompleteError, NotFoundError {
         String token;
         Match match;
         OutputStream responseBody = exchange.getResponseBody();
@@ -217,16 +217,13 @@ public class MatchController {
 
             match = DBMatch.getMatch(userID, matchId, dataSource);
             if (match == null) {
-                throw new MatchError("No match found.");
+                throw new NotFoundError(ErrorCodes.MATCH_NOT_FOUND);
             }
 
             exchange.sendResponseHeaders(200, 0);
             responseBody.write(objectMapper.writeValueAsBytes(match));
         } else if (exchange.getRequestMethod().equals("OPTIONS")) {
-            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Headers","origin, X-PINGOTHER, access-control-allow-origin, content-type, accept, authorization");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET , OPTIONS");
+
             exchange.sendResponseHeaders(200, 0);
 
         } else {
@@ -278,10 +275,7 @@ public class MatchController {
 
 
         } else if (exchange.getRequestMethod().equals("OPTIONS")) {
-            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Headers","origin, X-PINGOTHER, access-control-allow-origin, content-type, accept, authorization");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "POST , OPTIONS");
+
             exchange.sendResponseHeaders(200, 0);
 
         } else {
@@ -333,10 +327,7 @@ public class MatchController {
             responseBody.write(objectMapper.writeValueAsBytes(match));
 
         } else if (exchange.getRequestMethod().equals("OPTIONS")) {
-            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Headers","origin, X-PINGOTHER, access-control-allow-origin, content-type, accept, authorization");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "POST , OPTIONS");
+
             exchange.sendResponseHeaders(200, 0);
 
         } else {

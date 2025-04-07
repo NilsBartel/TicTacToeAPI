@@ -33,7 +33,7 @@ public final class LogIn {
 
     }
 
-    public void createUser(User user, HikariDataSource dataSource) throws LoginError, SignUpError {
+    public void createUser(User user, HikariDataSource dataSource) throws SignUpError {
 
         if (DBUser.userExists(user.getUserName(), dataSource)) {
             throw new SignUpError(ErrorCodes.USERNAME_ALREADY_EXISTS);
@@ -48,11 +48,11 @@ public final class LogIn {
         }
 
         if (user.getAnswer1().isEmpty()) {
-            throw new LoginError(ErrorCodes.QUESTION_NOT_FOUND);
+            throw new SignUpError(ErrorCodes.QUESTION_NOT_FOUND);
         }
 
         if (user.getAnswer2().isEmpty()) {
-            throw new LoginError(ErrorCodes.QUESTION_NOT_FOUND);
+            throw new SignUpError(ErrorCodes.QUESTION_NOT_FOUND);
         }
 
         String userName = user.getUserName();

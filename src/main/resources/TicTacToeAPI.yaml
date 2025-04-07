@@ -1,0 +1,366 @@
+
+openapi: 3.0.4
+info:
+  title: Tic Tac Toe API
+  description: A API to play Tic Tac Toe
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Main server
+
+
+paths:
+  /match/{matchId}:
+    get:
+      tags:
+        - match
+      description: Returns a match
+      parameters:
+        - name: matchId
+          in: path
+          description: The match that should be fetched
+          required: true
+          schema:
+            type: integer
+        - name: token
+          in: header
+          required: true
+          description: Token for authentication
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Match"
+        422:
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        # 422:
+          # description: No matchID provided
+        404:
+          description: Match not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /match/start:
+    post:
+      tags:
+        - match
+      description: Starts a game or resumes a game if a running game is available
+      parameters:
+        - name: token
+          in: header
+          required: true
+          description: Token for authentication
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Difficulty
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                difficulty:
+                  type: string
+                  enum: ["EASY", "MEDIUM", "IMPOSSIBLE"]
+      responses:
+        200:
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Match"
+        422:
+          description: No token provided || Invalid Request body || Wrong Difficulty
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /match/play:
+    post:
+      tags:
+        - match
+      description: Normal game play
+      parameters:
+        - name: token
+          in: header
+          required: true
+          description: Token for authentication
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Match with users move.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Match"
+      responses:
+        200:
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Match"
+
+
+
+  /account/login:
+    post:
+      tags:
+        - account
+      summary: Logs a user in.
+      description: Returns an Authentication token.
+      requestBody:
+        description: Username and Password
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userName:
+                  type: string
+                  example: bernd
+                password:
+                  type: string
+                  example: Password
+        required: true
+      responses:
+        "200":
+          description: A JSON list with message and token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: logged in successfully
+                  token:
+                    type: string
+                    example: knyYsm7X7Y0CoZZf9UHTdpyi4WOao4pr
+        "422":
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: UserName or Password Incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "405":
+          description: Invalid request Method.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /account/register:
+    post:
+      tags:
+        - account
+      summary: Registers a new User.
+      description: returns nothing.
+      requestBody:
+        description: UserName, Password, Security question 1 and Security question 2
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        "200":
+          description: Successful
+        "422":
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Wrong request body input.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "405":
+          description: Invalid request Method.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /account/reset:
+    post:
+      tags:
+        - account
+      summary: Resets the user password.
+      description: returns nothing.
+      requestBody:
+        description: UserName, new Password, Security question 1 and Security question 2
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        "200":
+          description: Successful
+        "422":
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Wrong request body input.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "405":
+          description: Invalid request Method.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+
+
+
+
+
+
+
+
+
+
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Something went wrong."
+        code:
+          type: string
+          example: "123"
+    User:
+      type: object
+      properties:
+        userName:
+          type: string
+          example: bernd
+        password:
+          type: string
+          example: password
+        answer1:
+          type: string
+          example: city
+        answer2:
+          type: string
+          example: pet
+
+
+    Match:
+      type: object
+      properties:
+        board:
+          $ref: "#/components/schemas/Board"
+        status:
+          type: string
+          enum: [ "PLAYER_WON", "COMPUTER_WON", "DRAW", "RUNNING" ]
+          example: "PLAYER_WON"
+        difficulty:
+          type: string
+          enum: [ "EASY", "MEDIUM", "IMPOSSIBLE" ]
+          example: "EASY"
+        isPlayerTurn:
+          type: boolean
+          example: true
+        matchID:
+          type: integer
+          example: 1
+        startTime:
+          type: integer
+          format: long
+          example: 1743085144651
+        endTime:
+          type: integer
+          format: long
+          example: 1743085147774
+
+    Board:
+      type: object
+      properties:
+        rows:
+          type: array
+          minItems: 3
+          maxItems: 3
+          items:
+            $ref: "#/components/schemas/Row"
+
+    Row:
+      type: object
+      properties:
+        fields:
+          type: array
+          minItems: 3
+          maxItems: 3
+          items:
+            $ref: "#/components/schemas/Field"
+
+    Field:
+      type: object
+      properties:
+        symbol:
+          type: string
+          enum: [ "x", "o", " " ]
+          example: "x"
+
+
+
+
+
+
+
+
+
+
+
+
+
+

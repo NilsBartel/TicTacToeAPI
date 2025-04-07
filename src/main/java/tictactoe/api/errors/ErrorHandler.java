@@ -56,6 +56,10 @@ public class ErrorHandler {
                 response = new ErrorResponse(ErrorCodes.decodeMessage(throwable.getMessage()), ErrorCodes.decodeCode(throwable.getMessage()));
                 exchange.sendResponseHeaders(422, 0);
             }
+            case NotFoundError notFoundError -> {
+                response = new ErrorResponse(ErrorCodes.decodeMessage(throwable.getMessage()), ErrorCodes.decodeCode(throwable.getMessage()));
+                exchange.sendResponseHeaders(404, 0);
+            }
             default -> {
                 response = new ErrorResponse("Internal server Error", -1);
                 exchange.sendResponseHeaders(500, 0);

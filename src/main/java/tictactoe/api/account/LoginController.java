@@ -73,15 +73,6 @@ public class LoginController {
 
         } else if (exchange.getRequestMethod().equals("OPTIONS")) {
 
-            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            //exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-
-
-
-            //exchange.sendResponseHeaders(200,0).add("Access-Control-Allow-Origin", "*");
-//            exchange.getResponseHeaders().add("Access-Control-Allow-Headers","origin, X-PINGOTHER, access-control-allow-origin, content-type, accept, authorization");
-//            exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
-//            exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "POST , OPTIONS");
             exchange.sendResponseHeaders(200, 0);
 
         } else {
@@ -113,10 +104,6 @@ public class LoginController {
             exchange.sendResponseHeaders(200, 0);
 
         } else if (exchange.getRequestMethod().equals("OPTIONS")) {
-            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Headers","origin, X-PINGOTHER, access-control-allow-origin, content-type, accept, authorization");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "POST , OPTIONS");
             exchange.sendResponseHeaders(200, 0);
 
         } else {
@@ -154,10 +141,6 @@ public class LoginController {
             }
 
         } else if (exchange.getRequestMethod().equals("OPTIONS")) {
-            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Headers","origin, X-PINGOTHER, access-control-allow-origin, content-type, accept, authorization");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "POST , OPTIONS");
             exchange.sendResponseHeaders(200, 0);
 
         } else {
