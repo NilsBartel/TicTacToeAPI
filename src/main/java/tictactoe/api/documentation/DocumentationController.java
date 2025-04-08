@@ -32,12 +32,9 @@ public class DocumentationController {
     static void handleDocumentation(HttpExchange exchange, HikariDataSource dataSource) throws MethodNotAllowed, IOException {
         Path documentationPath = Path.of("/Users/nilsbartel/IdeaProjects/TicTacToeAPI/target/openapi-docs/index.html");
 
-        System.out.println("before");
         if (!Files.exists(documentationPath)) {
             MavenCommandExecutor.mvnCleanCompile();
         }
-        System.out.println("after");
-
 
         if (exchange.getRequestMethod().equals("GET")) {
             byte[] htmlContent = Files.readAllBytes(Paths.get(documentationPath.toString()));

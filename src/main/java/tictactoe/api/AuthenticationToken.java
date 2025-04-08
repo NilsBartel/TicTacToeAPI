@@ -41,10 +41,19 @@ public final class AuthenticationToken {
         }
     }
 
+    public void logout(String authToken) throws AuthenticationError {
+        if (!authMap.containsKey(authToken)) {
+            throw new AuthenticationError(ErrorCodes.TOKEN_INVALID);
+        }
+        authMap.remove(authToken);
+    }
+
     private boolean timestampValid(Timestamp timestamp) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         return now.before(timestamp);
     }
+
+
 
     //TODO: clean up map after certain time (things where the time ha ran out)
 

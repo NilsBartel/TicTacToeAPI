@@ -382,6 +382,50 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /account/logout:
+    post:
+      tags:
+        - account
+      description: Logging out a user
+      parameters:
+        - name: token
+          in: header
+          required: true
+          description: Token for authentication
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        422:
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          description: Provided token invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "405":
+          description: Invalid request Method.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 
   /score:
     get:
@@ -456,9 +500,9 @@ components:
           message:
             type: string
             example: "Task done successfully"
-          code:
+          token:
             type: string
-            example: "null"
+            example: null
 
     User:
       type: object

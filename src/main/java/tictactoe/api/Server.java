@@ -8,6 +8,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import tictactoe.api.account.LoginController;
 import tictactoe.api.analyze.AnalyzeController;
 import tictactoe.api.documentation.DocumentationController;
+import tictactoe.api.account.LogoutController;
 import tictactoe.api.match.MatchController;
 import tictactoe.api.score.ScoreController;
 
@@ -23,6 +24,7 @@ public class Server {
         ScoreController.endPoint(server, dataSource);
         AnalyzeController.endPoint(server, dataSource);
         DocumentationController.endPoint(server, dataSource);
+        LogoutController.endPoint(server);
 
         server.setExecutor(null);
         server.start();
