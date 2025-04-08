@@ -61,7 +61,7 @@ public class MatchController {
     }
 
 
-    public static void matchHistory(HttpExchange exchange, HikariDataSource dataSource) throws RequestIncompleteError, AuthenticationError, MatchError, IOException, MethodNotAllowed, QueryError {
+    public static void matchHistory(HttpExchange exchange, HikariDataSource dataSource) throws RequestIncompleteError, AuthenticationError, IOException, MethodNotAllowed, QueryError, NotFoundError {
         int userID;
         List<Match> matchHistory;
         String token;
@@ -85,7 +85,7 @@ public class MatchController {
             matchHistory = getMatchHistory(query, userID, dataSource);
 
             if (matchHistory.isEmpty()) {
-                throw new MatchError(ErrorCodes.MATCH_HISTORY_EMPTY);
+                throw new NotFoundError(ErrorCodes.MATCH_HISTORY_EMPTY);
             }
 
             exchange.sendResponseHeaders(200, 0);

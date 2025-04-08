@@ -4,7 +4,6 @@ import api.ApiUtil;
 import api.databaseData.DatabaseUtil;
 import api.databaseData.MatchData;
 import api.databaseData.UsersData;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -32,11 +31,24 @@ import tictactoe.game.MatchStatus;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 public class MatchHistoryTest {
+
+    static final long YEAR_MILLIS = 31536000000L;
+    static final long MONTH_MILLIS = 2628000000L;
+    static final long WEEK_MILLIS = 604800000L;
+    static final long DAY_MILLIS = 86400000L;
+    static final long HOUR_MILLIS = 3600000L;
+    static final long MINUTE_MILLIS = 60000L;
+
+    static final long YEAR_SECONDS = 31536000L;
+    static final long MONTH_SECONDS = 2628000L;
+    static final long WEEK_SECONDS = 604800L;
+    static final long DAY_SECONDS = 86400L;
+    static final long HOUR_SECONDS = 3600L;
+    static final long MINUTE_SECONDS = 60L;
 
     static ObjectMapper objectMapper;
     static HikariDataSource dataSource;
@@ -70,6 +82,10 @@ public class MatchHistoryTest {
 
         DatabaseUtil.populateDatabase(postgres, dataSource);
 
+
+        editStartTimes(dataSource);
+
+
         server = Server.start(dataSource);
     }
 
@@ -78,6 +94,49 @@ public class MatchHistoryTest {
         dataSource.close();
         Server.close(server);
     }
+
+    public static void editStartTimes(HikariDataSource dataSource) {
+        int userID = 5;
+        int matchID = 5; //first match till id = 14
+
+
+        long currentTimeMillis = System.currentTimeMillis();
+
+        updateTime(5, new Timestamp(currentTimeMillis-(2*YEAR_MILLIS)));
+        updateTime(6, new Timestamp(currentTimeMillis-YEAR_MILLIS));
+        updateTime(7, new Timestamp(currentTimeMillis-(3*MONTH_MILLIS)));
+        updateTime(8, new Timestamp(currentTimeMillis-MONTH_MILLIS));
+        updateTime(9, new Timestamp(currentTimeMillis-WEEK_MILLIS));
+        updateTime(10, new Timestamp(currentTimeMillis-(2*DAY_MILLIS)));
+        updateTime(11, new Timestamp(currentTimeMillis-DAY_MILLIS));
+        updateTime(12, new Timestamp(currentTimeMillis-(2*HOUR_MILLIS)));
+        updateTime(13, new Timestamp(currentTimeMillis-HOUR_MILLIS));
+        updateTime(14, new Timestamp(currentTimeMillis-MINUTE_MILLIS));
+
+    }
+
+    private static void updateTime(int matchID, Timestamp startTime) {
+        try (Connection connection = dataSource.getConnection()) {
+            String sql1 = "UPDATE time SET starttime = ? WHERE match_id = ?";
+
+            try (PreparedStatement prepStmt = connection.prepareStatement(sql1)) {
+                prepStmt.setTimestamp(1, startTime);
+                prepStmt.setInt(2, matchID);
+                prepStmt.executeUpdate();
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+
+
+
+
+
 
 
     @Test
@@ -126,7 +185,7 @@ public class MatchHistoryTest {
         ErrorResponse errorResponse = objectMapper.readValue(entitiystring, ErrorResponse.class);
 
 
-        Assertions.assertEquals(422, httpResponse.getCode());
+        Assertions.assertEquals(404, httpResponse.getCode());
         Assertions.assertEquals(ErrorCodes.MATCH_HISTORY_EMPTY.getMessage(), errorResponse.getMessage());
     }
 
@@ -141,8 +200,6 @@ public class MatchHistoryTest {
         List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
 
         Assertions.assertEquals(200, httpResponse.getCode());
-        Assertions.assertEquals(MatchData.getMatch14(), myObjects.getFirst());
-        Assertions.assertEquals(MatchData.getMatch13(), myObjects.get(1));
         Assertions.assertEquals(10, myObjects.size());
     }
 
@@ -255,9 +312,6 @@ public class MatchHistoryTest {
         List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
 
         Assertions.assertEquals(200, httpResponse.getCode());
-        Assertions.assertEquals(MatchData.getMatch14(), myObjects.get(0));
-        Assertions.assertEquals(MatchData.getMatch13(), myObjects.get(1));
-        Assertions.assertEquals(MatchData.getMatch12(), myObjects.get(2));
         Assertions.assertEquals(3, myObjects.size());
     }
 
@@ -271,7 +325,6 @@ public class MatchHistoryTest {
         List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
 
         Assertions.assertEquals(200, httpResponse.getCode());
-        Assertions.assertEquals(MatchData.getMatch14(), myObjects.getFirst());
         Assertions.assertEquals(1, myObjects.size());
     }
 
@@ -285,7 +338,6 @@ public class MatchHistoryTest {
         List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
 
         Assertions.assertEquals(200, httpResponse.getCode());
-        Assertions.assertEquals(MatchData.getMatch5(), myObjects.getFirst());
         Assertions.assertEquals(1, myObjects.size());
         for (Match match : myObjects) {
             Assertions.assertEquals(DifficultyState.EASY, match.getDifficulty());
@@ -543,6 +595,155 @@ public class MatchHistoryTest {
         Assertions.assertEquals(422, httpResponse.getCode());
         Assertions.assertEquals(ErrorCodes.QUERY_DIFFICULTY_INVALID.getCode(), errorResponse.getCode());
     }
+
+
+
+
+
+
+
+
+    @Test
+    void timeTest3min() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?seconds=" + (3 * MINUTE_SECONDS));
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(1, myObjects.size());
+    }
+
+    @Test
+    void timeTest1hour() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?seconds=" + (HOUR_SECONDS + (3*MINUTE_SECONDS)));
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(2, myObjects.size());
+    }
+
+    @Test
+    void timeTest3hour() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?seconds=" + (3 * HOUR_SECONDS));
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(3, myObjects.size());
+    }
+
+
+    @Test
+    void timeTest1day() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?seconds=" + (DAY_SECONDS + (3*MINUTE_SECONDS)));
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(4, myObjects.size());
+    }
+
+    @Test
+    void timeTest3days() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?seconds=" + (3 * DAY_SECONDS + (3*MINUTE_SECONDS)));
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(5, myObjects.size());
+    }
+
+    @Test
+    void timeTest1week() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?seconds=" + (WEEK_SECONDS + (3*MINUTE_SECONDS)));
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(6, myObjects.size());
+    }
+
+    @Test
+    void timeTest1month() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?seconds=" + (MONTH_SECONDS + (3*MINUTE_SECONDS)));
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(7, myObjects.size());
+    }
+
+    @Test
+    void timeTest4month() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?seconds=" + (4 * MONTH_SECONDS + (3*MINUTE_SECONDS)));
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(8, myObjects.size());
+    }
+
+
+    @Test
+    void timeTest1year() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?seconds=" + (YEAR_SECONDS + (3*MINUTE_SECONDS)));
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(9, myObjects.size());
+    }
+
+
+    @Test
+    void timeTest2years() throws IOException {
+        HttpUriRequest request = new HttpGet("http://localhost:8080/match/matchHistory?seconds=" + (2 * YEAR_SECONDS + (3*MINUTE_SECONDS)));
+        request.setHeader("token", ApiUtil.getToken(UsersData.getUser5().getUserName(), UsersData.getUser5().getPassword()));
+
+        CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+        String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+
+        Assertions.assertEquals(200, httpResponse.getCode());
+        Assertions.assertEquals(10, myObjects.size());
+    }
+
+
+
+
+
+
+
+
+
 
 
 

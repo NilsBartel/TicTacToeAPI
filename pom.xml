@@ -201,28 +201,20 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <!-- RELEASE_VERSION -->
                 <version>7.12.0</version>
-                <!-- /RELEASE_VERSION -->
                 <executions>
                     <execution>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/TicTacToeAPI.yaml</inputSpec>
-                            <generatorName>html</generatorName>
-                            <configOptions>
-                                <sourceFolder>src/gen/java/main</sourceFolder>
-                            </configOptions>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi.yaml</inputSpec>
+                            <generatorName>html2</generatorName>
+                            <output>${project.build.directory}/openapi-docs</output>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-
-
-
-
 
         </plugins>
     </build>

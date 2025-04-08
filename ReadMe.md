@@ -146,22 +146,38 @@ Example of a match Object:
 
 
 ## Errors:
-| code: | message                           |
-|-------|-----------------------------------|
-| 0     | No Token provided.                |
-| 1     | Provided Token invalid.           |
-| 2     | Request Body Incomplete           |
-| 4     | Username does not Exist           |
-| 5     | Username or Password is incorrect |
-| 6     | Username already exists           |
-| 7     | Username too short                |
-| 3     | Username too short                |
-| 8     | Password is empty                 |
-| 9     | Password too short                |
-| 10    | Password needs lowercase letter   |
-| 11    | Password needs uppercase letter   |
-| 12    | Password needs digit              |
-| 13    | Password needs special character  |
-| 14    | Security Questions Empty          |
-| 15    | Security Question is wrong        |
-| 16    | Match History is Empty.           |
+| code: | message                                           |
+|-------|---------------------------------------------------|
+| 0     | No Token provided.                                |
+| 1     | Provided Token invalid.                           |
+| 2     | Request Body Incomplete                           |
+| 4     | Username does not Exist                           |
+| 5     | Username or Password is incorrect                 |
+| 6     | Username already exists                           |
+| 7     | Username too short                                |
+| 3     | Username too short                                |
+| 8     | Password is empty                                 |
+| 9     | Password too short                                |
+| 10    | Password needs lowercase letter                   |
+| 11    | Password needs uppercase letter                   |
+| 12    | Password needs digit                              |
+| 13    | Password needs special character                  |
+| 14    | Security Questions Empty                          |
+| 15    | Security Question is wrong                        |
+| 16    | Match History is Empty.                           |
+| 17    | Parameter seconds can't be zero or negative.      |
+| 18    | Parameter amount can't be zero or negative        |
+| 19    | Parameter seconds can only be a Long              |
+| 20    | Parameter amount can only be an Int               |
+| 21    | Parameter seconds can only be 209.999.999.999 max |
+| 22    | Parameter amount can only be 1.000 max            |
+| 23    | This Status does not exist.                       |
+| 24    | This Difficulty does not exist.                   |
+| 25    | Match Not Found                                   |
+
+
+if there are issues with docker while testing like:
+Error: Could not find a valid Docker environment. Please see logs and check configuration
+run: sudo ln -s /Users/nilsbartel/.colima/default/docker.sock /var/run/docker.sock
+
+ 

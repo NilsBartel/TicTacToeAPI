@@ -35,6 +35,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Match"
+        401:
+          description: Provided token invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         422:
           description: No token provided || No MatchID provided
           content:
@@ -85,6 +91,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Match"
+        401:
+          description: Provided token invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         422:
           description: No token provided || Invalid Request body || Wrong Difficulty
           content:
@@ -124,6 +136,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Match"
+        401:
+          description: Provided token invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         422:
           description: No token provided || Invalid Request body || Wrong Difficulty || not allowed change on match object
           content:
@@ -154,6 +172,8 @@ paths:
           description: The amount of matches
           schema:
             type: integer
+            minimum: 1
+            maximum: 1000
             example: 10
         - name: status
           in: query
@@ -175,8 +195,9 @@ paths:
           schema:
             type: integer
             format: long
+            minimum: 1
+            maximum: 209999999999
             example: 86400
-
       responses:
         200:
           description: Successful
@@ -186,7 +207,30 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Match"
-
+        422:
+          description: No token provided || Provided parameters invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          description: Provided token invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: No matches found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 
   /account/login:
@@ -368,6 +412,24 @@ paths:
                   drawCount:
                     type: integer
                     example: 9
+        401:
+          description: Provided token invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        422:
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 
 
