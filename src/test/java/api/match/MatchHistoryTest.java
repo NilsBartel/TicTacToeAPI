@@ -2,7 +2,6 @@ package api.match;
 
 import api.ApiUtil;
 import api.databaseData.DatabaseUtil;
-import api.databaseData.MatchData;
 import api.databaseData.UsersData;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -129,12 +128,6 @@ public class MatchHistoryTest {
             throw new RuntimeException(e);
         }
     }
-
-
-
-
-
-
 
 
 
@@ -663,7 +656,7 @@ public class MatchHistoryTest {
 
         CloseableHttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
         String entitiystring = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
-        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<List<Match>>(){});
+        List<Match> myObjects = objectMapper.readValue(entitiystring, new TypeReference<>(){});
 
         Assertions.assertEquals(200, httpResponse.getCode());
         Assertions.assertEquals(5, myObjects.size());
