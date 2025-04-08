@@ -67,66 +67,6 @@
         },
         {
           "type": "http",
-          "name": "play",
-          "seq": 2,
-          "request": {
-            "url": "http://localhost:8080/match/play/",
-            "method": "POST",
-            "headers": [
-              {
-                "name": "token",
-                "value": "OPyqn148uBMC6TiYBuFhSNzObh8rlrxb",
-                "enabled": true
-              }
-            ],
-            "params": [],
-            "body": {
-              "mode": "json",
-              "json": "{\n  \"board\": {\n    \"rows\": [\n      {\n        \"fields\": [\n          {\n            \"symbol\": \" \"\n          },\n          {\n            \"symbol\": \" \"\n          },\n          {\n            \"symbol\": \"o\"\n          }\n        ]\n      },\n      {\n        \"fields\": [\n          {\n            \"symbol\": \"o\"\n          },\n          {\n            \"symbol\": \"x\"\n          },\n          {\n            \"symbol\": \" \"\n          }\n        ]\n      },\n      {\n        \"fields\": [\n          {\n            \"symbol\": \" \"\n          },\n          {\n            \"symbol\": \" \"\n          },\n          {\n            \"symbol\": \" \"\n          }\n        ]\n      }\n    ]\n  },\n  \"status\": \"RUNNING\",\n  \"difficulty\": \"EASY\",\n  \"isPlayerTurn\": true,\n  \"matchID\": 1,\n  \"startTime\": 1742289282646,\n  \"endTime\": null\n}",
-              "formUrlEncoded": [],
-              "multipartForm": []
-            },
-            "script": {},
-            "vars": {},
-            "assertions": [],
-            "tests": "",
-            "auth": {
-              "mode": "none"
-            }
-          }
-        },
-        {
-          "type": "http",
-          "name": "start",
-          "seq": 4,
-          "request": {
-            "url": "http://localhost:8080/match/start",
-            "method": "POST",
-            "headers": [
-              {
-                "name": "token",
-                "value": "OPyqn148uBMC6TiYBuFhSNzObh8rlrxb",
-                "enabled": true
-              }
-            ],
-            "params": [],
-            "body": {
-              "mode": "json",
-              "json": "{\"difficulty\": \"EASY\"}",
-              "formUrlEncoded": [],
-              "multipartForm": []
-            },
-            "script": {},
-            "vars": {},
-            "assertions": [],
-            "tests": "",
-            "auth": {
-              "mode": "none"
-            }
-          }
-        },
-        {
-          "type": "http",
           "name": "matchHistory",
           "seq": 5,
           "request": {
@@ -203,6 +143,66 @@
             ],
             "body": {
               "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "play",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/match/play/",
+            "method": "POST",
+            "headers": [
+              {
+                "name": "token",
+                "value": "2ACEpU3xpdgyCRhWxJdGDWAdDv9X4F7w",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"board\": {\n    \"rows\": [\n      {\n        \"fields\": [\n          {\n            \"symbol\": \"o\"\n          },\n          {\n            \"symbol\": \"x\"\n          },\n          {\n            \"symbol\": \"o\"\n          }\n        ]\n      },\n      {\n        \"fields\": [\n          {\n            \"symbol\": \"o\"\n          },\n          {\n            \"symbol\": \" \"\n          },\n          {\n            \"symbol\": \" \"\n          }\n        ]\n      },\n      {\n        \"fields\": [\n          {\n            \"symbol\": \" \"\n          },\n          {\n            \"symbol\": \"x\"\n          },\n          {\n            \"symbol\": \" \"\n          }\n        ]\n      }\n    ]\n  },\n  \"status\": \"RUNNING\",\n  \"difficulty\": \"EASY\",\n  \"isPlayerTurn\": true,\n  \"matchID\": 49,\n  \"startTime\": 1744111738976,\n  \"endTime\": null\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "start",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:8080/match/start",
+            "method": "POST",
+            "headers": [
+              {
+                "name": "token",
+                "value": "2ACEpU3xpdgyCRhWxJdGDWAdDv9X4F7w",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\"difficulty\": \"EASY\"}",
               "formUrlEncoded": [],
               "multipartForm": []
             },
@@ -292,6 +292,29 @@
               "mode": "none"
             }
           }
+        },
+        {
+          "type": "http",
+          "name": "logout",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:8080/logout",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
         }
       ]
     },
@@ -358,6 +381,29 @@
           }
         }
       ]
+    },
+    {
+      "type": "http",
+      "name": "documentation",
+      "seq": 2,
+      "request": {
+        "url": "http://localhost:8080/documentation",
+        "method": "GET",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "none",
+          "formUrlEncoded": [],
+          "multipartForm": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "auth": {
+          "mode": "none"
+        }
+      }
     }
   ],
   "environments": [],
