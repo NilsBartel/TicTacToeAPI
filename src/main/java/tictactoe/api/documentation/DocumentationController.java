@@ -6,6 +6,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.vavr.control.Try;
 import tictactoe.api.errors.ErrorHandler;
 import tictactoe.api.errors.MethodNotAllowed;
+import tictactoe.util.MavenCommandExecutor;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,9 +32,11 @@ public class DocumentationController {
     static void handleDocumentation(HttpExchange exchange, HikariDataSource dataSource) throws MethodNotAllowed, IOException {
         Path documentationPath = Path.of("/Users/nilsbartel/IdeaProjects/TicTacToeAPI/target/openapi-docs/index.html");
 
+        System.out.println("before");
         if (!Files.exists(documentationPath)) {
-            //TODO: generate documentation
+            MavenCommandExecutor.mvnCleanCompile();
         }
+        System.out.println("after");
 
 
         if (exchange.getRequestMethod().equals("GET")) {
