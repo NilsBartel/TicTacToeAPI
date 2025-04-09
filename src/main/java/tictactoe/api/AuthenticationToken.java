@@ -12,7 +12,7 @@ import tictactoe.api.errors.ErrorCodes;
 public final class AuthenticationToken {
 
     private final int TOKEN_LENGTH = 32;
-    private final int TOKEN_LIFETIME = 60;  // in minutes
+    private final int TOKEN_LIFETIME_MINUTES = 60;
     private final Map<String, Map.Entry<Integer, Timestamp>> authMap = new HashMap<>();
     private static AuthenticationToken instance;
     private AuthenticationToken() {
@@ -29,7 +29,7 @@ public final class AuthenticationToken {
         String token = RandomString.make(TOKEN_LENGTH);
         authMap.put(
             token,
-            Map.entry(userID, new Timestamp(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(TOKEN_LIFETIME)))
+            Map.entry(userID, new Timestamp(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(TOKEN_LIFETIME_MINUTES)))
         );
         return token;
     }
@@ -42,7 +42,8 @@ public final class AuthenticationToken {
     }
 
     public void logout(String authToken) throws AuthenticationError {
-        if (!authMap.containsKey(authToken)) {
+
+        if (!authMap.containsKey(authToken) || !timestampValid(authMap.get(authToken).getValue())) {
             throw new AuthenticationError(ErrorCodes.TOKEN_INVALID);
         }
         authMap.remove(authToken);
