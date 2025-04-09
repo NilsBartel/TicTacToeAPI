@@ -17,6 +17,7 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException {
+        //TEST
 
         ch.qos.logback.classic.Logger hikariLogger =
             (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.zaxxer.hikari");
